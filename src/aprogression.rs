@@ -7,7 +7,7 @@ pub fn sum(a1: f64, d: f64, n: usize) -> f64 {
 }
 
 pub fn get_n(a1: f64, d: f64, sum: f64) -> usize {
-    //! 'n' - number of iterations will be spent before 'sum' is achieved
+    //! n - number of iterations will be spent before 'sum' is achieved
 
     let mut n = Box::<usize>::new(1);
     while crate::aprogression::sum(a1, d, *n) < sum {

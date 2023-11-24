@@ -16,6 +16,18 @@ mod test_theory_of_probability {
     }
 
     #[test]
+    fn test_binominal_coefficient2_neg() {
+        let res = binominal_coefficient(5, 5);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_binominal_coefficient3_neg() {
+        let res = binominal_coefficient(0, 5);
+        assert!(res.is_err());
+    }
+
+    #[test]
     fn test_bernoulli1_pos() {
         // P_n^m = C_n^m * p^m * q^(n-m)
         let q: f64 = 0.5;
