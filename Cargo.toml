@@ -2,3 +2,10 @@
 name = "math"
 version = "0.1.0"
 edition = "2021"
+authors = ["hardglitch"]
+
+[profile.release]
+strip = true
+opt-level = "s"
+lto = true
+codegen-units = 1
