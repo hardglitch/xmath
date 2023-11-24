@@ -134,6 +134,14 @@ impl crate::math::GProgression {
         //! b_n = b_k * q^(n - k) , n > k
         //!
         //! b_n = b_k / q^(k - n) , n < k
+        //!
+        //! b_k - value of a known element
+        //!
+        //! q - ratio of the progression
+        //!
+        //! k - index of a known element
+        //!
+        //! n - index of a required element
 
         if *q == 0.0 { return Err("Argument 'q' must not be 0".into()) }
 
@@ -146,6 +154,14 @@ impl crate::math::GProgression {
         //! q = (b_n / b_k)^(1 / (n - k)) , n > k
         //!
         //! q = (b_k / b_n)^(1 / (k - n)) , n < k
+        //!
+        //! b_k - value of first known element
+        //!
+        //! b_n - value of second known element
+        //!
+        //! k - index of first known element
+        //!
+        //! n - index of second known element
 
         if n == k { return Err("Argument 'n' must not be equal to 'k'.".into()) }
 
@@ -155,5 +171,32 @@ impl crate::math::GProgression {
         }
         if *b_n == 0.0 { return Err("Argument 'b_n' must not be 0".into()) }
         Ok((b_k / b_n).powf(1.0 / (k - n) as f64))
+    }
+}
+
+pub struct VectorAlgebra {}
+
+#[derive(PartialEq, Debug)]
+pub struct Vector3D {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+impl VectorAlgebra {
+    #[allow(dead_code)]
+    pub fn cos_alpha(a: &Vector3D, b: &Vector3D) -> Result<f64, Box<dyn Error>> {
+        let ab = a.x * b.x + a.y * b.y + a.z * b.z;
+        let a = (a.x.powf(2.0) + a.y.powf(2.0) + a.z.powf(2.0)).sqrt();
+        let b = (b.x.powf(2.0) + b.y.powf(2.0) + b.z.powf(2.0)).sqrt();
+        Ok(ab / (a * b))
+    }
+
+    #[allow(dead_code)]
+    pub fn vector_multiplication(a: &Vector3D, b: &Vector3D) -> Vector3D {
+        Vector3D{
+            x: a.y * b.z - a.z * b.y,
+            y: a.z * b.x - a.x * b.z,
+            z: a.x * b.y - a.y * b.x,
+        }
     }
 }
