@@ -1,0 +1,48 @@
+    "((x)+(1))^(2*ln(x))"
+
+    EXPR[]
+                                                                  ops             stack
+    EXPR_BEGIN                                              // expr begin
+        LPAR                                                // (
+            EXPR_BEGIN                                      // expr begin
+                LPAR                                        // (
+                    EXPR_BEGIN                              // expr begin
+                        EXPR.PUSH(x)                        // x                   x
+                    EXPR_END                                // expr end
+                RPAR                                        // )
+            --- PLUS_SIGNAL                                 // +
+            |   LPAR                                        // (
+            |       EXPR_BEGIN                              // expr begin
+            |           EXPR.PUSH(1)                        // 1                   1 x
+            |       EXPR_END                                // expr end
+            |   RPAR                                        // )
+            --> EXPR.PUSH(PLUS(EXPR.POP, EXPR.POP))         // x+1                 x+1
+            EXPR_END                                        // expr end
+        RPAR                                                // )
+    --- POWER_SIGNAL                                        // ^
+    |   LPAR                                                // (
+    |       EXPR_BEGIN                                      // expr begin
+    |           EXPR_BEGIN                                  // expr begin
+    |               EXPR.PUSH(2)                            // 2                   2 x+1
+    |           EXPR_END                                    // expr end
+    |       --- MULTIPLY_SIGNAL                             // *
+    |       |   EXPR_BEGIN                                  // expr begin
+    |       |   --- LN_SIGNAL                               // ln
+    |       |   |   EXPR_BEGIN                              // expr begin
+    |       |   |       LPAR                                // (
+    |       |   |           EXPR_BEGIN                      // expr begin
+    |       |   |               EXPR.PUSH(x)                // x                   x 2 x+1
+    |       |   |           EXPR_END                        // expr end
+    |       |   |       RPAR                                // )
+    |       |   |   EXPR_END                                // expr end
+    |       |   --> EXPR.PUSH(LN(EXPR.POP))                 // ln(x)               ln(x) 2 x+1
+    |       |   EXPR_END                                    // expr end
+    |       --> EXPR.PUSH(MULTIPLY(EXPR.POP, EXPR.POP))     // 2*ln(x)             2*ln(x) x+1
+    |       EXPR_END                                        // expr end
+    |   RPAR                                                // )
+    --> EXPR.PUSH(POWER(EXPR.POP, EXPR.POP))                // (x+1)^(2*ln(x))     (x+1)^(2*ln(x))
+    EXPR_END                                                // expr end
+
+
+    ----------------------------------
+    LPAR[] = RPAR[]  ()

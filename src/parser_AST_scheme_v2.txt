@@ -1,0 +1,27 @@
+        "((x)+(1))^(2*ln(x))"
+
+        EXPR[]
+        NST = 0
+                                                          ops                expr            nesting
+        LPAR                                          inc NST                                   1
+          LPAR                                        inc NST                                   2
+            EXPR.PUSH(x)                              push x                x                   2
+          RPAR                                        dec NST               x                   1
+       -- PLUS_SIGNAL                                 +                     x                   1
+       |  LPAR                                        inc NST               x                   2
+       |    EXPR.PUSH(1)                              push 1                1 x                 2
+       |  RPAR                                        dec NST               1 x                 1
+       -> EXPR.PUSH(PLUS(EXPR.POP, EXPR.POP))         push x+1              x+1                 1
+        RPAR                                          dec NST               x+1                 0
+   ---- POWER_SIGNAL                                  ^                     x+1                 0
+   |    LPAR                                          inc NST               x+1                 1
+   |      EXPR.PUSH(2)                                push 2                2 x+1               1
+   | ---- MULTIPLY_SIGNAL                             *                     2 x+1               1
+   | | -- LN_SIGNAL                                   ln                    2 x+1               1
+   | | |    LPAR                                      inc NST               2 x+1               2
+   | | |      EXPR.PUSH(x)                            push x                x 2 x+1             2
+   | | |    RPAR                                      dec NST               x 2 x+1             1
+   | | -> EXPR.PUSH(LN(EXPR.POP))                     push ln(x)            ln(x) 2 x+1         1
+   | ---> EXPR.PUSH(MULTIPLY(EXPR.POP, EXPR.POP))     push 2*ln(x)          2*ln(x) x+1         1
+   |    RPAR                                          dec NST               2*ln(x) x+1         0
+   -> EXPR.PUSH(POWER(EXPR.POP, EXPR.POP))            push (x+1)^(2*ln(x))  (x+1)^(2*ln(x))     0
