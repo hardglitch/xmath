@@ -1,1 +1,10 @@
-/target
+*
+!/examples/
+!/examples/*.rs
+!/src
+!/src/*.rs
+!/tests/
+!/tests/*.rs
+!Cargo.lock
+!Cargo.toml
+!.gitignore
