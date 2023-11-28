@@ -1,8 +1,8 @@
 // x.powf(2.0) + x : x1=-1, x2=0, x=-5..1 -> min=-0.25, max=20
 // (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt() : No roots, x=-5..1 -> No extremums
 // -1.0 / (x * (1.0 - (x.ln()).powf(2.0)).sqrt()) : No roots, x=-5..1 -> min=-25,24, max=-1
-// x.powf(3.0) - 16.0 * x.powf(2.0) / 3.0 + 15.0 * x : x1=0.00, x=-5..1 -> min=-333,33, max=10.66
-// 6.0 * x.powf(5.0) - 90.0 * x.powf(3.0) - 5.0 : x=-5..1 -> No roots, min=-7505, max=967
+// x.powf(3.0) - 16.0 * x.powf(2.0) / 3.0 + 15.0 * x : x1=0, x=-5..1 -> min=-333,33, max=10.66
+// 6.0 * x.powf(5.0) - 90.0 * x.powf(3.0) - 5.0 : No roots, x=-5..1 -> min=-7505, max=967
 // x.powf(3.0/2.0) - 3.0 * x + 1.0 : No roots, x=1..9 -> min=-3, max=1
 
 use math::func_analysis::Expression;
