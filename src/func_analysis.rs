@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use itertools;
-use itertools::{Itertools};
+use itertools::Itertools;
+use crate::utils::is_equal;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Default)]
 pub struct Point {
     pub x: f64,
     pub y: f64,
@@ -36,7 +37,7 @@ impl<F> Expression<F>
         let y = *self.expr;
         for i in -10000..10000 {
             let x = i as f64;
-            if (0.0 - y(x)).abs() <= 0.01 {
+            if is_equal(&y(x), &0.0, 1.0 / self.scale) {
                 self.roots.push(Some(x))
             }
         }
@@ -59,10 +60,17 @@ impl<F> Expression<F>
         }
 
         if extrs.is_empty() {
-            self.extrs.insert("NONE".to_owned(), Point{x:0.0, y:0.0});  // Flag
+            self.extrs.insert("NONE".to_owned(), Point::default());  // Flag
             return None
         }
 
+        self._find_global_min_max(&extrs);
+
+        // Other style of data returning
+        self.extremums()
+    }
+
+    fn _find_global_min_max(&mut self, extrs: &HashMap<i32, i32>) {
         let miny = extrs.values().sorted().min();
         let minx = extrs
             .iter()
@@ -84,9 +92,6 @@ impl<F> Expression<F>
             y: *maxy.unwrap() as f64 / self.scale
         };
         self.extrs.insert("max".to_owned(), max);
-
-        // Other style of data returning
-        self.extremums()
     }
 
     pub fn extremums(&self) -> Option<&HashMap<String, Point>> {

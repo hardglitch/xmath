@@ -7,8 +7,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let res = quadratic_equation(5.0, -63.0, -18.0)?.unwrap();
     println!("x1 = {:.2?}", &res.first().unwrap());
     println!("x2 = {:.2?}", &res.last().unwrap());
-    // x1 = 321.99
-    // x2 = -6.99
+    // x1 = 12.88
+    // x2 = -0.28
 
     Ok(())
 }

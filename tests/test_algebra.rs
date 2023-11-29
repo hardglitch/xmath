@@ -1,19 +1,13 @@
 #[cfg(test)]
 mod test_algebra {
     use math::algebra::quadratic_equation;
+    use math::utils::is_equal;
 
     #[test]
     fn test_quadratic_equation1_pos() {
-        // +-ax^2 +-bx +-с = 0
-        let a = -1.0;
-        let b: f64 = 6.0;
-        let c = -2.0;
-        let d = b.powf(2.0) - 4.0 * a * c;
-        let x1 = (-b + d.sqrt()) / 2.0 * a;
-        let x2 = (-b - d.sqrt()) / 2.0 * a;
-        let res_test = Some([x1, x2]);
-        let res = quadratic_equation(a, b, c).unwrap();
-        assert_eq!(res, res_test);
+        let res = quadratic_equation(5.0, -63.0, -18.0).unwrap().unwrap();
+        assert!(is_equal(res.first().unwrap(), &12.88, 0.01));
+        assert!(is_equal(res.last().unwrap(), &-0.28, 0.01));
     }
 
     #[test]

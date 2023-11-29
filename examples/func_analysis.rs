@@ -4,6 +4,7 @@
 // x.powf(3.0) - 16.0 * x.powf(2.0) / 3.0 + 15.0 * x : x1=0, x=-5..1 -> min=-333,33, max=10.66
 // 6.0 * x.powf(5.0) - 90.0 * x.powf(3.0) - 5.0 : No roots, x=-5..1 -> min=-7505, max=967
 // x.powf(3.0/2.0) - 3.0 * x + 1.0 : No roots, x=1..9 -> min=-3, max=1
+// 5.0 * x.powf(2.0) - 63.0 * x - 18.0 :
 
 use math::func_analysis::Expression;
 
