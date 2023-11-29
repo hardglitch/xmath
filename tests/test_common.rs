@@ -6,22 +6,20 @@ mod test_common {
     fn test_factorial1_pos() {
         // n! = 2 * 3 * ... * n
         let res = factorial(5);
-        let res_test: u128 = 2 * 3 * 4 * 5;
+        let res_test = 2.0 * 3.0 * 4.0 * 5.0;
         assert_eq!(res, res_test);
     }
 
     #[test]
     fn test_factorial2_pos() {
         let res = factorial(0);
-        let res_test: u128 = 0;
-        assert_eq!(res, res_test);
+        assert_eq!(res, 0.0);
     }
 
     #[test]
     fn test_factorial3_pos() {
         let res = factorial(1);
-        let res_test: u128 = 1;
-        assert_eq!(res, res_test);
+        assert_eq!(res, 1.0);
     }
 
     #[test]

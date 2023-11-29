@@ -1,13 +1,14 @@
-pub fn factorial(n: usize) -> u128 {
+pub fn factorial(n: usize) -> f64 {
     //! n! = 2 * 3 * ... * n
+    //! // Limit 170
 
     match n {
-        0 => { 0 }
-        1 => { 1 }
+        0 => { 0.0 }
+        1 => { 1.0 }
         _ => {
-            let mut r = Box::<u128>::new(1);
-            for i in 2..=n as u128 {
-                *r *= i
+            let mut r = Box::<f64>::new(1e0);
+            for i in 2..=n {
+                *r *= i as f64
             }
             *r
         }

@@ -1,6 +1,6 @@
 use std::error::Error;
 
-pub fn quadratic_equation(a: f32, b: f32, c: f32) -> Result<Option<[f32; 2]>, Box<dyn Error>> {
+pub fn quadratic_equation(a: f64, b: f64, c: f64) -> Result<Option<[f64; 2]>, Box<dyn Error>> {
     //! +-ax^2 +-bx +-с = 0
 
     if a == 0.0 { return Err("Argument 'a' must not be 0.".into()); }

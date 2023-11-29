@@ -6,8 +6,8 @@ use crate::utils::is_equal;
 
 #[derive(Debug, PartialEq, Default)]
 pub struct Point {
-    pub x: f32,
-    pub y: f32,
+    pub x: f64,
+    pub y: f64,
 }
 
 impl Display for Point {
@@ -17,12 +17,12 @@ impl Display for Point {
 }
 pub struct Expression<F> {
     expr: Box<F>,
-    roots: Vec<Option<f32>>,
+    roots: Vec<Option<f64>>,
     extrs: HashMap<String, Point>,
-    precision: f32,
+    precision: f64,
 }
 impl<F> Expression<F>
-    where F: (Fn(f32) -> f32) + Copy
+    where F: (Fn(f64) -> f64) + Copy
 {
     pub fn new(func: F) -> Self
     {
@@ -36,7 +36,7 @@ impl<F> Expression<F>
     pub fn find_roots(&mut self) {
         let y = *self.expr;
         for i in -10000..10000 {
-            let x = i as f32;
+            let x = i as f64;
             if is_equal(&y(x), &0.0, 1.0 / self.precision) {
                 self.roots.push(Some(x))
             }
@@ -44,7 +44,7 @@ impl<F> Expression<F>
         if self.roots.is_empty() { self.roots.push(None) }
     }
 
-    pub fn find_extremums(&mut self, x_min: f32, x_max: f32) -> Option<&HashMap<String, Point>> {
+    pub fn find_extremums(&mut self, x_min: f64, x_max: f64) -> Option<&HashMap<String, Point>> {
         let scale = 100.0;
         let mut x_range = (x_min * scale) as i32..=(x_max * scale) as i32;
         if x_min > x_max {
@@ -54,7 +54,7 @@ impl<F> Expression<F>
         let y = *self.expr;
 
         for i in x_range {
-            let x = i as f32 / scale;
+            let x = i as f64 / scale;
             let y_x = y(x);
             if y_x.is_nan() { continue }
             extrs.insert(i, (y_x * self.precision) as i64);
@@ -77,8 +77,8 @@ impl<F> Expression<F>
         let minx = extrs.iter().find_map(|(x, y)| if y == miny {Some(x)} else {None}).unwrap();
 
         let min = Point{
-            x: *minx as f32 / 100.0,
-            y: *miny as f32 / self.precision
+            x: *minx as f64 / 100.0,
+            y: *miny as f64 / self.precision
         };
         self.extrs.insert("min".to_owned(), min);
 
@@ -87,8 +87,8 @@ impl<F> Expression<F>
         let maxx = extrs.iter().find_map(|(x, y)| if y == maxy {Some(x)} else {None}).unwrap();
 
         let max = Point{
-            x: *maxx as f32 / 100.0,
-            y: *maxy as f32 / self.precision
+            x: *maxx as f64 / 100.0,
+            y: *maxy as f64 / self.precision
         };
         self.extrs.insert("max".to_owned(), max);
     }
@@ -116,7 +116,7 @@ impl<F> Expression<F>
         }
     }
 
-    pub fn roots(&self) -> &Vec<Option<f32>> {
+    pub fn roots(&self) -> &Vec<Option<f64>> {
         &self.roots
     }
 

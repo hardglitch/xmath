@@ -10,10 +10,9 @@ use math::func_analysis::Expression;
 
 fn main() {
     let mut y = Expression::new(
-        |x: f32| 2.0*x + 50.0/x + 15.0
-        // |x: f32| 6.0*x.powf(5.0) - 90.0*x.powf(3.0) - 5.0
+        |x: f64| x.powf(3.0) - 16.0*x.powf(2.0)/3.0 + 15.0*x
     );
-    y.find_extremums(-10.0, -0.5);
+    y.find_extremums(-5.0, 1.0);
     y.find_roots();
     y.print_result();
 

@@ -8,7 +8,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("x1 = {:.2?}", &res.first().unwrap());
     println!("x2 = {:.2?}", &res.last().unwrap());
     // x1 = 12.88
-    // x2 = -0.28
+    // x2 = -0.99
 
     Ok(())
 }
