@@ -27,7 +27,7 @@ mod test_aprogression {
     fn test_aprogression_get_a_n1_pos() {
         // a_n = a_k + (n - k) * d , n => k
         let res = get_a_n(3.0, 2.0, 2, 6);
-        let res_test = 3.0 + (6 - 2) as f64 * 2.0;
+        let res_test = 3.0 + (6 - 2) as f32 * 2.0;
         assert_eq!(res, res_test);
     }
 
@@ -35,7 +35,7 @@ mod test_aprogression {
     fn test_aprogression_get_a_n2_pos() {
         // a_n = a_k - (k - n) * d , n <= k
         let res = get_a_n(3.0, 2.0, 6, 2);
-        let res_test = 3.0 - (6 - 2) as f64 * 2.0;
+        let res_test = 3.0 - (6 - 2) as f32 * 2.0;
         assert_eq!(res, res_test);
     }
 }

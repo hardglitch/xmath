@@ -6,8 +6,8 @@ use crate::utils::is_equal;
 
 #[derive(Debug, PartialEq, Default)]
 pub struct Point {
-    pub x: f64,
-    pub y: f64,
+    pub x: f32,
+    pub y: f32,
 }
 
 impl Display for Point {
@@ -17,12 +17,12 @@ impl Display for Point {
 }
 pub struct Expression<F> {
     expr: Box<F>,
-    roots: Vec<Option<f64>>,
+    roots: Vec<Option<f32>>,
     extrs: HashMap<String, Point>,
-    scale: f64,
+    precision: f32,
 }
 impl<F> Expression<F>
-    where F: (Fn(f64) -> f64) + Copy
+    where F: (Fn(f32) -> f32) + Copy
 {
     pub fn new(func: F) -> Self
     {
@@ -30,33 +30,34 @@ impl<F> Expression<F>
             expr: Box::new(func),
             roots: Default::default(),
             extrs: Default::default(),
-            scale: 100.0,
+            precision: 10_000.0,
         }
     }
     pub fn find_roots(&mut self) {
         let y = *self.expr;
         for i in -10000..10000 {
-            let x = i as f64;
-            if is_equal(&y(x), &0.0, 1.0 / self.scale) {
+            let x = i as f32;
+            if is_equal(&y(x), &0.0, 1.0 / self.precision) {
                 self.roots.push(Some(x))
             }
         }
         if self.roots.is_empty() { self.roots.push(None) }
     }
 
-    pub fn find_extremums(&mut self, x_min: i32, x_max: i32) -> Option<&HashMap<String, Point>> {
-        let mut x_range = x_min * self.scale as i32..=x_max * self.scale as i32;
+    pub fn find_extremums(&mut self, x_min: f32, x_max: f32) -> Option<&HashMap<String, Point>> {
+        let scale = 100.0;
+        let mut x_range = (x_min * scale) as i32..=(x_max * scale) as i32;
         if x_min > x_max {
-            x_range = x_max * self.scale as i32..=x_min * self.scale as i32;
+            x_range = (x_max * scale) as i32..=(x_min * scale) as i32;
         }
-        let mut extrs = HashMap::<i32, i32>::new();
+        let mut extrs = HashMap::<i32, i64>::new();
         let y = *self.expr;
 
         for i in x_range {
-            let x = i as f64 / self.scale;
+            let x = i as f32 / scale;
             let y_x = y(x);
             if y_x.is_nan() { continue }
-            extrs.insert(i, (y_x * self.scale) as i32);
+            extrs.insert(i, (y_x * self.precision) as i64);
         }
 
         if extrs.is_empty() {
@@ -70,26 +71,24 @@ impl<F> Expression<F>
         self.extremums()
     }
 
-    fn _find_global_min_max(&mut self, extrs: &HashMap<i32, i32>) {
-        let miny = extrs.values().sorted().min();
-        let minx = extrs
-            .iter()
-            .find_map(|(k, v)| if Some(v) == miny {Some(k)} else {None});
+    fn _find_global_min_max(&mut self, extrs: &HashMap<i32, i64>) {
+        // Here minx and miny will have definitely get the values.
+        let miny = extrs.values().sorted().min().unwrap();
+        let minx = extrs.iter().find_map(|(x, y)| if y == miny {Some(x)} else {None}).unwrap();
 
         let min = Point{
-            x: *minx.unwrap() as f64 / self.scale,
-            y: *miny.unwrap() as f64 / self.scale
+            x: *minx as f32 / 100.0,
+            y: *miny as f32 / self.precision
         };
         self.extrs.insert("min".to_owned(), min);
 
-        let maxy = extrs.values().sorted().max();
-        let maxx = extrs
-            .iter()
-            .find_map(|(k, v)| if Some(v) == maxy {Some(k)} else {None});
+        // Here maxx and maxy will have definitely get the values.
+        let maxy = extrs.values().sorted().max().unwrap();
+        let maxx = extrs.iter().find_map(|(x, y)| if y == maxy {Some(x)} else {None}).unwrap();
 
         let max = Point{
-            x: *maxx.unwrap() as f64 / self.scale,
-            y: *maxy.unwrap() as f64 / self.scale
+            x: *maxx as f32 / 100.0,
+            y: *maxy as f32 / self.precision
         };
         self.extrs.insert("max".to_owned(), max);
     }
@@ -117,7 +116,7 @@ impl<F> Expression<F>
         }
     }
 
-    pub fn roots(&self) -> &Vec<Option<f64>> {
+    pub fn roots(&self) -> &Vec<Option<f32>> {
         &self.roots
     }
 
