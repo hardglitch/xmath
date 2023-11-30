@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod test_common {
-    use math::common::{factorial, sigma};
+    use math::common::{factorial, sigma, simple_sigma};
+    use math::utils::is_equal;
 
     #[test]
     fn test_factorial1_pos() {
@@ -24,15 +25,68 @@ mod test_common {
 
     #[test]
     fn test_sigma1_pos() {
-        // sigma(n) = 1 + 2 + 3 + ... + n
-        let res = sigma(5);
-        let res_test = 1 + 2 + 3 + 4 + 5;
-        assert_eq!(res, res_test);
+        let res = sigma(1.0, 1.5, 0.1, |x| x + 1.0).unwrap();
+        assert!(is_equal(&res, &13.5, 0.01));
+    }
+
+    #[test]
+    fn test_sigma2_pos() {
+        let res = sigma(1.5, 1.0, -0.1, |x| x + 1.0).unwrap();
+        assert!(is_equal(&res, &13.5, 0.01));
+    }
+
+    #[test]
+    fn test_sigma3_pos() {
+        let res = sigma(1.0, 2.5, 1.0, |x| x + 1.0).unwrap();
+        assert!(is_equal(&res, &5.0, 0.01));
     }
 
     #[test]
     fn test_sigma1_neg() {
-        let res = sigma(5);
-        assert_ne!(res, 2);
+        let res = sigma(1.5, 1.5, -0.1, |x| x + 1.0);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_sigma2_neg() {
+        let res = sigma(1.0, 1.5, -0.1, |x| x + 1.0);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_sigma3_neg() {
+        let res = sigma(1.5, 1.0, 0.1, |x| x + 1.0);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_sigma4_neg() {
+        let res = sigma(1.0, 1.5, -0.0, |x| x + 1.0);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_sigma5_neg() {
+        let res = sigma(1.0, 1.5, 2.0, |x| x + 1.0);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_sigma6_neg() {
+        let res = sigma(1.5, 1.0, -2.0, |x| x + 1.0);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_simple_sigma1_pos() {
+        let res = simple_sigma(5);
+        let test_res = 1 + 2 + 3 + 4 + 5;
+        assert_eq!(res, test_res);
+    }
+
+    #[test]
+    fn test_simple_sigma2_pos() {
+        let res = simple_sigma(0);
+        assert_eq!(res, 0);
     }
 }

@@ -22,13 +22,13 @@ pub fn get_b_n(b_k: f64, q: f64, k: usize, n: usize) -> Result<f64, Box<dyn Erro
     //!
     //! b_n = b_k / q^(k - n) , n < k
     //!
-    //! b_k - value of a known element
+    //! b_k - value of the known element
     //!
-    //! q - ratio of the progression
+    //! q - ratio of progression
     //!
-    //! k - index of a known element
+    //! k - index of the known element
     //!
-    //! n - index of a required element
+    //! n - index of the required element
 
     if q == 0.0 { return Err("Argument 'q' must not be 0".into()) }
 
@@ -36,19 +36,18 @@ pub fn get_b_n(b_k: f64, q: f64, k: usize, n: usize) -> Result<f64, Box<dyn Erro
     Ok(b_k / q.powf((k - n) as f64))
 }
 
-#[allow(dead_code)]
 pub fn get_q(b_k: f64, b_n: f64, k: usize, n: usize) -> Result<f64, Box<dyn Error>> {
     //! q = (b_n / b_k)^(1 / (n - k)) , n > k
     //!
     //! q = (b_k / b_n)^(1 / (k - n)) , n < k
     //!
-    //! b_k - value of first known element
+    //! b_k - value of the first known element
     //!
-    //! b_n - value of second known element
+    //! b_n - value of the second known element
     //!
-    //! k - index of first known element
+    //! k - index of the first known element
     //!
-    //! n - index of second known element
+    //! n - index of the second known element
 
     if n == k { return Err("Argument 'n' must not be equal to 'k'.".into()) }
 
