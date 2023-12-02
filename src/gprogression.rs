@@ -1,20 +1,29 @@
 use std::error::Error;
 
-pub fn sum(b1: f64, q: f64, n: usize) -> Result<f64, Box<dyn Error>> {
-    //! sum = b1 * (q^n - 1) / (q - 1)
+pub fn sum(base: f64, q: f64, n: usize) -> Result<f64, Box<dyn Error>> {
+    //! sum = base * (q^n - 1) / (q - 1)
 
     if q == 1.0 { return Err("Argument 'q' must not be 1.0".into()) }
-    Ok(b1 * (q.powf(n as f64) - 1.0) / (q - 1.0))
+    Ok(base * (q.powf(n as f64) - 1.0) / (q - 1.0))
 }
 
-pub fn get_n(b1: f64, q: f64, sum: f64) -> usize {
-    //! 'n' - number of iterations will be spent before 'sum' is achieved
+pub fn get_iters(base: f64, q: f64, sum: f64) -> Result<usize, Box<dyn Error>> {
+    //! Number of iterations will be spent before 'sum' is achieved
+    //!
+    //! base - the first element of progression
+    //!
+    //! q - geometrical ratio (step)
+    //!
+    //! sum - geometric progression sum
+
+    if base < 0.0 { return Err("Arguments 'base' must not be less than 0".into()) }
+    if sum <= 0.0 || q <= 0.0 { return Err("Arguments 'd' and 'sum' must be greater than 0".into()) }
 
     let mut n = Box::<usize>::new(1);
-    while crate::gprogression::sum(b1, q, *n).ok() < Some(sum) {
+    while crate::gprogression::sum(base, q, *n).ok() < Some(sum) {
         *n += 1
     }
-    *n
+    Ok(*n)
 }
 
 pub fn get_b_n(b_k: f64, q: f64, k: usize, n: usize) -> Result<f64, Box<dyn Error>> {

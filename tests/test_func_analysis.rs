@@ -2,13 +2,14 @@
 mod test_func_analysis {
     use math::func_analysis::{Expression, Point};
     use std::collections::HashMap;
+    use math::utils::is_equal;
 
     #[test]
     fn test_find_roots1_pos() {
         let mut y = Expression::new(
             |x: f64| x.powf(3.0) - 16.0 * x.powf(2.0) / 3.0 + 15.0 * x
         );
-        y.find_roots();
+        y.find_roots().unwrap();
         let root = y.roots()[0].unwrap();
         assert_eq!(0.0, root);
     }
@@ -18,7 +19,7 @@ mod test_func_analysis {
         let mut y = Expression::new(
             |x: f64| (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt()
         );
-        y.find_roots();
+        y.find_roots().unwrap();
         let root = y.roots()[0];
         assert!(root.is_none());
     }
@@ -28,7 +29,7 @@ mod test_func_analysis {
         let mut y = Expression::new(
             |x: f64| 6.0 * x.powf(5.0) - 90.0 * x.powf(3.0) - 5.0
         );
-        y.find_extremums(-5.0, 1.0);
+        y.find_extremums(-5.0, 1.0).unwrap();
 
         let max = y.max().unwrap();
         assert_eq!(max, &Point{x:-3.0, y:967.0});
@@ -46,12 +47,13 @@ mod test_func_analysis {
         let mut y = Expression::new(
             |x: f64| x.powf(3.0) - 16.0 * x.powf(2.0) / 3.0 + 15.0 * x
         );
-        let res = y.find_extremums(-5.0, 1.0);
-        let mut test_data = HashMap::<String, Point>::new();
-        test_data.insert("min".to_owned(), Point{ x: -5.0, y: -333.3333 });
-        test_data.insert("max".to_owned(), Point{ x: 1.0, y: 10.6666 });
-        assert_eq!(Some(&test_data), res);
-        assert_eq!(Some(&test_data), y.extremums());
+        let res = y.find_extremums(-5.0, 1.0).unwrap().unwrap();
+        let min = res.get("min").unwrap();
+        let max = res.get("max").unwrap();
+        assert!(is_equal(&min.x, &-5.0, 0.01));
+        assert!(is_equal(&min.y, &-333.33, 0.01));
+        assert!(is_equal(&max.x, &1.0, 0.01));
+        assert!(is_equal(&max.y, &10.67, 0.01));
     }
 
     #[test]
@@ -59,7 +61,7 @@ mod test_func_analysis {
         let mut y = Expression::new(
             |x: f64| x.powf(2.0) + x
         );
-        let res = y.find_extremums(-5.0, 1.0);
+        let res = y.find_extremums(-5.0, 1.0).unwrap();
         let mut test_data = HashMap::<String, Point>::new();
         test_data.insert("min".to_owned(), Point{ x: -0.5, y: -0.25 });
         test_data.insert("max".to_owned(), Point{ x: -5.0, y: 20.0 });
@@ -68,21 +70,24 @@ mod test_func_analysis {
     }
 
     #[test]
-    fn test_find_extremums4_none_pos() {
+    fn test_find_extremums4_extremums_pos() {
         let mut y = Expression::new(
-            |x: f64| (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt()
+            |x: f64| x.powf(2.0) + x
         );
-        let res = y.find_extremums(-5.0, 1.0);
-        assert!(res.is_none());
-        assert!(y.extremums().is_none());
+        let res = y.find_extremums(1.0, -5.0).unwrap();
+        let mut test_data = HashMap::<String, Point>::new();
+        test_data.insert("min".to_owned(), Point{ x: -0.5, y: -0.25 });
+        test_data.insert("max".to_owned(), Point{ x: -5.0, y: 20.0 });
+        assert_eq!(Some(&test_data), res);
+        assert_eq!(Some(&test_data), y.extremums());
     }
 
     #[test]
-    fn test_find_extremums5_inverted_args_pos() {
+    fn test_find_extremums5_none_pos() {
         let mut y = Expression::new(
             |x: f64| (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt()
         );
-        let res = y.find_extremums(1.0, -5.0);
+        let res = y.find_extremums(-5.0, 1.0).unwrap();
         assert!(res.is_none());
         assert!(y.extremums().is_none());
     }

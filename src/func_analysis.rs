@@ -1,28 +1,45 @@
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
+use std::thread::JoinHandle;
 use itertools;
 use itertools::Itertools;
 use crate::utils::is_equal;
+
 
 #[derive(Debug, PartialEq, Default)]
 pub struct Point {
     pub x: f64,
     pub y: f64,
 }
-
 impl Display for Point {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({}, {})", self.x, self.y)
+        write!(f, "(x={}, y={})", self.x, self.y)
     }
 }
+
+struct Settings {
+    x_min: f64,
+    x_max: f64,
+    precision: f64,
+}
+impl Default for Settings {
+    fn default() -> Self {
+        Self{
+            x_min: -1000.0,
+            x_max: 1000.0,
+            precision: 0.0001,
+        }
+    }
+}
+
 pub struct Expression<F> {
     expr: Box<F>,
     roots: Vec<Option<f64>>,
     extrs: HashMap<String, Point>,
-    precision: f64,
+    settings: Settings,
 }
 impl<F> Expression<F>
-    where F: (Fn(f64) -> f64) + Copy
+    where for<'a> F: (Fn(f64) -> f64) + Copy + Send + Sync + 'a
 {
     pub fn new(func: F) -> Self
     {
@@ -30,55 +47,105 @@ impl<F> Expression<F>
             expr: Box::new(func),
             roots: Default::default(),
             extrs: Default::default(),
-            precision: 10_000.0,
+            settings: Default::default(),
         }
     }
-    pub fn find_roots(&mut self) {
-        let y = *self.expr;
-        for i in -10000..10000 {
-            let x = i as f64;
-            if is_equal(&y(x), &0.0, 1.0 / self.precision) {
-                self.roots.push(Some(x))
-            }
+
+    pub fn find_roots(&mut self) -> std::io::Result<()> {
+        let upscaled_x_min = (self.settings.x_min / self.settings.precision) as i64;
+        let upscaled_x_max = (self.settings.x_max / self.settings.precision) as i64;
+        let max_threads = std::thread::available_parallelism()?.get();
+        let one_thread_tasks = ((upscaled_x_max - upscaled_x_min).abs() / max_threads as i64) + 1;
+        let mut handels = Vec::<JoinHandle<()>>::new();
+        let (tx, rx) = std::sync::mpsc::channel();
+
+        for th in 0..max_threads {
+            let tx_th = tx.clone();
+            let expr = *self.expr;
+            let precision = self.settings.precision;
+
+            let handle = std::thread::spawn(move || {
+                let upscaled_x_min_shifted = upscaled_x_min + one_thread_tasks * th as i64;
+                let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
+                for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
+                    let downscaled_x = upscaled_x as f64 * precision;
+                    if is_equal(&expr(downscaled_x), &0.0, precision / 10.0) {
+                        tx_th.send(Some(upscaled_x)).unwrap();
+                    }
+                }
+            });
+            handels.push(handle);
         }
-        if self.roots.is_empty() { self.roots.push(None) }
+        for handle in handels { handle.join().unwrap(); }
+        drop(tx);
+
+        for r in rx {
+            let upscaled_x = r.expect("Nothing has been received.");
+            let downscaled_x = upscaled_x as f64 * self.settings.precision;
+            self.roots.push(Some(downscaled_x));
+        }
+        if self.roots.is_empty() { self.roots.push(None); }
+        Ok(())
     }
 
-    pub fn find_extremums(&mut self, x_min: f64, x_max: f64) -> Option<&HashMap<String, Point>> {
-        let scale = 100.0;
-        let mut x_range = (x_min * scale) as i32..=(x_max * scale) as i32;
-        if x_min > x_max {
-            x_range = (x_max * scale) as i32..=(x_min * scale) as i32;
+    pub fn find_extremums(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<&HashMap<String, Point>>> {
+        let mut upscaled_x_min = (x_min / self.settings.precision) as i64;
+        let mut upscaled_x_max = (x_max / self.settings.precision) as i64;
+        if upscaled_x_min > upscaled_x_max {
+            std::mem::swap(&mut upscaled_x_min, &mut upscaled_x_max);
         }
-        let mut extrs = HashMap::<i32, i64>::new();
-        let y = *self.expr;
 
-        for i in x_range {
-            let x = i as f64 / scale;
-            let y_x = y(x);
-            if y_x.is_nan() { continue }
-            extrs.insert(i, (y_x * self.precision) as i64);
+        let max_threads = std::thread::available_parallelism()?.get();
+        let one_thread_tasks = ((upscaled_x_max - upscaled_x_min).abs() / max_threads as i64) + 1;
+        let mut handels = Vec::<JoinHandle<()>>::new();
+        let mut extrs = HashMap::<i64, i64>::new();
+        let (tx, rx) = std::sync::mpsc::channel();
+
+        for th in 0..max_threads {
+            let tx_th = tx.clone();
+            let expr = *self.expr;
+            let precision = self.settings.precision;
+
+            let handle = std::thread::spawn(move || {
+                let upscaled_x_min_shifted = upscaled_x_min + one_thread_tasks * th as i64;
+                let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
+                for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
+                    let downscaled_x = upscaled_x as f64 * precision;
+                    let y = expr(downscaled_x);
+                    if y.is_nan() { continue }
+                    let upscaled_y = (y / precision) as i64;
+                    tx_th.send(Some((upscaled_x, upscaled_y))).unwrap();
+                }
+            });
+            handels.push(handle);
+        }
+        for handle in handels { handle.join().unwrap(); }
+        drop(tx);
+
+        for r in rx {
+            let (x, y) = r.expect("Nothing has been received.");
+            extrs.insert(x, y);
         }
 
         if extrs.is_empty() {
             self.extrs.insert("NONE".to_owned(), Point::default());  // Flag
-            return None
+            return Ok(None)
         }
 
         self._find_global_min_max(&extrs);
 
         // Other style of data returning
-        self.extremums()
+        Ok(self.extremums())
     }
 
-    fn _find_global_min_max(&mut self, extrs: &HashMap<i32, i64>) {
+    fn _find_global_min_max(&mut self, extrs: &HashMap<i64, i64>) {
         // Here minx and miny will have definitely get the values.
         let miny = extrs.values().sorted().min().unwrap();
         let minx = extrs.iter().find_map(|(x, y)| if y == miny {Some(x)} else {None}).unwrap();
 
         let min = Point{
-            x: *minx as f64 / 100.0,
-            y: *miny as f64 / self.precision
+            x: *minx as f64 * self.settings.precision,
+            y: *miny as f64 * self.settings.precision,
         };
         self.extrs.insert("min".to_owned(), min);
 
@@ -87,8 +154,8 @@ impl<F> Expression<F>
         let maxx = extrs.iter().find_map(|(x, y)| if y == maxy {Some(x)} else {None}).unwrap();
 
         let max = Point{
-            x: *maxx as f64 / 100.0,
-            y: *maxy as f64 / self.precision
+            x: *maxx as f64 * self.settings.precision,
+            y: *maxy as f64 * self.settings.precision,
         };
         self.extrs.insert("max".to_owned(), max);
     }
@@ -99,18 +166,20 @@ impl<F> Expression<F>
     }
 
     pub fn max(&self) -> Option<&Point> {
-        match self.extrs.is_empty() {
-            true  => { None },
-            false => {
+        if self.extrs.is_empty() { return None; }
+        match self.extrs.get("NONE") {
+            Some(_)  => { None },
+            None => {
                 self.extrs.get("max")
             }
         }
     }
 
     pub fn min(&self) -> Option<&Point> {
-        match self.extrs.is_empty() {
-            true  => { None },
-            false => {
+        if self.extrs.is_empty() { return None; }
+        match self.extrs.get("NONE") {
+            Some(_)  => { None },
+            None => {
                 self.extrs.get("min")
             }
         }
@@ -136,11 +205,16 @@ impl<F> Expression<F>
             match self.extrs.get("NONE") {
                 Some(_) => println!("No extremums"),
                 None => {
-                    let min = self.extrs.get("min").unwrap();
-                    println!("Min F(x)={:.2}, x={:.2}", min.y, min.x);
+                    if self.extrs.get("min") == self.extrs.get("max") {
+                        let min_max = self.extrs.get("min").unwrap();
+                        println!("Min=Max F(x)={:.2}, x={:.2}", min_max.y, min_max.x);
+                    } else {
+                        let min = self.extrs.get("min").unwrap();
+                        println!("Min F(x)={:.2}, x={:.2}", min.y, min.x);
 
-                    let max = self.extrs.get("max").unwrap();
-                    println!("Max F(x)={:.2}, x={:.2}", max.y, max.x);
+                        let max = self.extrs.get("max").unwrap();
+                        println!("Max F(x)={:.2}, x={:.2}", max.y, max.x);
+                    }
                 }
             }
         }

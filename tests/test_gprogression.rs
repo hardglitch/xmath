@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_gprogression {
-    use math::gprogression::{get_b_n, get_n, get_q, sum};
+    use math::gprogression::{get_b_n, get_iters, get_q, sum};
 
     #[test]
     fn test_gprogression_sum1_pos() {
@@ -27,7 +27,7 @@ mod test_gprogression {
 
     #[test]
     fn test_gprogression_get_n1_pos() {
-        let res = get_n(3.0, 1.15, 20.0);
+        let res = get_iters(3.0, 1.15, 20.0).unwrap();
         assert_eq!(res, 5);
     }
 

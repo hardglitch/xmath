@@ -76,7 +76,7 @@ pub fn get_d(a_k: f64, k: usize, a_n: f64, n: usize) -> Result<f64, Box<dyn Erro
 pub fn get_iters(base: f64, d: f64, sum: f64) -> Result<usize, Box<dyn Error>> {
     //! Number of iterations will be spent before 'sum' is achieved
     //!
-    //! a1 - the first element of progression
+    //! base - the first element of progression
     //!
     //! d - arithmetical ratio (step)
     //!
