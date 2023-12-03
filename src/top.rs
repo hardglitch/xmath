@@ -1,7 +1,7 @@
 use std::error::Error;
 use crate::common::factorial;
 
-pub fn binominal_coefficient(m: usize, n: usize) -> Result<f64, Box<dyn Error>> {
+pub fn binom(m: usize, n: usize) -> Result<f64, Box<dyn Error>> {
     //! C_n^m = n! / m! * (n - m)! , m < n
 
     if m > n { return Err("Argument 'n' must be greater then 'm'.".into()); }
@@ -27,7 +27,7 @@ pub fn bernoulli(m: usize, n: usize, p: f64, q: f64) -> Result<f64, Box<dyn Erro
     //!
     //! q - probability that the event will not occur in each test
 
-    match binominal_coefficient(m, n) {
+    match binom(m, n) {
         Ok(c) => Ok(c * p.powf(m as f64) * q.powf((n - m) as f64)),
         Err(e) => Err(e)
     }
