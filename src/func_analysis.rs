@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::thread::JoinHandle;
-use itertools;
-use itertools::Itertools;
 use crate::utils::is_equal;
 
 
@@ -70,7 +68,7 @@ impl<F> Expression<F>
                 for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
                     let downscaled_x = upscaled_x as f64 * precision;
                     if is_equal(&expr(downscaled_x), &0.0, precision / 10.0) {
-                        tx_th.send(Some(upscaled_x)).unwrap();
+                        tx_th.send(upscaled_x).unwrap();
                     }
                 }
             });
@@ -79,8 +77,7 @@ impl<F> Expression<F>
         for handle in handels { handle.join().unwrap(); }
         drop(tx);
 
-        for r in rx {
-            let upscaled_x = r.expect("Nothing has been received.");
+        for upscaled_x in rx {
             let downscaled_x = upscaled_x as f64 * self.settings.precision;
             self.roots.push(Some(downscaled_x));
         }
@@ -98,7 +95,6 @@ impl<F> Expression<F>
         let max_threads = std::thread::available_parallelism()?.get();
         let one_thread_tasks = ((upscaled_x_max - upscaled_x_min).abs() / max_threads as i64) + 1;
         let mut handels = Vec::<JoinHandle<()>>::new();
-        let mut extrs = HashMap::<i64, i64>::new();
         let (tx, rx) = std::sync::mpsc::channel();
 
         for th in 0..max_threads {
@@ -114,7 +110,7 @@ impl<F> Expression<F>
                     let y = expr(downscaled_x);
                     if y.is_nan() { continue }
                     let upscaled_y = (y / precision) as i64;
-                    tx_th.send(Some((upscaled_x, upscaled_y))).unwrap();
+                    tx_th.send((upscaled_x, upscaled_y)).unwrap();
                 }
             });
             handels.push(handle);
@@ -122,26 +118,27 @@ impl<F> Expression<F>
         for handle in handels { handle.join().unwrap(); }
         drop(tx);
 
-        for r in rx {
-            let (x, y) = r.expect("Nothing has been received.");
-            extrs.insert(x, y);
+        let mut raw_data = HashMap::<i64, i64>::new();
+        for (upscaled_x, upscaled_y) in rx {
+            raw_data.insert(upscaled_x, upscaled_y);
         }
-
-        if extrs.is_empty() {
+        if raw_data.is_empty() {
             self.extrs.insert("NONE".to_owned(), Point::default());  // Flag
             return Ok(None)
         }
-
-        self._find_global_min_max(&extrs);
+        self._find_min_max(&raw_data);
 
         // Other style of data returning
         Ok(self.extremums())
     }
 
-    fn _find_global_min_max(&mut self, extrs: &HashMap<i64, i64>) {
+    fn _find_min_max(&mut self, raw_data: &HashMap<i64, i64>) {
+        let mut raw_data_vl: Vec<&i64> = Vec::from_iter(raw_data.values());
+        raw_data_vl.sort();
+
         // Here minx and miny will have definitely get the values.
-        let miny = extrs.values().sorted().min().unwrap();
-        let minx = extrs.iter().find_map(|(x, y)| if y == miny {Some(x)} else {None}).unwrap();
+        let miny = raw_data_vl.first().unwrap().to_owned();
+        let minx = raw_data.iter().find_map(|(x, y)| if y == miny {Some(x)} else {None}).unwrap();
 
         let min = Point{
             x: *minx as f64 * self.settings.precision,
@@ -150,8 +147,8 @@ impl<F> Expression<F>
         self.extrs.insert("min".to_owned(), min);
 
         // Here maxx and maxy will have definitely get the values.
-        let maxy = extrs.values().sorted().max().unwrap();
-        let maxx = extrs.iter().find_map(|(x, y)| if y == maxy {Some(x)} else {None}).unwrap();
+        let maxy = raw_data_vl.last().unwrap().to_owned();
+        let maxx = raw_data.iter().find_map(|(x, y)| if y == maxy {Some(x)} else {None}).unwrap();
 
         let max = Point{
             x: *maxx as f64 * self.settings.precision,
