@@ -33,7 +33,6 @@ impl Point {
 }
 
 
-
 #[derive(Debug, Copy, Clone)]
 pub struct RawPoint {
     pub(crate) x: i64,
@@ -55,7 +54,6 @@ impl PartialOrd for RawPoint {
         Some(self.y.cmp(&other.y))
     }
 }
-
 impl RawPoint {
     pub(crate) fn convert_to_point(&self) -> Point {
         Point {
@@ -80,17 +78,21 @@ impl Default for Settings {
         }
     }
 }
-// impl Settings {
-//     pub fn precision(&self) -> f64 {
-//         self.precision
-//     }
-// }
+
+
+#[derive(Default)]
+struct Flags {
+    is_roots: bool,
+    is_extrs: bool,
+}
+
 
 pub struct Expression<F> {
     expr: Box<F>,
-    roots: Vec<Option<f64>>,
+    roots: Vec<f64>,
     extrs: Vec<RawPoint>,
     settings: Settings,
+    flags: Flags,
 }
 impl<F> Expression<F>
     where for<'a> F: (Fn(f64) -> f64) + Copy + Send + Sync + 'a
@@ -102,10 +104,12 @@ impl<F> Expression<F>
             roots: Default::default(),
             extrs: Default::default(),
             settings: Default::default(),
+            flags: Default::default(),
         }
     }
 
     pub fn find_roots(&mut self) -> std::io::Result<()> {
+        self.flags.is_roots = true;
         let upscaled_x_min = (self.settings.x_min / self.settings.precision) as i64;
         let upscaled_x_max = (self.settings.x_max / self.settings.precision) as i64;
         let max_threads = std::thread::available_parallelism()?.get();
@@ -135,13 +139,13 @@ impl<F> Expression<F>
 
         for upscaled_x in rx {
             let downscaled_x = upscaled_x as f64 * self.settings.precision;
-            self.roots.push(Some(downscaled_x));
+            self.roots.push(downscaled_x);
         }
-        if self.roots.is_empty() { self.roots.push(None); }
         Ok(())
     }
 
     pub fn find_extremums(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<Vec<Point>>> {
+        self.flags.is_extrs = true;
         let mut upscaled_x_min = (x_min / self.settings.precision) as i64;
         let mut upscaled_x_max = (x_max / self.settings.precision) as i64;
         if upscaled_x_min > upscaled_x_max {
@@ -200,9 +204,9 @@ impl<F> Expression<F>
     }
 
     pub fn extremums(&self) -> Option<Vec<Point>> {
-        match self.extrs.is_empty() {
-            true => None,
-            false => {
+        match self.flags.is_extrs && !self.extrs.is_empty() {
+            false => None,
+            true => {
                 let points = self.extrs.iter()
                     .map(|p| p.convert_to_point())
                     .collect();
@@ -212,37 +216,40 @@ impl<F> Expression<F>
     }
 
     pub fn max(&self) -> Option<Point> {
-        match self.extrs.is_empty() {
-            true => None,
-            false => Some(self.extrs.last().unwrap().convert_to_point())
+        match self.flags.is_extrs && !self.extrs.is_empty() {
+            false => None,
+            true => Some(self.extrs.last().unwrap().convert_to_point())
         }
     }
 
     pub fn min(&self) -> Option<Point> {
-        match self.extrs.is_empty() {
-            true => None,
-            false => Some(self.extrs.first().unwrap().convert_to_point())
+        match self.flags.is_extrs && !self.extrs.is_empty() {
+            false => None,
+            true => Some(self.extrs.first().unwrap().convert_to_point())
         }
     }
 
-    pub fn roots(&self) -> &[Option<f64>] {
-        &self.roots[..]
+    pub fn roots(&self) -> Option<&[f64]> {
+        match self.flags.is_roots && !self.roots.is_empty() {
+            false => None,
+            true => Some(&self.roots[..])
+        }
     }
 
     pub fn print_result(&self) {
-        if !self.roots.is_empty() {
-            match self.roots[0].is_none() {
+        if self.flags.is_roots {
+            match self.roots.is_empty() {
                 true  => println!("No roots"),
                 false => {
                     for (i, root) in self.roots.iter().enumerate() {
-                        println!("x{}={:.2}", i+1, root.unwrap());
+                        println!("x{}={:.2}", i+1, root);
                     }
                 }
             }
         }
 
-        if !self.extrs.is_empty() {
-            match self.min().is_none() {
+        if self.flags.is_extrs {
+            match self.extrs.is_empty() {
                 true => println!("No extremums"),
                 false => {
                     if self.min() == self.max() {

@@ -9,7 +9,7 @@ mod test_func_analysis {
             |x: f64| x.powf(3.0) - 16.0 * x.powf(2.0) / 3.0 + 15.0 * x
         );
         y.find_roots().unwrap();
-        let root = y.roots()[0].unwrap();
+        let root = y.roots().unwrap()[0];
         assert_eq!(0.0, root);
     }
 
@@ -19,7 +19,7 @@ mod test_func_analysis {
             |x: f64| (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt()
         );
         y.find_roots().unwrap();
-        let root = y.roots()[0];
+        let root = y.roots();
         assert!(root.is_none());
     }
 
@@ -89,5 +89,16 @@ mod test_func_analysis {
         let res = y.find_extremums(-5.0, 1.0).unwrap();
         assert!(res.is_none());
         assert!(y.extremums().is_none());
+    }
+
+    #[test]
+    fn test_output_result1_none_pos() {
+        let y = Expression::new(
+            |x: f64| (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt()
+        );
+        assert!(y.extremums().is_none());
+        assert!(y.min().is_none());
+        assert!(y.max().is_none());
+        assert!(y.roots().is_none());
     }
 }
