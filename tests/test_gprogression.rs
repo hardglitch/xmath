@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_gprogression {
-    use math::gprogression::{get_b_n, get_iters, get_q, sum};
+    use xmath::gprogression::{get_b_n, get_iters, get_q, sum};
 
     #[test]
     fn test_gprogression_sum1_pos() {

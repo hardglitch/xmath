@@ -6,13 +6,14 @@
 // x.powf(3.0/2.0) - 3.0*x + 1.0 : No roots, x=1..9 -> min=-3, max=1
 
 use std::error::Error;
-use math::func_analysis::Expression;
+use xmath::func_analysis::Expression;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut y = Expression::new(
         |x: f64| x.powi(3) - 16.0*x.powi(2)/3.0 + 15.0*x
+        // |x: f64| ((-1_f64).powf(x+1.0)) / x
     );
-    y.find_extremums(-5.0, 1.0)?;
+    y.find_extremums(-1000.0, 1000.0)?;
     y.find_roots()?;
     y.print_result();
     // x1=0.00

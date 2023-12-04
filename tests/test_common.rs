@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_common {
-    use math::common::{factorial, sigma, simple_sigma};
-    use math::utils::is_equal;
+    use xmath::common::{factorial, sigma, simple_sigma};
+    use xmath::utils::is_equal;
 
     #[test]
     fn test_factorial1_pos() {

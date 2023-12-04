@@ -1,4 +1,4 @@
-use math::aprogression::{get_a_n, get_d, get_iters, sum_by_elems};
+use xmath::aprogression::{get_a_n, get_d, get_iters, sum_by_elems};
 
 fn main() {
     let d = get_d(-3.0, 8, 91.0, 4);

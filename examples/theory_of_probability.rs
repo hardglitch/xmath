@@ -1,4 +1,4 @@
-use math::top::bernoulli;
+use xmath::top::bernoulli;
 
 
 fn bernoulli_example() {

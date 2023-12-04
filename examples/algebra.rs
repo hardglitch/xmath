@@ -1,5 +1,5 @@
 use std::error::Error;
-use math::algebra::quadratic_equation;
+use xmath::algebra::quadratic_equation;
 
 
 fn main() -> Result<(), Box<dyn Error>> {

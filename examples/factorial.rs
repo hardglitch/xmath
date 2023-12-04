@@ -1,4 +1,4 @@
-use math::common::factorial;
+use xmath::common::factorial;
 
 fn main() {
     let a = factorial(170);

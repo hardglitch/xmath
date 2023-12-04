@@ -1,4 +1,4 @@
-use math::common::sigma;
+use xmath::common::sigma;
 
 fn main() {
     let res = sigma(1.0, 10000.0, 1.0, |x| x);

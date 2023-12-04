@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_utils {
-    use math::utils::is_equal;
+    use xmath::utils::is_equal;
 
     #[test]
     fn test_is_equal1_pos() {

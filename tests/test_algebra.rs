@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_algebra {
-    use math::algebra::quadratic_equation;
-    use math::utils::is_equal;
+    use xmath::algebra::quadratic_equation;
+    use xmath::utils::is_equal;
 
     #[test]
     fn test_quadratic_equation1_pos() {

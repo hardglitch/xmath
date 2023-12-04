@@ -1,19 +1,70 @@
-use std::collections::HashMap;
+use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 use std::thread::JoinHandle;
 use crate::utils::is_equal;
 
 
-#[derive(Debug, PartialEq, Default)]
+#[derive(Debug, Copy, Clone)]
 pub struct Point {
-    pub x: f64,
-    pub y: f64,
+    pub(crate) x: f64,
+    pub(crate) y: f64,
 }
 impl Display for Point {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(x={}, y={})", self.x, self.y)
+        write!(f, "(x={}, y={})", self.x(), self.y())
     }
 }
+impl PartialEq for Point {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+impl Eq for Point {}
+impl Point {
+    pub fn new(x: f64, y: f64) -> Self {
+        Self {x, y}
+    }
+    pub fn x(&self) -> f64 {
+        self.x
+    }
+    pub fn y(&self) -> f64 {
+        self.y
+    }
+}
+
+
+
+#[derive(Debug, Copy, Clone)]
+pub struct RawPoint {
+    pub(crate) x: i64,
+    pub(crate) y: i64,
+}
+impl PartialEq for RawPoint {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+impl Eq for RawPoint {}
+impl Ord for RawPoint {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.y.cmp(&other.y)
+    }
+}
+impl PartialOrd for RawPoint {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.y.cmp(&other.y))
+    }
+}
+
+impl RawPoint {
+    pub(crate) fn convert_to_point(&self) -> Point {
+        Point {
+            x: self.x as f64 * Settings::default().precision,
+            y: self.y as f64 * Settings::default().precision,
+        }
+    }
+}
+
 
 struct Settings {
     x_min: f64,
@@ -29,11 +80,16 @@ impl Default for Settings {
         }
     }
 }
+// impl Settings {
+//     pub fn precision(&self) -> f64 {
+//         self.precision
+//     }
+// }
 
 pub struct Expression<F> {
     expr: Box<F>,
     roots: Vec<Option<f64>>,
-    extrs: HashMap<String, Point>,
+    extrs: Vec<RawPoint>,
     settings: Settings,
 }
 impl<F> Expression<F>
@@ -85,7 +141,7 @@ impl<F> Expression<F>
         Ok(())
     }
 
-    pub fn find_extremums(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<&HashMap<String, Point>>> {
+    pub fn find_extremums(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<Vec<Point>>> {
         let mut upscaled_x_min = (x_min / self.settings.precision) as i64;
         let mut upscaled_x_max = (x_max / self.settings.precision) as i64;
         if upscaled_x_min > upscaled_x_max {
@@ -103,6 +159,7 @@ impl<F> Expression<F>
             let precision = self.settings.precision;
 
             let handle = std::thread::spawn(move || {
+                let mut th_raw_data = Vec::<RawPoint>::new();
                 let upscaled_x_min_shifted = upscaled_x_min + one_thread_tasks * th as i64;
                 let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
                 for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
@@ -110,7 +167,15 @@ impl<F> Expression<F>
                     let y = expr(downscaled_x);
                     if y.is_nan() { continue }
                     let upscaled_y = (y / precision) as i64;
-                    tx_th.send((upscaled_x, upscaled_y)).unwrap();
+                    th_raw_data.push(
+                        RawPoint{ x: upscaled_x, y: upscaled_y }
+                    );
+                }
+                if !th_raw_data.is_empty() {
+                    th_raw_data.sort();
+                    let min_point = *th_raw_data.first().unwrap();
+                    let max_point = *th_raw_data.last().unwrap();
+                    tx_th.send((min_point, max_point)).unwrap();
                 }
             });
             handels.push(handle);
@@ -118,72 +183,50 @@ impl<F> Expression<F>
         for handle in handels { handle.join().unwrap(); }
         drop(tx);
 
-        let mut raw_data = HashMap::<i64, i64>::new();
-        for (upscaled_x, upscaled_y) in rx {
-            raw_data.insert(upscaled_x, upscaled_y);
+        let mut raw_data = Vec::<RawPoint>::new();
+        for (min_point, max_point) in rx {
+            raw_data.push(min_point);
+            raw_data.push(max_point);
         }
         if raw_data.is_empty() {
-            self.extrs.insert("NONE".to_owned(), Point::default());  // Flag
             return Ok(None)
         }
-        self._find_min_max(&raw_data);
+        raw_data.sort();
+        self.extrs.push(*raw_data.first().unwrap());  // min point
+        self.extrs.push(*raw_data.last().unwrap());   // max point
 
         // Other style of data returning
         Ok(self.extremums())
     }
 
-    fn _find_min_max(&mut self, raw_data: &HashMap<i64, i64>) {
-        let mut raw_data_vl: Vec<&i64> = Vec::from_iter(raw_data.values());
-        raw_data_vl.sort();
-
-        // Here minx and miny will have definitely get the values.
-        let miny = raw_data_vl.first().unwrap().to_owned();
-        let minx = raw_data.iter().find_map(|(x, y)| if y == miny {Some(x)} else {None}).unwrap();
-
-        let min = Point{
-            x: *minx as f64 * self.settings.precision,
-            y: *miny as f64 * self.settings.precision,
-        };
-        self.extrs.insert("min".to_owned(), min);
-
-        // Here maxx and maxy will have definitely get the values.
-        let maxy = raw_data_vl.last().unwrap().to_owned();
-        let maxx = raw_data.iter().find_map(|(x, y)| if y == maxy {Some(x)} else {None}).unwrap();
-
-        let max = Point{
-            x: *maxx as f64 * self.settings.precision,
-            y: *maxy as f64 * self.settings.precision,
-        };
-        self.extrs.insert("max".to_owned(), max);
-    }
-
-    pub fn extremums(&self) -> Option<&HashMap<String, Point>> {
-        if self.extrs.is_empty() || self.extrs.get("NONE").is_some() { return None }
-        Some(&self.extrs)
-    }
-
-    pub fn max(&self) -> Option<&Point> {
-        if self.extrs.is_empty() { return None; }
-        match self.extrs.get("NONE") {
-            Some(_)  => { None },
-            None => {
-                self.extrs.get("max")
+    pub fn extremums(&self) -> Option<Vec<Point>> {
+        match self.extrs.is_empty() {
+            true => None,
+            false => {
+                let points = self.extrs.iter()
+                    .map(|p| p.convert_to_point())
+                    .collect();
+                Some(points)
             }
         }
     }
 
-    pub fn min(&self) -> Option<&Point> {
-        if self.extrs.is_empty() { return None; }
-        match self.extrs.get("NONE") {
-            Some(_)  => { None },
-            None => {
-                self.extrs.get("min")
-            }
+    pub fn max(&self) -> Option<Point> {
+        match self.extrs.is_empty() {
+            true => None,
+            false => Some(self.extrs.last().unwrap().convert_to_point())
         }
     }
 
-    pub fn roots(&self) -> &Vec<Option<f64>> {
-        &self.roots
+    pub fn min(&self) -> Option<Point> {
+        match self.extrs.is_empty() {
+            true => None,
+            false => Some(self.extrs.first().unwrap().convert_to_point())
+        }
+    }
+
+    pub fn roots(&self) -> &[Option<f64>] {
+        &self.roots[..]
     }
 
     pub fn print_result(&self) {
@@ -199,18 +242,14 @@ impl<F> Expression<F>
         }
 
         if !self.extrs.is_empty() {
-            match self.extrs.get("NONE") {
-                Some(_) => println!("No extremums"),
-                None => {
-                    if self.extrs.get("min") == self.extrs.get("max") {
-                        let min_max = self.extrs.get("min").unwrap();
-                        println!("Min=Max F(x)={:.2}, x={:.2}", min_max.y, min_max.x);
+            match self.min().is_none() {
+                true => println!("No extremums"),
+                false => {
+                    if self.min() == self.max() {
+                        println!("Min=Max F(x)={:.2}, x={:.2}", self.min().unwrap().y, self.min().unwrap().x);
                     } else {
-                        let min = self.extrs.get("min").unwrap();
-                        println!("Min F(x)={:.2}, x={:.2}", min.y, min.x);
-
-                        let max = self.extrs.get("max").unwrap();
-                        println!("Max F(x)={:.2}, x={:.2}", max.y, max.x);
+                        println!("Min F(x)={:.2}, x={:.2}", self.min().unwrap().y, self.min().unwrap().x);
+                        println!("Max F(x)={:.2}, x={:.2}", self.max().unwrap().y, self.max().unwrap().x);
                     }
                 }
             }

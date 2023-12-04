@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_theory_of_probability {
-    use math::top::{bernoulli, binom};
+    use xmath::top::{bernoulli, binom};
     #[test]
     fn test_binominal_coefficient1_pos() {
         // C_n^m = n! / m! * (n - m)!
