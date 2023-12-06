@@ -37,4 +37,16 @@ mod test_utils {
         let res = is_equal(&0.00167, &0.0, 0.01);
         assert!(res);
     }
+
+    #[test]
+    fn test_is_equal7_pos() {
+        let res = is_equal(&0.001, &0.005, 0.001);
+        assert!(!res);
+    }
+
+    #[test]
+    fn test_is_equal8_pos() {
+        let res = is_equal(&-1.1, &-5.3, -0.001);
+        assert!(!res);
+    }
 }

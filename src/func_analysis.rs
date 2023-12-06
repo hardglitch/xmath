@@ -1,10 +1,8 @@
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
-use std::thread::JoinHandle;
 use crate::utils::is_equal;
 
-
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct Point {
     pub(crate) x: f64,
     pub(crate) y: f64,
@@ -33,7 +31,7 @@ impl Point {
 }
 
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct RawPoint {
     pub(crate) x: i64,
     pub(crate) y: i64,
@@ -95,7 +93,7 @@ pub struct Expression<F> {
     flags: Flags,
 }
 impl<F> Expression<F>
-    where for<'a> F: (Fn(f64) -> f64) + Copy + Send + Sync + 'a
+    where for<'a> F: (Fn(f64) -> f64) + Copy + Send + 'a
 {
     pub fn new(func: F) -> Self
     {
@@ -110,31 +108,31 @@ impl<F> Expression<F>
 
     pub fn find_roots(&mut self) -> std::io::Result<()> {
         self.flags.is_roots = true;
+        let max_threads = std::thread::available_parallelism()?.get();
         let upscaled_x_min = (self.settings.x_min / self.settings.precision) as i64;
         let upscaled_x_max = (self.settings.x_max / self.settings.precision) as i64;
-        let max_threads = std::thread::available_parallelism()?.get();
-        let one_thread_tasks = ((upscaled_x_max - upscaled_x_min).abs() / max_threads as i64) + 1;
-        let mut handels = Vec::<JoinHandle<()>>::new();
         let (tx, rx) = std::sync::mpsc::channel();
 
-        for th in 0..max_threads {
-            let tx_th = tx.clone();
-            let expr = *self.expr;
-            let precision = self.settings.precision;
+        std::thread::scope(|s| {
+            let one_thread_tasks = ((upscaled_x_max - upscaled_x_min).abs() / max_threads as i64) + 1;
 
-            let handle = std::thread::spawn(move || {
-                let upscaled_x_min_shifted = upscaled_x_min + one_thread_tasks * th as i64;
-                let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
-                for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
-                    let downscaled_x = upscaled_x as f64 * precision;
-                    if is_equal(&expr(downscaled_x), &0.0, precision / 10.0) {
-                        tx_th.send(upscaled_x).unwrap();
+            for th in 0..max_threads {
+                let tx_th = tx.clone();
+                let expr = *self.expr;
+                let precision = self.settings.precision;
+
+                s.spawn(move || {
+                    let upscaled_x_min_shifted = upscaled_x_min + one_thread_tasks * th as i64;
+                    let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
+                    for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
+                        let downscaled_x = upscaled_x as f64 * precision;
+                        if is_equal(&expr(downscaled_x), &0.0, precision / 10.0) {
+                            tx_th.send(upscaled_x).unwrap();
+                        }
                     }
-                }
-            });
-            handels.push(handle);
-        }
-        for handle in handels { handle.join().unwrap(); }
+                });
+            }
+        });
         drop(tx);
 
         for upscaled_x in rx {
@@ -153,48 +151,46 @@ impl<F> Expression<F>
         }
 
         let max_threads = std::thread::available_parallelism()?.get();
-        let one_thread_tasks = ((upscaled_x_max - upscaled_x_min).abs() / max_threads as i64) + 1;
-        let mut handels = Vec::<JoinHandle<()>>::new();
         let (tx, rx) = std::sync::mpsc::channel();
 
-        for th in 0..max_threads {
-            let tx_th = tx.clone();
-            let expr = *self.expr;
-            let precision = self.settings.precision;
+        std::thread::scope(|s| {
+            let one_thread_tasks = ((upscaled_x_max - upscaled_x_min).abs() / max_threads as i64) + 1;
 
-            let handle = std::thread::spawn(move || {
-                let mut th_raw_data = Vec::<RawPoint>::new();
-                let upscaled_x_min_shifted = upscaled_x_min + one_thread_tasks * th as i64;
-                let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
-                for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
-                    let downscaled_x = upscaled_x as f64 * precision;
-                    let y = expr(downscaled_x);
-                    if y.is_nan() { continue }
-                    let upscaled_y = (y / precision) as i64;
-                    th_raw_data.push(
-                        RawPoint{ x: upscaled_x, y: upscaled_y }
-                    );
-                }
-                if !th_raw_data.is_empty() {
-                    th_raw_data.sort();
-                    let min_point = *th_raw_data.first().unwrap();
-                    let max_point = *th_raw_data.last().unwrap();
-                    tx_th.send((min_point, max_point)).unwrap();
-                }
-            });
-            handels.push(handle);
-        }
-        for handle in handels { handle.join().unwrap(); }
+            for th in 0..max_threads {
+                let tx_th = tx.clone();
+                let expr = *self.expr;
+                let precision = self.settings.precision;
+
+                s.spawn(move || {
+                    let mut th_raw_data = Vec::<RawPoint>::new();
+                    let upscaled_x_min_shifted = upscaled_x_min + one_thread_tasks * th as i64;
+                    let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
+                    for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
+                        let downscaled_x = upscaled_x as f64 * precision;
+                        let y = expr(downscaled_x);
+                        if y.is_nan() { continue }
+                        let upscaled_y = (y / precision) as i64;
+                        th_raw_data.push(
+                            RawPoint{ x: upscaled_x, y: upscaled_y }
+                        );
+                    }
+                    if !th_raw_data.is_empty() {
+                        th_raw_data.sort();
+                        let min_point = *th_raw_data.first().unwrap();
+                        let max_point = *th_raw_data.last().unwrap();
+                        tx_th.send((min_point, max_point)).unwrap();
+                    }
+                });
+            }
+        });
         drop(tx);
 
         let mut raw_data = Vec::<RawPoint>::new();
-        for (min_point, max_point) in rx {
-            raw_data.push(min_point);
-            raw_data.push(max_point);
+        for (min, max) in rx {
+            raw_data.push(min);
+            raw_data.push(max);
         }
-        if raw_data.is_empty() {
-            return Ok(None)
-        }
+        if raw_data.is_empty() { return Ok(None) }
         raw_data.sort();
         self.extrs.push(*raw_data.first().unwrap());  // min point
         self.extrs.push(*raw_data.last().unwrap());   // max point
@@ -250,7 +246,7 @@ impl<F> Expression<F>
 
         if self.flags.is_extrs {
             match self.extrs.is_empty() {
-                true => println!("No extremums"),
+                true  => println!("No extremums"),
                 false => {
                     if self.min() == self.max() {
                         println!("Min=Max F(x)={:.2}, x={:.2}", self.min().unwrap().y, self.min().unwrap().x);
