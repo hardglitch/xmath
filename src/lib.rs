@@ -10,3 +10,4 @@ pub mod gprogression;
 pub mod vector_algebra;
 pub mod func_analysis;
 pub mod utils;
+pub mod parser;
