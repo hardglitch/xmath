@@ -1,4 +1,5 @@
 #![feature(let_chains)]
+#![feature(isqrt)]
 
 extern crate core;
 
@@ -10,4 +11,4 @@ pub mod gprogression;
 pub mod vector_algebra;
 pub mod func_analysis;
 pub mod utils;
-pub mod parser;
+pub mod matrices;
