@@ -179,6 +179,22 @@ mod test_matrices {
         assert_eq!(m1 * m2, test_res);
     }
 
+
+    #[test]
+    fn test_matrices13_pos() {
+        let m = Matrix::new(3,3,vec![
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            1.0, 2.0, 3.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            1.0, 4.0, 1.0,
+            2.0, 5.0, 2.0,
+            3.0, 6.0, 3.0,
+        ]).unwrap();
+        assert_eq!(m.transpose(), test_res);
+    }
+
     #[test]
     fn test_matrices1_neg() {
         let m = Matrix::new(3,3,vec![
@@ -295,5 +311,20 @@ mod test_matrices {
             1.0, 1.0, 1.0,
         ]).unwrap();
         assert_ne!(m1 - m2, test_res);
+    }
+
+    #[test]
+    fn test_matrices10_neg() {
+        let m = Matrix::new(3,3,vec![
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            1.0, 2.0, 3.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            7.0, 4.0, 1.0,
+            2.0, 5.0, 2.0,
+            3.0, 6.0, 3.0,
+        ]).unwrap();
+        assert_ne!(m.transpose(), test_res);
     }
 }

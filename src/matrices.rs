@@ -124,4 +124,12 @@ impl Matrix {
         }
         d
     }
+
+    pub fn transpose(&self) -> Matrix {
+        let mut new_m = self.body.to_vec();
+        for (i, e) in self.body.iter().enumerate(){
+            new_m[i/self.rows + self.rows*(i % self.rows)] = *e
+        }
+        Matrix::new(self.strings, self.rows, new_m).unwrap()
+    }
 }
