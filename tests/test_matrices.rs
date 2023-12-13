@@ -196,6 +196,51 @@ mod test_matrices {
     }
 
     #[test]
+    fn test_matrices14_pos() {
+        let m = Matrix::new(3,3,vec![
+            2.0, 1.0, 3.0,
+            4.0, 1.0, 5.0,
+            4.0, 5.0, 2.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            -23.0/14.0, 13.0/14.0, 1.0/7.0,
+            6.0/7.0, -4.0/7.0, 1.0/7.0,
+            8.0/7.0, -3.0/7.0, -1.0/7.0,
+        ]).unwrap();
+        assert_eq!(m.inverse().unwrap(), test_res);
+    }
+
+    #[test]
+    fn test_matrices15_pos() {
+        let m = Matrix::new(3,3,vec![
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            1.0, 2.0, 3.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            2.0, 4.0, 6.0,
+            8.0, 10.0, 12.0,
+            2.0, 4.0, 6.0,
+        ]).unwrap();
+        assert_eq!(m.mul_num(2.0), test_res);
+    }
+
+    #[test]
+    fn test_matrices16_pos() {
+        let m = Matrix::new(3,3,vec![
+            2.0, 1.0, 3.0,
+            4.0, 1.0, 5.0,
+            4.0, 5.0, 2.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            -23.0, 12.0, 16.0,
+            13.0, -8.0, -6.0,
+            2.0, 2.0, -2.0,
+        ]).unwrap();
+        assert_eq!(m.cofactor_matrix(), test_res);
+    }
+
+    #[test]
     fn test_matrices1_neg() {
         let m = Matrix::new(3,3,vec![
             131.0, 231.0, 5.4,
@@ -326,5 +371,20 @@ mod test_matrices {
             3.0, 6.0, 3.0,
         ]).unwrap();
         assert_ne!(m.transpose(), test_res);
+    }
+
+    #[test]
+    fn test_matrices11_neg() {
+        let m = Matrix::new(3,3,vec![
+            2.0, 1.0, 3.0,
+            4.0, 1.0, 5.0,
+            4.0, 5.0, 2.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            -23.0/14.0, 13.0/1.0, 1.0/7.0,
+            6.0/7.0, -4.0/7.0, 1.0/7.0,
+            8.0/7.0, -3.0/7.0, -1.0/7.0,
+        ]).unwrap();
+        assert_ne!(m.inverse().unwrap(), test_res);
     }
 }
