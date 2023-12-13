@@ -4,9 +4,7 @@ use std::mem::swap;
 use std::ops::{Add, Mul, Sub};
 use crate::utils::is_equal;
 
-pub trait Mulable {
 
-}
 #[derive(Debug)]
 pub struct Matrix {
     strings: usize,
