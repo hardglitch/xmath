@@ -30,21 +30,21 @@ impl Mul for Matrix {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        self.mul_by_ref(&rhs)
+        self.mul_by_ref(&rhs).unwrap()
     }
 }
 impl Add for Matrix {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        self.add_by_ref(&rhs)
+        self.add_by_ref(&rhs).unwrap()
     }
 }
 impl Sub for Matrix {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        self.sub_by_ref(&rhs)
+        self.sub_by_ref(&rhs).unwrap()
     }
 }
 
@@ -96,12 +96,12 @@ impl Matrix {
         ).unwrap()
     }
 
-    pub fn mul_by_ref(&self, rhs: &Self) -> Self {
+    pub fn mul_by_ref(&self, rhs: &Self) -> Result<Self, Box<dyn Error>> {
         if self.rows != rhs.strings && rhs.rows != self.strings {
-            panic!("Matrices must have the same dimensions.");
+            return Err("Matrices must have the same dimensions.".into())
         }
-        let mut left = &self;
-        let mut right = &rhs;
+        let mut left = self;
+        let mut right = rhs;
         if left.body.len() < right.body.len() { swap(&mut left, &mut right) }
 
         let mut new_m= Vec::<f64>::new();
@@ -118,12 +118,12 @@ impl Matrix {
                 new_m.push(new_elem);
             }
         }
-        Self::new(left.strings, right.rows, new_m).unwrap()
+        Self::new(left.strings, right.rows, new_m)
     }
 
-    pub fn add_by_ref(&self, rhs: &Self) -> Self {
+    pub fn add_by_ref(&self, rhs: &Self) -> Result<Self, Box<dyn Error>> {
         if self.rows != rhs.rows || self.strings != rhs.strings {
-            panic!("Matrices must have the same dimensions.")
+            return Err("Matrices must have the same dimensions.".into())
         }
 
         let new_m: Vec<f64> = self.body
@@ -132,12 +132,12 @@ impl Matrix {
             .map(|(i, e)| e + rhs.body[i])
             .collect();
 
-        Self::new(self.strings, self.rows, new_m).unwrap()
+        Self::new(self.strings, self.rows, new_m)
     }
 
-    pub fn sub_by_ref(&self, rhs: &Self) -> Self {
+    pub fn sub_by_ref(&self, rhs: &Self) -> Result<Self, Box<dyn Error>> {
         if self.rows != rhs.rows || self.strings != rhs.strings {
-            panic!("Matrices must have the same dimensions.")
+            return Err("Matrices must have the same dimensions.".into())
         }
 
         let new_m: Vec<f64> = self.body
@@ -146,15 +146,17 @@ impl Matrix {
             .map(|(i, e)| e - rhs.body[i])
             .collect();
 
-        Self::new(self.strings, self.rows, new_m).unwrap()
+        Self::new(self.strings, self.rows, new_m)
     }
 
-    pub fn transpose(&self) -> Self {
+    pub fn transpose(&self) -> Option<Self> {
+        if self.rows != self.strings { return None }
+
         let mut new_m = self.body.to_vec();
         for (i, e) in self.body.iter().enumerate(){
             new_m[i/self.rows + self.rows*(i % self.rows)] = *e
         }
-        Self::new(self.strings, self.rows, new_m).unwrap()
+        Some(Self::new(self.strings, self.rows, new_m).unwrap())
     }
 
     pub fn inverse(&self) -> Option<Self> {
@@ -169,30 +171,29 @@ impl Matrix {
         let size = ads.len().isqrt();
 
         Some(
-            Self::new(size,size,ads.to_vec()).unwrap()
-                .transpose()
+            Self::new(size,size,ads
+                .to_vec()).unwrap()
+                .transpose().unwrap()
                 .mul_num(1.0 / det)
         )
     }
 
-    pub fn mul_num(self, num: f64) -> Self {
+    pub fn mul_num(&self, num: f64) -> Self {
         let new_m: Vec<f64> = self.body
-            .into_iter()
+            .iter()
             .map(|e| e * num)
             .collect();
 
         Self::new(self.strings, self.rows, new_m).unwrap()
     }
 
-    pub fn cofactor_matrix(&self) -> Self {
+    pub fn cofactor_matrix(&self) -> Option<Self> {
+        if self.rows != self.strings { return None }
+
         let mut ads = Vec::<f64>::new();
         self._cofactor_matrix(&mut ads);
         let size = ads.len().isqrt();
-        Self::new(
-            size,
-            size,
-            ads
-        ).unwrap()
+        Some(Self::new(size, size, ads).unwrap())
     }
 
     fn _cofactor_matrix(&self, ads: &mut Vec<f64>) {
