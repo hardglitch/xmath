@@ -103,5 +103,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     //     1
 
 
+
+    let m = Matrix::new(3,3,vec![
+        1.0, 1.0, 2.0,
+        3.0, -4.0, 5.0,
+        6.0, 7.0, 8.0,
+    ])?;
+    let m1 = m.pow(3)?;
+    let m2 = m.mul_by_ref(&m)?.mul_by_ref(&m)?.mul_by_ref(&m)?;
+    println!("m1 = {:?}", m1);
+    println!("m2 = {:?}", m2);
+    // m1 = Matrix { strings: 3, rows: 3, body: [2212.0, 1552.0, 3207.0, 3420.0, 4031.0, 4773.0, 10239.0, 6435.0, 14930.0] }
+    // m2 = Matrix { strings: 3, rows: 3, body: [2212.0, 1552.0, 3207.0, 3420.0, 4031.0, 4773.0, 10239.0, 6435.0, 14930.0] }
+
+
     Ok(())
 }

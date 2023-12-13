@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::mem::swap;
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, Deref, Mul, Sub};
 use crate::utils::is_equal;
 
 
@@ -47,7 +47,6 @@ impl Sub for Matrix {
         self.sub_by_ref(&rhs).unwrap()
     }
 }
-
 impl Matrix {
     pub fn new(strings: usize, rows: usize, body: Vec<f64>) -> Result<Self, Box<dyn Error>> {
         if strings == 0 || rows == 0 { return Err("Arguments must be greater than 0.".into()) }
@@ -119,6 +118,25 @@ impl Matrix {
             }
         }
         Self::new(left.strings, right.rows, new_m)
+    }
+
+    pub fn pow(&self, pow: usize) -> Result<Self, Box<dyn Error>> {
+        if self.rows != self.strings {
+            return Err("Such matrices must not be raised to a power.".into())
+        }
+        match pow {
+            0 => { Self::new(self.strings, self.rows, vec![0.0; self.body.len()]) }
+            1 => { Ok(self.clone()) }
+            _ => {
+                let mut m = Box::new(self.mul_by_ref(self)?);
+                for _ in 2..=pow {
+                    let old_m = m.deref();
+                    let new_m = old_m.mul_by_ref(self)?;
+                    *m = new_m;
+                }
+                Ok(*m)
+            }
+        }
     }
 
     pub fn add_by_ref(&self, rhs: &Self) -> Result<Self, Box<dyn Error>> {
