@@ -83,4 +83,20 @@ fn main() {
     ]).unwrap();
     println!("Transposed m = {:?}", m.transpose());
     // Transposed m = Matrix { strings: 3, rows: 3, body: [1.0, 3.0, 6.0, 1.0, -4.0, 7.0, 2.0, 5.0, 8.0] }
+
+
+
+    let m = Matrix::new(3,3,vec![
+        1.0, 1.0, 2.0,
+        3.0, -4.0, 5.0,
+        6.0, 7.0, 8.0,
+    ]).unwrap();
+    let im = m.inverse().unwrap();
+    println!("m * im = im * m: {:?}", m.mul_by_ref(&im) == im.mul_by_ref(&m));
+    println!("m * im = {:?}", m * im);
+    // m * im = im * m: true
+    // m * im = Matrix { strings: 3, rows: 3, body: [1.0, 0.0, 5.551115123125783e-17, 0.0, 1.0, 0.0, 0.0, 1.1102230246251565e-16, 1.0] }
+    // 1
+    //   1       - E
+    //     1
 }

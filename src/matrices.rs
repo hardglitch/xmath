@@ -1,15 +1,22 @@
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::mem::swap;
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, Deref, Mul, Sub};
 use crate::utils::is_equal;
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Matrix {
     strings: usize,
     rows: usize,
     body: Vec<f64>,
+}
+impl Deref for Matrix {
+    type Target = ();
+
+    fn deref(&self) -> &Self::Target {
+        todo!()
+    }
 }
 impl Display for Matrix {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -27,68 +34,27 @@ impl PartialEq for Matrix {
     }
 }
 impl Mul for Matrix {
-    type Output = Matrix;
+    type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        if self.rows != rhs.strings && rhs.rows != self.strings {
-            panic!("Matrices must have the same dimensions.");
-        }
-        let mut left = &self;
-        let mut right = &rhs;
-        if left.body.len() < right.body.len() { swap(&mut left, &mut right) }
-
-        let mut new_m= Vec::<f64>::new();
-        for s in 0..left.strings {
-            let str = (s * left.rows..s * left.rows + left.rows).collect::<Vec<usize>>();
-
-            for r in 0..right.rows {
-                let new_elem = str
-                    .iter()
-                    .enumerate()
-                    .map(|(i, n)| left.body[*n] * right.body[r + right.rows * i])
-                    .sum();
-
-                new_m.push(new_elem);
-            }
-        }
-
-        Matrix::new(left.strings, right.rows, new_m).unwrap()
+        self.mul_by_ref(&rhs)
     }
 }
 impl Add for Matrix {
-    type Output = Matrix;
+    type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        if self.rows != rhs.rows || self.strings != rhs.strings {
-            panic!("Matrices must have the same dimensions.")
-        }
-
-        let new_m: Vec<f64> = self.body
-            .into_iter()
-            .enumerate()
-            .map(|(i, e)| e + rhs.body[i])
-            .collect();
-
-        Matrix::new(self.strings, self.rows, new_m).unwrap()
+        self.add_by_ref(&rhs)
     }
 }
 impl Sub for Matrix {
-    type Output = Matrix;
+    type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        if self.rows != rhs.rows || self.strings != rhs.strings {
-            panic!("Matrices must have the same dimensions.")
-        }
-
-        let new_m: Vec<f64> = self.body
-            .into_iter()
-            .enumerate()
-            .map(|(i, e)| e - rhs.body[i])
-            .collect();
-
-        Matrix::new(self.strings, self.rows, new_m).unwrap()
+        self.sub_by_ref(&rhs)
     }
 }
+
 impl Matrix {
     pub fn new(strings: usize, rows: usize, body: Vec<f64>) -> Result<Self, Box<dyn Error>> {
         if strings == 0 || rows == 0 { return Err("Arguments must be greater than 0.".into()) }
@@ -117,7 +83,7 @@ impl Matrix {
         det
     }
 
-    fn _sub_matrix(&self, s: usize, r: usize) -> Matrix {
+    fn _sub_matrix(&self, s: usize, r: usize) -> Self {
         let str = (s * self.rows..s * self.rows + self.rows).collect::<Vec<usize>>();
 
         let sub_matrix: Vec<f64> = self.body
@@ -130,22 +96,75 @@ impl Matrix {
 
         let size = sub_matrix.len().isqrt();
 
-        Matrix::new(
+        Self::new(
             size,
             size,
             sub_matrix
         ).unwrap()
     }
 
-    pub fn transpose(&self) -> Matrix {
+    pub fn mul_by_ref(&self, rhs: &Self) -> Self {
+        if self.rows != rhs.strings && rhs.rows != self.strings {
+            panic!("Matrices must have the same dimensions.");
+        }
+        let mut left = &self;
+        let mut right = &rhs;
+        if left.body.len() < right.body.len() { swap(&mut left, &mut right) }
+
+        let mut new_m= Vec::<f64>::new();
+        for s in 0..left.strings {
+            let str = (s * left.rows..s * left.rows + left.rows).collect::<Vec<usize>>();
+
+            for r in 0..right.rows {
+                let new_elem = str
+                    .iter()
+                    .enumerate()
+                    .map(|(i, n)| left.body[*n] * right.body[r + right.rows * i])
+                    .sum();
+
+                new_m.push(new_elem);
+            }
+        }
+        Self::new(left.strings, right.rows, new_m).unwrap()
+    }
+
+    pub fn add_by_ref(&self, rhs: &Self) -> Self {
+        if self.rows != rhs.rows || self.strings != rhs.strings {
+            panic!("Matrices must have the same dimensions.")
+        }
+
+        let new_m: Vec<f64> = self.body
+            .iter()
+            .enumerate()
+            .map(|(i, e)| e + rhs.body[i])
+            .collect();
+
+        Self::new(self.strings, self.rows, new_m).unwrap()
+    }
+
+    pub fn sub_by_ref(&self, rhs: &Self) -> Self {
+        if self.rows != rhs.rows || self.strings != rhs.strings {
+            panic!("Matrices must have the same dimensions.")
+        }
+
+        let new_m: Vec<f64> = self.body
+            .iter()
+            .enumerate()
+            .map(|(i, e)| e - rhs.body[i])
+            .collect();
+
+        Self::new(self.strings, self.rows, new_m).unwrap()
+    }
+
+    pub fn transpose(&self) -> Self {
         let mut new_m = self.body.to_vec();
         for (i, e) in self.body.iter().enumerate(){
             new_m[i/self.rows + self.rows*(i % self.rows)] = *e
         }
-        Matrix::new(self.strings, self.rows, new_m).unwrap()
+        Self::new(self.strings, self.rows, new_m).unwrap()
     }
 
-    pub fn inverse(&self) -> Option<Matrix> {
+    pub fn inverse(&self) -> Option<Self> {
         if self.rows != self.strings { return None }
 
         let det = self.det();
@@ -157,26 +176,26 @@ impl Matrix {
         let size = ads.len().isqrt();
 
         Some(
-            Matrix::new(size,size,ads.to_vec()).unwrap()
+            Self::new(size,size,ads.to_vec()).unwrap()
                 .transpose()
                 .mul_num(1.0 / det)
         )
     }
 
-    pub fn mul_num(self, num: f64) -> Matrix {
+    pub fn mul_num(self, num: f64) -> Self {
         let new_m: Vec<f64> = self.body
             .into_iter()
             .map(|e| e * num)
             .collect();
 
-        Matrix::new(self.strings, self.rows, new_m).unwrap()
+        Self::new(self.strings, self.rows, new_m).unwrap()
     }
 
-    pub fn cofactor_matrix(&self) -> Matrix {
+    pub fn cofactor_matrix(&self) -> Self {
         let mut ads = Vec::<f64>::new();
         self._cofactor_matrix(&mut ads);
         let size = ads.len().isqrt();
-        Matrix::new(
+        Self::new(
             size,
             size,
             ads
