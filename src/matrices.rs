@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::mem::swap;
-use std::ops::{Add, Deref, Mul, Sub};
+use std::ops::{Add, Mul, Sub};
 use crate::utils::is_equal;
 
 
@@ -10,13 +10,6 @@ pub struct Matrix {
     strings: usize,
     rows: usize,
     body: Vec<f64>,
-}
-impl Deref for Matrix {
-    type Target = ();
-
-    fn deref(&self) -> &Self::Target {
-        todo!()
-    }
 }
 impl Display for Matrix {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
