@@ -1,3 +1,4 @@
+use std::cmp::{min, Ordering};
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::mem::swap;
@@ -167,14 +168,19 @@ impl Matrix {
         Self::new(self.strings, self.rows, new_m)
     }
 
-    pub fn transpose(&self) -> Option<Self> {
-        if self.rows != self.strings { return None }
-
+    #[allow(unused_assignments)]
+    pub fn transpose(&self) -> Self {
         let mut new_m = self.body.to_vec();
-        for (i, e) in self.body.iter().enumerate(){
-            new_m[i/self.rows + self.rows*(i % self.rows)] = *e
+        let mut size = 0;
+        match self.rows.cmp(&self.strings) {
+            Ordering::Greater => { size = (self.rows - self.strings) * self.rows }
+            Ordering::Less => { size = (self.strings - self.rows) * self.strings }
+            _ => { size = self.rows }
         }
-        Some(Self::new(self.strings, self.rows, new_m).unwrap())
+        for (i, e) in self.body.iter().enumerate(){
+            new_m[ i/size + min(self.rows, self.strings) * (i % size) ] = *e
+        }
+        Self::new(self.rows, self.strings, new_m).unwrap()
     }
 
     pub fn inverse(&self) -> Option<Self> {
@@ -191,7 +197,7 @@ impl Matrix {
         Some(
             Self::new(size,size,ads
                 .to_vec()).unwrap()
-                .transpose().unwrap()
+                .transpose()
                 .mul_num(1.0 / det)
         )
     }
@@ -227,4 +233,12 @@ impl Matrix {
             }
         }
     }
+
+    // pub fn slae(&self, d: &[f64]) -> Option<Vec<f64>> {
+    //     if self.rows != self.strings || d.len() != self.strings { return None }
+    //
+    //     let det = self.det();
+    //     if det == 0.0 { return None }
+    //
+    // }
 }

@@ -192,7 +192,21 @@ mod test_matrices {
             2.0, 5.0, 2.0,
             3.0, 6.0, 3.0,
         ]).unwrap();
-        assert_eq!(m.transpose().unwrap(), test_res);
+        assert_eq!(m.transpose(), test_res);
+    }
+
+    #[test]
+    fn test_matrices13_2_pos() {
+        let m = Matrix::new(2,3,vec![
+            1.0, 1.0, 2.0,
+            3.0, -4.0, 5.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,2,vec![
+            1.0, 3.0,
+            1.0, -4.0,
+            2.0, 5.0,
+        ]).unwrap();
+        assert_eq!(m.transpose(), test_res);
     }
 
     #[test]
@@ -385,7 +399,7 @@ mod test_matrices {
             2.0, 5.0, 2.0,
             3.0, 6.0, 3.0,
         ]).unwrap();
-        assert_ne!(m.transpose().unwrap(), test_res);
+        assert_ne!(m.transpose(), test_res);
     }
 
     #[test]
@@ -423,15 +437,6 @@ mod test_matrices {
 
     #[test]
     fn test_matrices14_neg() {
-        let m = Matrix::new(2,3,vec![
-            2.0, 1.0, 3.0,
-            4.0, 1.0, 5.0,
-        ]).unwrap();
-        assert!(m.transpose().is_none());
-    }
-
-    #[test]
-    fn test_matrices15_neg() {
         let m = Matrix::new(2,3,vec![
             1.0, 1.0, 2.0,
             3.0, -4.0, 5.0,
