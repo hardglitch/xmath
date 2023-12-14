@@ -3,7 +3,7 @@ mod test_matrices {
     use xmath::matrices::Matrix;
 
     #[test]
-    fn test_matrices1_pos() {
+    fn test_matrices_det1_pos() {
         let m = Matrix::new(3,3,vec![
             0.0, 2.0, -1.0,
             -2.0, -1.0, 2.0,
@@ -14,7 +14,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices2_pos() {
+    fn test_matrices_det2_pos() {
         let m = Matrix::new(2,2,vec![
             131.0, 231.0,
             -130.0, -230.0,
@@ -24,7 +24,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices3_pos() {
+    fn test_matrices_det3_pos() {
         let m = Matrix::new(2,2,vec![
             131.0, 231.0,
             0.0, -0.0,
@@ -34,7 +34,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices4_pos() {
+    fn test_matrices_det4_pos() {
         let m = Matrix::new(2,3,vec![
             131.0, 231.0, 5.4,
             0.0, -0.0, 4.5,
@@ -44,7 +44,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices5_pos() {
+    fn test_matrices_det5_pos() {
         let m = Matrix::new(5,5,vec![
             0.0, 5.0, 6.0, 7.0, 1.0,
             1.0, 4.0, 5.0, 1.0, 1.0,
@@ -57,7 +57,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices6_pos() {
+    fn test_matrices_mul1_pos() {
         let m1 = Matrix::new(1,3,vec![
             1.0, 2.0, 3.0,
         ]).unwrap();
@@ -69,7 +69,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices7_pos() {
+    fn test_matrices_mul2_pos() {
         let m1 = Matrix::new(2,2,vec![
             1.0, 2.0,
             3.0, 4.0,
@@ -86,7 +86,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices8_pos() {
+    fn test_matrices_mul3_pos() {
         let m1 = Matrix::new(2,2,vec![
             1.0, 2.0,
             3.0, 4.0,
@@ -103,7 +103,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices9_pos() {
+    fn test_matrices_mul4_pos() {
         let m1 = Matrix::new(2,1,vec![
             1.0,
             2.0,
@@ -120,7 +120,42 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices10_pos() {
+    fn test_matrices_mul5_pos() {
+        let m1 = Matrix::new(3,3,vec![
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            1.0, 2.0, 3.0,
+        ]).unwrap();
+        let m2 = Matrix::new(3,3,vec![
+            1.0, 2.0, 3.0,
+            1.0, 2.0, 3.0,
+            5.0, 2.0, 1.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            18.0, 12.0, 12.0,
+            39.0, 30.0, 33.0,
+            18.0, 12.0, 12.0,
+        ]).unwrap();
+        assert_eq!(m1 * m2, test_res);
+    }
+
+    #[test]
+    fn test_matrices_mul_num1_pos() {
+        let m = Matrix::new(3,3,vec![
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            1.0, 2.0, 3.0,
+        ]).unwrap();
+        let test_res = Matrix::new(3,3,vec![
+            2.0, 4.0, 6.0,
+            8.0, 10.0, 12.0,
+            2.0, 4.0, 6.0,
+        ]).unwrap();
+        assert_eq!(m.mul_num(2.0), test_res);
+    }
+
+    #[test]
+    fn test_matrices_add1_pos() {
         let m1 = Matrix::new(3,3,vec![
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
@@ -140,7 +175,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices11_pos() {
+    fn test_matrices_sub1_pos() {
         let m1 = Matrix::new(3,3,vec![
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
@@ -160,28 +195,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices12_pos() {
-        let m1 = Matrix::new(3,3,vec![
-            1.0, 2.0, 3.0,
-            4.0, 5.0, 6.0,
-            1.0, 2.0, 3.0,
-        ]).unwrap();
-        let m2 = Matrix::new(3,3,vec![
-            1.0, 2.0, 3.0,
-            1.0, 2.0, 3.0,
-            5.0, 2.0, 1.0,
-        ]).unwrap();
-        let test_res = Matrix::new(3,3,vec![
-            18.0, 12.0, 12.0,
-            39.0, 30.0, 33.0,
-            18.0, 12.0, 12.0,
-        ]).unwrap();
-        assert_eq!(m1 * m2, test_res);
-    }
-
-
-    #[test]
-    fn test_matrices13_pos() {
+    fn test_matrices_trans1_pos() {
         let m = Matrix::new(3,3,vec![
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
@@ -196,7 +210,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices13_2_pos() {
+    fn test_matrices_trans_2_pos() {
         let m = Matrix::new(2,3,vec![
             1.0, 1.0, 2.0,
             3.0, -4.0, 5.0,
@@ -210,7 +224,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices14_pos() {
+    fn test_matrices_inverse1_pos() {
         let m = Matrix::new(3,3,vec![
             2.0, 1.0, 3.0,
             4.0, 1.0, 5.0,
@@ -225,22 +239,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices15_pos() {
-        let m = Matrix::new(3,3,vec![
-            1.0, 2.0, 3.0,
-            4.0, 5.0, 6.0,
-            1.0, 2.0, 3.0,
-        ]).unwrap();
-        let test_res = Matrix::new(3,3,vec![
-            2.0, 4.0, 6.0,
-            8.0, 10.0, 12.0,
-            2.0, 4.0, 6.0,
-        ]).unwrap();
-        assert_eq!(m.mul_num(2.0), test_res);
-    }
-
-    #[test]
-    fn test_matrices16_pos() {
+    fn test_matrices_cfm1_pos() {
         let m = Matrix::new(3,3,vec![
             2.0, 1.0, 3.0,
             4.0, 1.0, 5.0,
@@ -255,7 +254,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices17_pos() {
+    fn test_matrices_pow1_pos() {
         let m = Matrix::new(3,3,vec![
             1.0, 1.0, 2.0,
             3.0, -4.0, 5.0,
@@ -265,7 +264,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices18_pos() {
+    fn test_matrices_slae1_pos() {
         let m = Matrix::new(3,3,vec![
             1.0, 4.0, 2.0,
             2.0, -6.0, -2.0,
@@ -277,7 +276,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices19_pos() {
+    fn test_matrices_slae2_pos() {
         let m = Matrix::new(2,3,vec![
             1.0, 4.0, 2.0,
             2.0, -6.0, -2.0,
@@ -329,7 +328,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices6_neg() {
+    fn test_matrices_mul1_neg() {
         let m1 = Matrix::new(2,1,vec![
             1.0,
             2.0,
@@ -347,7 +346,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices7_neg() {
+    fn test_matrices_mul2_neg() {
         let m1 = Matrix::new(3,2,vec![
             1.0, 2.0,
             3.0, 4.0,
@@ -365,7 +364,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices8_neg() {
+    fn test_matrices_add1_neg() {
         let m1 = Matrix::new(3,3,vec![
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
@@ -385,7 +384,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices9_neg() {
+    fn test_matrices_sub1_neg() {
         let m1 = Matrix::new(3,3,vec![
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
@@ -405,7 +404,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices10_neg() {
+    fn test_matrices_trans1_neg() {
         let m = Matrix::new(3,3,vec![
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
@@ -420,7 +419,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices11_neg() {
+    fn test_matrices_inverse1_neg() {
         let m = Matrix::new(3,3,vec![
             2.0, 1.0, 3.0,
             4.0, 1.0, 5.0,
@@ -435,7 +434,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices12_neg() {
+    fn test_matrices_inverse2_neg() {
         let m = Matrix::new(2,3,vec![
             2.0, 1.0, 3.0,
             4.0, 1.0, 5.0,
@@ -444,7 +443,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices13_neg() {
+    fn test_matrices_cfm1_neg() {
         let m = Matrix::new(2,3,vec![
             2.0, 1.0, 3.0,
             4.0, 1.0, 5.0,
@@ -453,7 +452,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices14_neg() {
+    fn test_matrices_pow1_neg() {
         let m = Matrix::new(2,3,vec![
             1.0, 1.0, 2.0,
             3.0, -4.0, 5.0,
@@ -462,7 +461,7 @@ mod test_matrices {
     }
 
     #[test]
-    fn test_matrices15_neg() {
+    fn test_matrices_slae1_neg() {
         let m = Matrix::new(3,3,vec![
             1.0, 1.0, 2.0,
             3.0, -4.0, 5.0,
