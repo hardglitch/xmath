@@ -261,12 +261,29 @@ mod test_matrices {
             3.0, -4.0, 5.0,
             6.0, 7.0, 8.0,
         ]).unwrap();
-        let test_res = Matrix::new(3, 3, vec![
-            2212.0, 1552.0, 3207.0,
-            3420.0, 4031.0, 4773.0,
-            10239.0, 6435.0, 14930.0,
+        assert_eq!(m.pow(3).unwrap(), m.clone() * m.clone() * m);
+    }
+
+    #[test]
+    fn test_matrices18_pos() {
+        let m = Matrix::new(3,3,vec![
+            1.0, 4.0, 2.0,
+            2.0, -6.0, -2.0,
+            1.0, 5.0, 2.0,
         ]).unwrap();
-        assert_eq!(m.pow(3).unwrap(), test_res);
+        let d = &[1.0, 3.0, 2.0];
+        let test_res = vec![2.0, 1.0, -2.5];
+        assert_eq!(m.slae(d).unwrap().unwrap(), test_res);
+    }
+
+    #[test]
+    fn test_matrices19_pos() {
+        let m = Matrix::new(2,3,vec![
+            1.0, 4.0, 2.0,
+            2.0, -6.0, -2.0,
+        ]).unwrap();
+        let d = &[1.0, 3.0, 2.0];
+        assert!(m.slae(d).unwrap().is_none());
     }
 
     #[test]
@@ -442,5 +459,15 @@ mod test_matrices {
             3.0, -4.0, 5.0,
         ]).unwrap();
         assert!(m.pow(3).is_err());
+    }
+
+    #[test]
+    fn test_matrices15_neg() {
+        let m = Matrix::new(3,3,vec![
+            1.0, 1.0, 2.0,
+            3.0, -4.0, 5.0,
+            3.0, -4.0, 5.0,
+        ]).unwrap();
+        assert!(m.slae(&[1.0]).is_err());
     }
 }

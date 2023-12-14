@@ -95,6 +95,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     ])?;
     let im = m.inverse().unwrap();
     println!("m * im = im * m: {:?}", m.mul_by_ref(&im)? == im.mul_by_ref(&m)?);
+    // or
+    // println!("m * im = im * m: {:?}", m.clone() * im.clone() == im.clone() * m.clone());
     println!("m * im = {:?}", m * im);
     // m * im = im * m: true
     // m * im = Matrix { strings: 3, rows: 3, body: [1.0, 0.0, 5.551115123125783e-17, 0.0, 1.0, 0.0, 0.0, 1.1102230246251565e-16, 1.0] }
@@ -110,11 +112,31 @@ fn main() -> Result<(), Box<dyn Error>> {
         6.0, 7.0, 8.0,
     ])?;
     let m1 = m.pow(3)?;
-    let m2 = m.mul_by_ref(&m)?.mul_by_ref(&m)?.mul_by_ref(&m)?;
+    let m2 = m.mul_by_ref(&m)?.mul_by_ref(&m)?;
+    let m3 = m.clone() * m.clone() * m;
     println!("m1 = {:?}", m1);
     println!("m2 = {:?}", m2);
-    // m1 = Matrix { strings: 3, rows: 3, body: [2212.0, 1552.0, 3207.0, 3420.0, 4031.0, 4773.0, 10239.0, 6435.0, 14930.0] }
-    // m2 = Matrix { strings: 3, rows: 3, body: [2212.0, 1552.0, 3207.0, 3420.0, 4031.0, 4773.0, 10239.0, 6435.0, 14930.0] }
+    println!("m3 = {:?}", m3);
+    // m1 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
+    // m2 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
+    // m3 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
+
+
+
+    // SLAE (Kramer's method)
+    let m = Matrix::new(3,3,vec![
+        1.0, 4.0, 2.0,
+        2.0, -6.0, -2.0,
+        1.0, 5.0, 2.0,
+    ])?;
+    let d = &[1.0, 3.0, 2.0];
+    for (i, x) in m.slae(d)?.unwrap().iter().enumerate() {
+        println!("x{} = {:?}", i+1, x);
+    }
+    // x1 = 2.0
+    // x2 = 1.0
+    // x3 = -2.5
+
 
 
     Ok(())

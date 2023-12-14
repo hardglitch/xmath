@@ -130,7 +130,7 @@ impl Matrix {
             1 => { Ok(self.clone()) }
             _ => {
                 let mut m = Box::new(self.mul_by_ref(self)?);
-                for _ in 2..=pow {
+                for _ in 2..pow {
                     let old_m = m.deref();
                     let new_m = old_m.mul_by_ref(self)?;
                     *m = new_m;
@@ -168,19 +168,18 @@ impl Matrix {
         Self::new(self.strings, self.rows, new_m)
     }
 
-    #[allow(unused_assignments)]
     pub fn transpose(&self) -> Self {
-        let mut new_m = self.body.to_vec();
-        let mut size = 0;
+        let mut new_body = self.body.to_vec();
+        let mut size = Box::<usize>::new(0);
         match self.rows.cmp(&self.strings) {
-            Ordering::Greater => { size = (self.rows - self.strings) * self.rows }
-            Ordering::Less => { size = (self.strings - self.rows) * self.strings }
-            _ => { size = self.rows }
+            Ordering::Greater => { *size = (self.rows - self.strings) * self.rows }
+            Ordering::Less => { *size = (self.strings - self.rows) * self.strings }
+            _ => { *size = self.rows }
         }
         for (i, e) in self.body.iter().enumerate(){
-            new_m[ i/size + min(self.rows, self.strings) * (i % size) ] = *e
+            new_body[ i / *size + min(self.rows, self.strings) * (i % *size) ] = *e
         }
-        Self::new(self.rows, self.strings, new_m).unwrap()
+        Self::new(self.rows, self.strings, new_body).unwrap()
     }
 
     pub fn inverse(&self) -> Option<Self> {
@@ -234,11 +233,26 @@ impl Matrix {
         }
     }
 
-    // pub fn slae(&self, d: &[f64]) -> Option<Vec<f64>> {
-    //     if self.rows != self.strings || d.len() != self.strings { return None }
-    //
-    //     let det = self.det();
-    //     if det == 0.0 { return None }
-    //
-    // }
+    pub fn slae(&self, d: &[f64]) -> Result<Option<Vec<f64>>, Box<dyn Error>> {
+        if self.rows != self.strings { return Ok(None) }
+        if d.len() != self.strings { return Err("The number of d-elements is not equal to the number of strings in the Matrix.".into()) }
+
+        let det = self.det();
+        if det == 0.0 { return Ok(None) }
+
+        let mut res = Vec::<f64>::new();
+
+        for r in 0..self.rows {
+            let mut new_body = self.body.to_vec();
+            for (i, e) in d.iter().enumerate() {
+                new_body[r + self.rows * i] = *e
+            }
+            let size = new_body.len().isqrt();
+            let x_m = Self::new(size,size, new_body)?;
+            let x = x_m.det() / det;
+            res.push(x);
+        }
+
+        Ok(Some(res))
+    }
 }
