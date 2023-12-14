@@ -57,6 +57,23 @@ impl Matrix {
     }
 
     pub fn det(&self) -> f64 {
+        //! The matrix determinant.
+        //! # Example
+        //!```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m = Matrix::new(5, 5, vec![
+        //!     0.0, 5.0, 6.0, 7.0, 1.0,
+        //!     1.0, 4.0, 5.0, 1.0, 1.0,
+        //!     0.0, 3.0, 1.0, 2.0, 2.0,
+        //!     0.0, 1.0, 7.0, 8.0, 6.0,
+        //!     0.0, 1.0, 4.0, 4.0, 7.0,
+        //! ])?;
+        //!
+        //! println!("det = {:?}", m.det());
+        //! // det = 156.0
+        //! ```
+
         if self.rows != self.strings { return 0.0 }
 
         let mut det = 0_f64;
@@ -97,6 +114,29 @@ impl Matrix {
     }
 
     pub fn mul_by_ref(&self, rhs: &Self) -> Result<Self, Box<dyn Error>> {
+        //! Matrix multiplication by references.
+        //! # Example
+        //!```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m1 = Matrix::new(3, 3, vec![
+        //!     1.0, 2.0, 3.0,
+        //!     4.0, 5.0, 6.0,
+        //!     1.0, 2.0, 3.0,
+        //! ])?;
+        //!
+        //! let m2 = Matrix::new(3, 3, vec![
+        //!     1.0, 2.0, 3.0,
+        //!     1.0, 2.0, 3.0,
+        //!     5.0, 2.0, 1.0,
+        //! ])?;
+        //!
+        //! println!("m1 * m2 = {:?}", m1.mul_by_ref(&m2)?);
+        //! println!("m1 * m2 = {:?}", m1 * m2);
+        //! // m1 * m2 = Matrix { strings: 3, rows: 3, body: [18.0, 12.0, 12.0, 39.0, 30.0, 33.0, 18.0, 12.0, 12.0] }
+        //! // m1 * m2 = Matrix { strings: 3, rows: 3, body: [18.0, 12.0, 12.0, 39.0, 30.0, 33.0, 18.0, 12.0, 12.0] }
+        //! ```
+
         if self.rows != rhs.strings && rhs.rows != self.strings {
             return Err("Matrices must have the same dimensions.".into())
         }
@@ -122,6 +162,29 @@ impl Matrix {
     }
 
     pub fn pow(&self, pow: usize) -> Result<Self, Box<dyn Error>> {
+        //! Matrix exponentiation.
+        //! # Example
+        //! ```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m = Matrix::new(3, 3, vec![
+        //!     1.0, 1.0, 2.0,
+        //!     3.0, -4.0, 5.0,
+        //!     6.0, 7.0, 8.0,
+        //! ])?;
+        //!
+        //! let m1 = m.pow(3)?;
+        //! let m2 = m.mul_by_ref(&m)?.mul_by_ref(&m)?;
+        //! let m3 = m.clone() * m.clone() * m;
+        //!
+        //! println!("m1 = {:?}", m1);
+        //! println!("m2 = {:?}", m2);
+        //! println!("m3 = {:?}", m3);
+        //! // m1 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
+        //! // m2 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
+        //! // m3 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
+        //! ```
+
         if self.rows != self.strings {
             return Err("Such matrices must not be raised to a power.".into())
         }
@@ -141,6 +204,29 @@ impl Matrix {
     }
 
     pub fn add_by_ref(&self, rhs: &Self) -> Result<Self, Box<dyn Error>> {
+        //! Matrix addition by references.
+        //! # Example
+        //!```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m1 = Matrix::new(3, 3, vec![
+        //!     1.0, 2.0, 3.0,
+        //!     4.0, 5.0, 6.0,
+        //!     7.0, 8.0, 9.0,
+        //! ])?;
+        //!
+        //! let m2 = Matrix::new(3, 3, vec![
+        //!     1.0, 1.0, 2.0,
+        //!     3.0, -4.0, 5.0,
+        //!     6.0, 7.0, 8.0,
+        //! ])?;
+        //!
+        //! println!("m1 + m2 = {:?}", m1.add_by_ref(&m2)?);
+        //! println!("m1 + m2 = {:?}", m1 + m2);
+        //! // m1 + m2 = Matrix { strings: 3, rows: 3, body: [2.0, 3.0, 5.0, 7.0, 1.0, 11.0, 13.0, 15.0, 17.0] }
+        //! // m1 + m2 = Matrix { strings: 3, rows: 3, body: [2.0, 3.0, 5.0, 7.0, 1.0, 11.0, 13.0, 15.0, 17.0] }
+        //! ```
+
         if self.rows != rhs.rows || self.strings != rhs.strings {
             return Err("Matrices must have the same dimensions.".into())
         }
@@ -155,6 +241,29 @@ impl Matrix {
     }
 
     pub fn sub_by_ref(&self, rhs: &Self) -> Result<Self, Box<dyn Error>> {
+        //! Matrix subtraction by references.
+        //! # Example
+        //!```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m1 = Matrix::new(3, 3, vec![
+        //!     1.0, 2.0, 3.0,
+        //!     4.0, 5.0, 6.0,
+        //!     7.0, 8.0, 9.0,
+        //! ])?;
+        //!
+        //! let m2 = Matrix::new(3, 3, vec![
+        //!     1.0, 1.0, 2.0,
+        //!     3.0, -4.0, 5.0,
+        //!     6.0, 7.0, 8.0,
+        //! ])?;
+        //!
+        //! println!("m1 - m2 = {:?}", m1.sub_by_ref(&m2)?);
+        //! println!("m1 - m2 = {:?}", m1 - m2);
+        //! // m1 - m2 = Matrix { strings: 3, rows: 3, body: [0.0, 1.0, 1.0, 1.0, 9.0, 1.0, 1.0, 1.0, 1.0] }
+        //! // m1 - m2 = Matrix { strings: 3, rows: 3, body: [0.0, 1.0, 1.0, 1.0, 9.0, 1.0, 1.0, 1.0, 1.0] }
+        //! ```
+
         if self.rows != rhs.rows || self.strings != rhs.strings {
             return Err("Matrices must have the same dimensions.".into())
         }
@@ -169,6 +278,21 @@ impl Matrix {
     }
 
     pub fn transpose(&self) -> Self {
+        //! Matrix transposition.
+        //! # Example
+        //!```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m = Matrix::new(3, 3, vec![
+        //!     1.0, 1.0, 2.0,
+        //!     3.0, -4.0, 5.0,
+        //!     6.0, 7.0, 8.0,
+        //! ])?;
+        //!
+        //! println!("Transposed m = {:?}", m.transpose());
+        //! // Transposed m = Matrix { strings: 3, rows: 3, body: [1.0, 3.0, 6.0, 1.0, -4.0, 7.0, 2.0, 5.0, 8.0] }
+        //! ```
+
         let mut new_body = self.body.to_vec();
         let mut size = Box::<usize>::new(0);
         match self.rows.cmp(&self.strings) {
@@ -183,6 +307,35 @@ impl Matrix {
     }
 
     pub fn inverse(&self) -> Option<Self> {
+        //! Matrix inversion.
+        //! # Example
+        //! ```
+        //!// inv_m = transposed CFM / det,
+        //!//     CFM - cofactor matrix
+        //!//     det - matrix determinant
+        //!
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m = Matrix::new(3, 3, vec![
+        //!     1.0, 1.0, 2.0,
+        //!     3.0, -4.0, 5.0,
+        //!     6.0, 7.0, 8.0,
+        //! ])?;
+        //! let im = m.inverse().unwrap();
+        //!
+        //! println!("m * im = im * m: {:?}", m.mul_by_ref(&im)? == im.mul_by_ref(&m)?);
+        //! // or
+        //! // println!("m * im = im * m: {:?}", m.clone() * im.clone() == im.clone() * m.clone());
+        //! // m * im = im * m: true
+        //!
+        //! println!("m * im = {:?}", m * im);
+        //! // m * im = Matrix { strings: 3, rows: 3, body: [1.0, 0.0, 5.551115123125783e-17, 0.0, 1.0, 0.0, 0.0, 1.1102230246251565e-16, 1.0] }
+        //!
+        //! // 1
+        //! //  1    - identity matrix
+        //! //   1
+        //! ```
+
         if self.rows != self.strings { return None }
 
         let det = self.det();
@@ -202,6 +355,21 @@ impl Matrix {
     }
 
     pub fn mul_num(&self, num: f64) -> Self {
+        //! Matrix multiplication by number.
+        //! # Example
+        //!```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m = Matrix::new(3, 3, vec![
+        //!     1.0, 2.0, 3.0,
+        //!     1.0, 2.0, 3.0,
+        //!     5.0, 2.0, 1.0,
+        //! ])?;
+        //!
+        //! println!("m * 2 = {:?}", m.mul_num(2.0));
+        //! // m * 2 = Matrix { strings: 3, rows: 3, body: [2.0, 4.0, 6.0, 2.0, 4.0, 6.0, 10.0, 4.0, 2.0] }
+        //! ```
+
         let new_m: Vec<f64> = self.body
             .iter()
             .map(|e| e * num)
@@ -211,6 +379,21 @@ impl Matrix {
     }
 
     pub fn cofactor_matrix(&self) -> Option<Self> {
+        //! Cofactor matrix.
+        //! # Example
+        //!```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m = Matrix::new(3, 3, vec![
+        //!     1.0, 1.0, 2.0,
+        //!     3.0, -4.0, 5.0,
+        //!     6.0, 7.0, 8.0,
+        //! ])?;
+        //!
+        //! println!("Cofactor matrix of m = {:?}", m.cofactor_matrix().unwrap());
+        //! // Cofactor matrix of m = Matrix { strings: 3, rows: 3, body: [-67.0, 6.0, 45.0, 6.0, -4.0, -1.0, 13.0, 1.0, -7.0] }
+        //! ```
+
         if self.rows != self.strings { return None }
 
         let mut ads = Vec::<f64>::new();
@@ -234,6 +417,27 @@ impl Matrix {
     }
 
     pub fn slae(&self, d: &[f64]) -> Result<Option<Vec<f64>>, Box<dyn Error>> {
+        //! SLAE (System of Linear (Algebraic) Equations) (Kramer's method).
+        //! # Example
+        //! ```
+        //! use xmath::matrices::Matrix;
+        //!
+        //! let m = Matrix::new(3, 3, vec![
+        //!     1.0, 4.0, 2.0,
+        //!     2.0, -6.0, -2.0,
+        //!     1.0, 5.0, 2.0,
+        //! ])?;
+        //!
+        //! let d = &[1.0, 3.0, 2.0];
+        //!
+        //! for (i, x) in m.slae(d)?.unwrap().iter().enumerate() {
+        //!     println!("x{} = {:?}", i+1, x);
+        //! }
+        //! // x1 = 2.0
+        //! // x2 = 1.0
+        //! // x3 = -2.5
+        //! ```
+
         if self.rows != self.strings { return Ok(None) }
         if d.len() != self.strings { return Err("The number of d-elements is not equal to the number of strings in the Matrix.".into()) }
 
