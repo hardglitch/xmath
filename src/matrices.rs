@@ -68,7 +68,7 @@ impl Matrix {
         //!     0.0, 3.0, 1.0, 2.0, 2.0,
         //!     0.0, 1.0, 7.0, 8.0, 6.0,
         //!     0.0, 1.0, 4.0, 4.0, 7.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! println!("det = {:?}", m.det());
         //! // det = 156.0
@@ -123,15 +123,15 @@ impl Matrix {
         //!     1.0, 2.0, 3.0,
         //!     4.0, 5.0, 6.0,
         //!     1.0, 2.0, 3.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! let m2 = Matrix::new(3, 3, vec![
         //!     1.0, 2.0, 3.0,
         //!     1.0, 2.0, 3.0,
         //!     5.0, 2.0, 1.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
-        //! println!("m1 * m2 = {:?}", m1.mul_by_ref(&m2)?);
+        //! println!("m1 * m2 = {:?}", m1.mul_by_ref(&m2).unwrap());
         //! println!("m1 * m2 = {:?}", m1 * m2);
         //! // m1 * m2 = Matrix { strings: 3, rows: 3, body: [18.0, 12.0, 12.0, 39.0, 30.0, 33.0, 18.0, 12.0, 12.0] }
         //! // m1 * m2 = Matrix { strings: 3, rows: 3, body: [18.0, 12.0, 12.0, 39.0, 30.0, 33.0, 18.0, 12.0, 12.0] }
@@ -171,10 +171,10 @@ impl Matrix {
         //!     1.0, 1.0, 2.0,
         //!     3.0, -4.0, 5.0,
         //!     6.0, 7.0, 8.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
-        //! let m1 = m.pow(3)?;
-        //! let m2 = m.mul_by_ref(&m)?.mul_by_ref(&m)?;
+        //! let m1 = m.pow(3).unwrap();
+        //! let m2 = m.mul_by_ref(&m).unwrap().mul_by_ref(&m).unwrap();
         //! let m3 = m.clone() * m.clone() * m;
         //!
         //! println!("m1 = {:?}", m1);
@@ -213,15 +213,15 @@ impl Matrix {
         //!     1.0, 2.0, 3.0,
         //!     4.0, 5.0, 6.0,
         //!     7.0, 8.0, 9.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! let m2 = Matrix::new(3, 3, vec![
         //!     1.0, 1.0, 2.0,
         //!     3.0, -4.0, 5.0,
         //!     6.0, 7.0, 8.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
-        //! println!("m1 + m2 = {:?}", m1.add_by_ref(&m2)?);
+        //! println!("m1 + m2 = {:?}", m1.add_by_ref(&m2).unwrap());
         //! println!("m1 + m2 = {:?}", m1 + m2);
         //! // m1 + m2 = Matrix { strings: 3, rows: 3, body: [2.0, 3.0, 5.0, 7.0, 1.0, 11.0, 13.0, 15.0, 17.0] }
         //! // m1 + m2 = Matrix { strings: 3, rows: 3, body: [2.0, 3.0, 5.0, 7.0, 1.0, 11.0, 13.0, 15.0, 17.0] }
@@ -250,15 +250,15 @@ impl Matrix {
         //!     1.0, 2.0, 3.0,
         //!     4.0, 5.0, 6.0,
         //!     7.0, 8.0, 9.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! let m2 = Matrix::new(3, 3, vec![
         //!     1.0, 1.0, 2.0,
         //!     3.0, -4.0, 5.0,
         //!     6.0, 7.0, 8.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
-        //! println!("m1 - m2 = {:?}", m1.sub_by_ref(&m2)?);
+        //! println!("m1 - m2 = {:?}", m1.sub_by_ref(&m2).unwrap());
         //! println!("m1 - m2 = {:?}", m1 - m2);
         //! // m1 - m2 = Matrix { strings: 3, rows: 3, body: [0.0, 1.0, 1.0, 1.0, 9.0, 1.0, 1.0, 1.0, 1.0] }
         //! // m1 - m2 = Matrix { strings: 3, rows: 3, body: [0.0, 1.0, 1.0, 1.0, 9.0, 1.0, 1.0, 1.0, 1.0] }
@@ -287,7 +287,7 @@ impl Matrix {
         //!     1.0, 1.0, 2.0,
         //!     3.0, -4.0, 5.0,
         //!     6.0, 7.0, 8.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! println!("Transposed m = {:?}", m.transpose());
         //! // Transposed m = Matrix { strings: 3, rows: 3, body: [1.0, 3.0, 6.0, 1.0, -4.0, 7.0, 2.0, 5.0, 8.0] }
@@ -320,10 +320,10 @@ impl Matrix {
         //!     1.0, 1.0, 2.0,
         //!     3.0, -4.0, 5.0,
         //!     6.0, 7.0, 8.0,
-        //! ])?;
+        //! ]).unwrap();
         //! let im = m.inverse().unwrap();
         //!
-        //! println!("m * im = im * m: {:?}", m.mul_by_ref(&im)? == im.mul_by_ref(&m)?);
+        //! println!("m * im = im * m: {:?}", m.mul_by_ref(&im).unwrap() == im.mul_by_ref(&m).unwrap());
         //! // or
         //! // println!("m * im = im * m: {:?}", m.clone() * im.clone() == im.clone() * m.clone());
         //! // m * im = im * m: true
@@ -364,7 +364,7 @@ impl Matrix {
         //!     1.0, 2.0, 3.0,
         //!     1.0, 2.0, 3.0,
         //!     5.0, 2.0, 1.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! println!("m * 2 = {:?}", m.mul_num(2.0));
         //! // m * 2 = Matrix { strings: 3, rows: 3, body: [2.0, 4.0, 6.0, 2.0, 4.0, 6.0, 10.0, 4.0, 2.0] }
@@ -388,7 +388,7 @@ impl Matrix {
         //!     1.0, 1.0, 2.0,
         //!     3.0, -4.0, 5.0,
         //!     6.0, 7.0, 8.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! println!("Cofactor matrix of m = {:?}", m.cofactor_matrix().unwrap());
         //! // Cofactor matrix of m = Matrix { strings: 3, rows: 3, body: [-67.0, 6.0, 45.0, 6.0, -4.0, -1.0, 13.0, 1.0, -7.0] }
@@ -426,11 +426,11 @@ impl Matrix {
         //!     1.0, 4.0, 2.0,
         //!     2.0, -6.0, -2.0,
         //!     1.0, 5.0, 2.0,
-        //! ])?;
+        //! ]).unwrap();
         //!
         //! let d = &[1.0, 3.0, 2.0];
         //!
-        //! for (i, x) in m.slae(d)?.unwrap().iter().enumerate() {
+        //! for (i, x) in m.slae(d).unwrap().unwrap().iter().enumerate() {
         //!     println!("x{} = {:?}", i+1, x);
         //! }
         //! // x1 = 2.0
