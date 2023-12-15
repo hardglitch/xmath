@@ -254,6 +254,19 @@ mod test_matrices {
     }
 
     #[test]
+    fn test_matrices_cfm2_pos() {
+        let m = Matrix::new(2, 2, vec![
+            2.0, 1.0,
+            3.0, 2.0,
+        ]).unwrap();
+        let test_res = Matrix::new(2,2,vec![
+            2.0, -3.0,
+            -1.0, 2.0,
+        ]).unwrap();
+        assert_eq!(m.cofactor_matrix().unwrap(), test_res);
+    }
+
+    #[test]
     fn test_matrices_pow1_pos() {
         let m = Matrix::new(3,3,vec![
             1.0, 1.0, 2.0,

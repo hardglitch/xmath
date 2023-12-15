@@ -403,13 +403,18 @@ impl Matrix {
     }
 
     fn _cofactor_matrix(&self, ads: &mut Vec<f64>) {
+        let mut minor = Box::new(0.0);
         if self.body.len() >= 4 {
             for s in 0..self.strings {
                 for r in 0..self.rows {
                     let ad = (-1_f64).powi((r+1 + s+1) as i32);
-                    let new_m = self._sub_matrix(s, r);
-                    let minor = new_m.det();
-                    let d = ad * minor;
+                    if self.body.len() > 4 {
+                        let new_m = self._sub_matrix(s, r);
+                        *minor = new_m.det();
+                    } else {
+                        *minor = self.body[self.body.len()-1 - s * self.strings - r];
+                    }
+                    let d = ad * *minor;
                     ads.push(d);
                 }
             }
