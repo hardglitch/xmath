@@ -321,11 +321,10 @@ impl Matrix {
         //!     3.0, -4.0, 5.0,
         //!     6.0, 7.0, 8.0,
         //! ]).unwrap();
+        //!
         //! let im = m.inverse().unwrap();
         //!
         //! println!("m * im = im * m: {:?}", m.mul_by_ref(&im).unwrap() == im.mul_by_ref(&m).unwrap());
-        //! // or
-        //! // println!("m * im = im * m: {:?}", m.clone() * im.clone() == im.clone() * m.clone());
         //! // m * im = im * m: true
         //!
         //! println!("m * im = {:?}", m * im);
