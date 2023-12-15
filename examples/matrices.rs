@@ -148,7 +148,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 
 
-
     // Matrix equation
     let m1 = Matrix::new(2, 2, vec![
         2.0, 1.0,
