@@ -151,8 +151,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Matrix equation
     let m1 = Matrix::new(2, 2, vec![
-        2.0, 1.0,  //  2 -1
-        3.0, 2.0,  // -3  2
+        2.0, 1.0,
+        3.0, 2.0,
     ])?;
     let m2 = Matrix::new(2, 2, vec![
         0.0, 1.0,
@@ -166,6 +166,27 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("x = {:?}", (m3 - m2.mul_num(2.0)) * m1.inverse().unwrap() );
     // (m1 * x) + (m2 * 2) - m3 = 0
     // x = Matrix { strings: 2, rows: 2, body: [11.0, -7.0, 1.0, -2.0] }
+
+
+
+    // Matrix equation
+    let m1 = Matrix::new(2, 2, vec![
+        10.0, 2.0,
+        3.0, 1.0,
+    ])?;
+    let m2 = Matrix::new(2, 2, vec![
+        2.0, 1.0,
+        2.0, 3.0,
+    ])?;
+    let m3 = Matrix::new(2, 2, vec![
+        1.0, 5.0,
+        2.0, 4.0,
+    ])?;
+    println!("m1 * x * m2 = m3");
+    println!("x = {:?}", m1.inverse().unwrap() * m3 * m2.inverse().unwrap() );
+    // m1 * x * m2 = m3
+    // x = Matrix { strings: 2, rows: 2, body: [-0.1875, -0.1875, 0.0625, 2.0625] }
+
 
 
     Ok(())
