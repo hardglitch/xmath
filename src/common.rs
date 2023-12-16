@@ -1,5 +1,6 @@
 use std::error::Error;
-use crate::utils::is_equal;
+use crate::utils::AdvancedEQ;
+
 
 pub fn factorial(n: usize) -> f64 {
     //! n! = 2 * 3 * ... * n
@@ -42,7 +43,7 @@ pub fn sigma<F>(first: f64, last: f64, step: f64, func: F) -> Result<f64, Box<dy
     //! func - function, f(value)
 
     if (first-last).abs() < step.abs() { return Err("'Step' must be less than".into()); }
-    if is_equal(&first, &last, 0.01) { return Err("'First' and 'last' must not be equal".into()); }
+    if first.is_equal(last, 0.01) { return Err("'First' and 'last' must not be equal".into()); }
     if (first < last) && (step < 0.0) { return Err("If 'first' is less than 'last' then 'step' must be greater than 0".into()); }
     if (first > last) && (step > 0.0) { return Err("If 'first' is greater than 'last' then 'step' must be less than 0".into()); }
     if step == 0.0 { return Err("'Step' must not be equal to 0".into()); }
@@ -52,7 +53,7 @@ pub fn sigma<F>(first: f64, last: f64, step: f64, func: F) -> Result<f64, Box<dy
 
     while step > 0.0 && value < last ||
           step < 0.0 && value > last ||
-          is_equal(&value, &last, 0.01)
+          value.is_equal(last, 0.01)
     {
         sum += func(value);
         value += step;

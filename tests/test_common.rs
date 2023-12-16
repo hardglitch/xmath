@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_common {
     use xmath::common::{factorial, sigma, simple_sigma};
-    use xmath::utils::is_equal;
+    use xmath::utils::AdvancedEQ;
 
     #[test]
     fn test_factorial1_pos() {
@@ -26,19 +26,19 @@ mod test_common {
     #[test]
     fn test_sigma1_pos() {
         let res = sigma(1.0, 1.5, 0.1, |x| x + 1.0).unwrap();
-        assert!(is_equal(&res, &13.5, 0.01));
+        assert!(res.is_equal(13.5, 0.01));
     }
 
     #[test]
     fn test_sigma2_pos() {
         let res = sigma(1.5, 1.0, -0.1, |x| x + 1.0).unwrap();
-        assert!(is_equal(&res, &13.5, 0.01));
+        assert!(res.is_equal(13.5, 0.01));
     }
 
     #[test]
     fn test_sigma3_pos() {
         let res = sigma(1.0, 2.5, 1.0, |x| x + 1.0).unwrap();
-        assert!(is_equal(&res, &5.0, 0.01));
+        assert!(res.is_equal(5.0, 0.01));
     }
 
     #[test]

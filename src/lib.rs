@@ -1,5 +1,6 @@
 #![feature(let_chains)]
 #![feature(isqrt)]
+#![feature(associated_type_defaults)]
 
 extern crate core;
 
@@ -12,3 +13,4 @@ pub mod vector_algebra;
 pub mod func_analysis;
 pub mod utils;
 pub mod matrices;
+pub mod im_numbers;

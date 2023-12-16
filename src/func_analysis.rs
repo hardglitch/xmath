@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
-use crate::utils::is_equal;
+use crate::utils::AdvancedEQ;
+
 
 #[derive(Debug)]
 pub struct Point {
@@ -126,7 +127,7 @@ impl<F> Expression<F>
                     let upscaled_x_max_shifted = upscaled_x_min + one_thread_tasks * (th + 1) as i64;
                     for upscaled_x in upscaled_x_min_shifted..=upscaled_x_max_shifted {
                         let downscaled_x = upscaled_x as f64 * precision;
-                        if is_equal(&expr(downscaled_x), &0.0, precision / 10.0) {
+                        if expr(downscaled_x).is_equal(0.0, precision / 10.0) {
                             tx_th.send(upscaled_x).unwrap();
                         }
                     }

@@ -3,7 +3,7 @@ use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::mem::swap;
 use std::ops::{Add, Deref, Mul, Sub};
-use crate::utils::is_equal;
+use crate::utils::AdvancedEQ;
 
 
 #[derive(Debug, Clone)]
@@ -24,7 +24,7 @@ impl PartialEq for Matrix {
             self.body
                 .iter()
                 .enumerate()
-                .all(|(i, n)| is_equal(n, &other.body[i], 0.0001))
+                .all(|(i, n)| n.is_equal(other.body[i], 0.0001))
     }
 }
 impl Mul for Matrix {

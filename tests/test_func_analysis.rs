@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_func_analysis {
     use xmath::func_analysis::{Expression, Point};
-    use xmath::utils::is_equal;
+    use xmath::utils::AdvancedEQ;
 
     #[test]
     fn test_find_roots1_pos() {
@@ -49,10 +49,10 @@ mod test_func_analysis {
         let res = y.find_extremums(-5.0, 1.0).unwrap().unwrap();
         let min = res.first().unwrap();
         let max = res.last().unwrap();
-        assert!(is_equal(&min.x(), &-5.0, 0.01));
-        assert!(is_equal(&min.y(), &-333.33, 0.01));
-        assert!(is_equal(&max.x(), &1.0, 0.01));
-        assert!(is_equal(&max.y(), &10.67, 0.01));
+        assert!(min.x().is_equal(-5.0, 0.01));
+        assert!(min.y().is_equal(-333.33, 0.01));
+        assert!(max.x().is_equal(1.0, 0.01));
+        assert!(max.y().is_equal(10.67, 0.01));
     }
 
     #[test]
