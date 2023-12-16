@@ -8,5 +8,3 @@
 !Cargo.lock
 !Cargo.toml
 !.gitignore
-/examples/imnumbers.rs
-/src/im_numbers.rs

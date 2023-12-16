@@ -13,4 +13,3 @@ pub mod vector_algebra;
 pub mod func_analysis;
 pub mod utils;
 pub mod matrices;
-pub mod im_numbers;
