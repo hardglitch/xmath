@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_utils {
-    use xmath::utils::AdvancedEQ;
+    use crate::utils::AdvancedEQ;
 
     #[test]
     fn test_is_equal1_pos() {
@@ -46,7 +46,7 @@ mod test_utils {
 
     #[test]
     fn test_is_equal8_pos() {
-        let res = -1.1.is_equal(-5.3, -0.001);
+        let res = (-1.1).is_equal(-5.3, -0.001);
         assert!(!res);
     }
 }

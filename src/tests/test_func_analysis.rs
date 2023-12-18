@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_func_analysis {
-    use xmath::func_analysis::{Expression, Point};
-    use xmath::utils::AdvancedEQ;
+    use crate::func_analysis::{Expression, Point};
+    use crate::utils::AdvancedEQ;
 
     #[test]
     fn test_find_roots1_pos() {

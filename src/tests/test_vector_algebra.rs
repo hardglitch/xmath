@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_vector_algebra {
-    use xmath::vector_algebra::{cos_alpha, Vector3D, vector_multiplication};
+    use crate::vector_algebra::{cos_alpha, Vector3D, vector_multiplication};
 
     #[test]
     fn test_vector_algebra_cos_alpha1_pos() {

@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_aprogression {
-    use xmath::aprogression::{get_a_n, get_iters, sum_by_d, sum_by_elems, get_d};
+    use crate::aprogression::{get_a_n, get_d, sum_by_d, sum_by_elems, get_iters};
 
     #[test]
     fn test_aprogression_sum_by_d1_pos() {

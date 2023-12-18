@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_common {
-    use xmath::common::{factorial, sigma, simple_sigma};
-    use xmath::utils::AdvancedEQ;
+    use crate::common::{factorial, sigma, simple_sigma};
+    use crate::utils::AdvancedEQ;
 
     #[test]
     fn test_factorial1_pos() {

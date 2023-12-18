@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_algebra {
-    use xmath::algebra::quadratic_equation;
-    use xmath::utils::AdvancedEQ;
+    use crate::algebra::quadratic_equation;
+    use crate::utils::AdvancedEQ;
 
     #[test]
     fn test_quadratic_equation1_pos() {

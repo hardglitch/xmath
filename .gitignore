@@ -3,8 +3,8 @@
 !/examples/*.rs
 !/src
 !/src/*.rs
-!/tests/
-!/tests/*.rs
+!/src/tests/
+!/src/tests/*.rs
 !Cargo.lock
 !Cargo.toml
 !.gitignore

@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_matrices {
-    use xmath::matrices::Matrix;
+    use crate::matrices::Matrix;
 
     #[test]
     fn test_matrices_det1_pos() {

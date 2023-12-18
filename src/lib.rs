@@ -15,3 +15,7 @@ pub mod func_analysis;
 pub mod utils;
 pub mod matrices;
 pub mod im_numbers;
+
+#[doc(hidden)]
+#[allow(clippy::module_inception)]
+pub(crate) mod tests;
