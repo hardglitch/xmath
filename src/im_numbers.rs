@@ -100,7 +100,8 @@ impl ImExpression {
         lhs.elems.iter_mut().for_each(|e| e.pair_checker());
         rhs.elems.iter_mut().for_each(|e| e.pair_checker());
 
-        if lhs.elems == rhs.elems && lhs.pow == rhs.pow { lhs.mul += rhs.mul }
+        if lhs.elems == rhs.elems && lhs.pow == rhs.pow &&
+           lhs.elems.len() > 1 && rhs.elems.len() > 1 { lhs.mul += rhs.mul }
 
         let eq_plus = |e1: &ImNumber, e2: &ImNumber| -> Option<ImNumber> {
            if e1.im_pow.is_equal(e2.im_pow, default::PRECISION) {
