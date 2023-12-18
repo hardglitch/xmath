@@ -5,8 +5,8 @@ use crate::utils::AdvancedEQ;
 
 #[derive(Debug)]
 pub struct Point {
-    pub(crate) x: f64,
-    pub(crate) y: f64,
+    x: f64,
+    y: f64,
 }
 impl Display for Point {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -34,8 +34,8 @@ impl Point {
 
 #[derive(Copy, Clone)]
 pub struct RawPoint {
-    pub(crate) x: i64,
-    pub(crate) y: i64,
+    x: i64,
+    y: i64,
 }
 impl PartialEq for RawPoint {
     fn eq(&self, other: &Self) -> bool {
