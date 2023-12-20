@@ -273,6 +273,32 @@ pub(crate) mod test_im_numbers {
     }
 
     #[test]
+    fn test_imnum_add7_pos() {
+        let expr1 = ImOutput { exprs: vec![
+            ImExpression {
+                elems: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+                pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+                mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+            }
+        ]};
+        let expr2 = ImOutput { exprs: vec![
+            ImExpression {
+                elems: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+                pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+                mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+            }
+        ]};
+        let test_res = ImOutput { exprs: vec![
+            ImExpression {
+                elems: vec![ImNumber { real: 2.0, im_pow: 0.0 }],
+                pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+                mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+            }
+        ]};
+        assert_eq!(expr1 + expr2, test_res);
+    }
+
+    #[test]
     fn test_imnum_sub1_pos() {
         let i_1i = Im::new("1i").unwrap();
         let i_2i = Im::new("2i").unwrap();

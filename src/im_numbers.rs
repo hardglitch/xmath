@@ -93,15 +93,6 @@ impl ImExpression {
         None
     }
 
-    // pub(crate) fn clean(&mut self) {
-    //     while let Some((i, _)) = self.elems.iter()
-    //         .enumerate()
-    //         .find(|(_, n)| n.real == 0.0)
-    //     {
-    //         self.elems.remove(i);
-    //     }
-    // }
-
     pub(crate) fn is_zero(&self) -> bool {
         return if let Some(e) = self.mul.first() &&
             self.mul.len() == 1 && e.real == 0.0 { true } else { false }
@@ -125,8 +116,9 @@ impl ImExpression {
     // }
 
     fn is_addable(&self, other: &Self) -> bool {
-         self.elems == other.elems && self.pow == other.pow &&
-            self.elems.len() > 1 && self.pow.len() > 1
+         self.elems == other.elems &&
+         self.pow == other.pow &&
+         self.real_pow().is_none()
     }
 
     fn real_pow(&self) -> Option<f64> {
@@ -136,12 +128,13 @@ impl ImExpression {
         None
     }
 
-    // fn real_pow_mut(&mut self) -> Option<&mut ImNumber> {
-    //     if self.pow.len() == 1 && let Some(p) = self.pow.first_mut() && p.is_real() {
-    //         return Some(p)
-    //     }
-    //     None
-    // }
+    #[allow(dead_code)]
+    fn real_pow_mut(&mut self) -> Option<&mut ImNumber> {
+        if self.pow.len() == 1 && let Some(p) = self.pow.first_mut() && p.is_real() {
+            return Some(p)
+        }
+        None
+    }
 
     fn real_base(&mut self) -> Option<f64> {
         if let Some(b) = self.elems.first() && self.elems.len() == 1 && b.is_real() {
@@ -164,25 +157,31 @@ impl ImExpression {
         None
     }
 
-    unsafe fn add(&self, rhs: &Self) -> Self {
+    #[allow(dead_code)]
+    fn real_mul_mut(&mut self) -> Option<&mut ImNumber> {
+        if self.pow.len() == 1 && let Some(m) = self.pow.first_mut() &&  m.is_real() {
+            return Some(m)
+        }
+        None
+    }
 
-        let lhs = &mut self.clone();
-        let rhs = &mut rhs.clone();
-        if lhs.elems.len() < rhs.elems.len() {
-            swap(lhs, rhs)
+    unsafe fn add(&mut self, rhs: &mut Self) {
+        if self.elems.len() < rhs.elems.len() {
+            swap(self, rhs)
         }
 
-        lhs.elems.iter_mut().for_each(|e| e.pair_checker());
+        self.elems.iter_mut().for_each(|e| e.pair_checker());
         rhs.elems.iter_mut().for_each(|e| e.pair_checker());
 
-        if lhs.is_addable(rhs) {
-            let mut lhs_expr = Box::<ImExpression>::default();
-            lhs_expr.elems = lhs.mul.clone();
+        if self.is_addable(rhs) {
+            let mut lhs_expr = ImExpression::default();
+            lhs_expr.elems.append(&mut self.mul);
 
-            let mut rhs_expr = Box::<ImExpression>::default();
-            rhs_expr.elems = rhs.mul.clone();
+            let mut rhs_expr = ImExpression::default();
+            rhs_expr.elems.append(&mut rhs.mul);
 
-            lhs.mul = lhs_expr.add(&rhs_expr).elems;
+            lhs_expr.add(&mut rhs_expr);
+            self.mul = lhs_expr.mul;
         }
 
         let eq_plus = |e1: &ImNumber, e2: &ImNumber| -> Option<ImNumber> {
@@ -192,24 +191,22 @@ impl ImExpression {
            None
         };
 
-        let mut expr = lhs.clone();
-        expr.elems.clear();
+        let mut elems_mut = Vec::<ImNumber>::new();
 
-        for e1 in lhs.elems.iter() {
+        for e1 in self.elems.iter() {
             for e2 in rhs.elems.iter() {
                 if let Some(e) = eq_plus(e1, e2) {
-                    expr.elems.push(e)
-                } else if lhs.elems.len() == 1 && rhs.elems.len() == 1 {
-                    expr.elems.push(e1.clone());
-                    expr.elems.push(e2.clone());
-                } else if lhs.elems.len() > 1 && rhs.elems.len() == 1 {
-                    expr.elems.push(e1.clone());
+                    elems_mut.push(e)
+                } else if self.elems.len() == 1 && rhs.elems.len() == 1 {
+                    elems_mut.push(e1.clone());
+                    elems_mut.push(e2.clone());
+                } else if self.elems.len() > 1 && rhs.elems.len() == 1 {
+                    elems_mut.push(e1.clone());
                 }
             }
         }
 
-        // expr.clean();
-        expr
+        self.elems = elems_mut;
     }
 
     unsafe fn sub(&self, rhs: &Self) -> Self {
@@ -289,20 +286,25 @@ impl ImExpression {
         else if self.elems == rhs.elems {
             if self.mul.len() > 1 || self.real_mul().is_none() {
                 let mut lhs_mul = ImExpression::default();
-                lhs_mul.elems = self.mul.clone();
+                lhs_mul.elems.append(&mut self.mul);
+
                 let mut rhs_mul = ImExpression::default();
-                rhs_mul.elems.append(rhs.mul.as_mut());
+                rhs_mul.elems.append(&mut rhs.mul);
+
                 lhs_mul.mul(&mut rhs_mul);
-                self.mul = lhs_mul.mul;
+                self.mul = lhs_mul.elems;
                 if self.is_zero() { return }
             }
 
             if self.pow.len() > 1 || self.real_pow().is_none() {
-                let mut lhs_pow = Box::<ImExpression>::default();
-                lhs_pow.elems = self.pow.clone();
-                let mut rhs_pow = Box::<ImExpression>::default();
-                rhs_pow.elems = rhs.pow.clone();
-                self.pow = lhs_pow.add(&rhs_pow).elems;
+                let mut lhs_pow = ImExpression::default();
+                lhs_pow.elems.append(&mut self.pow);
+
+                let mut rhs_pow = ImExpression::default();
+                rhs_pow.elems.append(&mut rhs.pow);
+
+                lhs_pow.add(&mut rhs_pow);
+                self.pow = lhs_pow.elems;
                 if self.is_one() {
                     self.mul = vec![ImNumber::new(1.0, 0.0)];
                     self.pow = vec![ImNumber::new(1.0, 0.0)];
@@ -455,20 +457,18 @@ impl Add for ImOutput {
 
     fn add(mut self, mut rhs: Self) -> Self {
         let mut exprs = Vec::<ImExpression>::new();
-        while let Some(e2) = rhs.exprs.pop() {
+        while let Some(e2) = rhs.exprs.pop().as_mut() {
             self.exprs.iter_mut().for_each(|e1| unsafe {
                 if e1.pow == e2.pow {
-                    let mut e = Box::<ImExpression>::default();
-                    *e = e1.add(&e2);
-                    exprs.push(*e);
+                    e1.add(e2);
+                    exprs.push(e1.clone());
                 } else {
                     exprs.push(e1.clone());
                     exprs.push(e2.clone());
                 }
             });
         }
-        self.exprs.clear();
-        self.exprs.append(&mut exprs);
+        self.exprs = exprs;
         self.clean();
         self
     }
@@ -478,7 +478,7 @@ impl Sub for ImOutput {
 
     fn sub(mut self, mut rhs: Self) -> Self {
         let mut exprs = Vec::<ImExpression>::new();
-        while let Some(e2) = rhs.exprs.pop() {
+        while let Some(e2) = rhs.exprs.pop().as_mut() {
             self.exprs.iter_mut().for_each(|e1| unsafe {
                 if e1.pow == e2.pow {
                     let mut e = Box::<ImExpression>::default();
@@ -490,8 +490,7 @@ impl Sub for ImOutput {
                 }
             });
         }
-        self.exprs.clear();
-        self.exprs.append(&mut exprs);
+        self.exprs = exprs;
         self.clean();
         self
     }
