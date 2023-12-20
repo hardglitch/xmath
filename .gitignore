@@ -5,6 +5,8 @@
 !/src/*.rs
 !/src/tests/
 !/src/tests/*.rs
+!/src/im_numbers/
+!/src/im_numbers/*.rs
 !Cargo.lock
 !Cargo.toml
 !.gitignore

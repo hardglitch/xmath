@@ -1,16 +1,16 @@
-use xmath::im_numbers::{Im, XValue};
+use xmath::im_numbers::cast::ImValue;
 
 fn main() {
-
     // (1 + 2i)(3 - i) = ?   =>  (2i^1 + 1)(-1i^1 + 3)
     // (1 + 3i^2 - 2i)(3 - i) = ?   =>  (3i^2 - 2i^1 + 1)(-1i^1 + 3)
-    let i_2i = Im::new("2i").unwrap();
-    let i_1i = Im::new("1i").unwrap();
-    let i_4i = Im::new("4i").unwrap();
-    // let expr = (1.0.cast() + i_2i) * (3.0.cast() + i_1i) + i_4i.clone() - (i_4i + 6.0.cast());
-    // let expr = (1.0.cast() + i_2i * 2.0.cast());
-    // let expr = (1.0.cast() - i_2i * 2.0.cast());
-    let expr = 1.0.cast() - (i_2i + 5.0.cast());
-    dbg!(expr);
-    // println!("{}", expr);
+    // let expr = 0.0.cast() * (-2.0).cast(); // 0
+    // let expr = 1.0.cast() + i_2i * 2.0.cast(); // 1 + 4i
+    // let expr = 1.0.cast() - i_2i * 2.0.cast(); // 1 - 4i
+    // let expr = (1.0.cast() + i_2i) * 3.0.cast(); // 3 + 6i
+    // let expr = (1.0.cast() + i_2i) * (i_1i.clone() + i_1i); // 2i - 4
+    let expr = (2.i() + 1.r()) * (3.r() + 1.i()); // 7i - 1
+    // let expr = (1.r() + 2.i()) * (3.r() + 1.i()) + 4.i() - (4.i() + 6.r()); // 7i - 5
+    // let expr = 1.r() * (2.i() - 2.i()) * 5.r() - (2.i() + 5.r()) * 2.i(); // 4 - 10i
+    // dbg!(expr);
+    println!("{}", expr);
 }
