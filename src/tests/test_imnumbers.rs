@@ -533,4 +533,61 @@ pub(crate) mod test_im_numbers {
         ]};
         assert_eq!(expr1 * expr2, test_res);
     }
+
+    #[test]
+    fn test_imnum_mul13_pos() {
+        let expr1 = ImOutput { exprs: vec![
+            ImExpression {
+                elems: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+                pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+                mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+            }
+        ]};
+        let expr2 = ImOutput { exprs: vec![
+            ImExpression {
+                elems: vec![ImNumber { real: 2.0, im_pow: 0.0 }],
+                pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+                mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+            }
+        ]};
+        let test_res = ImOutput { exprs: vec![
+            ImExpression {
+                elems: vec![ImNumber { real: 2.0, im_pow: 0.0 }],
+                pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+                mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+            }
+        ]};
+        assert_eq!(expr1 * expr2, test_res);
+    }
+
+    // #[test]
+    // fn test_imnum_mul14_pos() {
+    //     let expr1 = ImOutput { exprs: vec![
+    //         ImExpression {
+    //             elems: vec![ImNumber { real: 2.0, im_pow: 0.0 }],
+    //             pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+    //             mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+    //         }
+    //     ]};
+    //     let expr2 = ImOutput { exprs: vec![
+    //         ImExpression {
+    //             elems: vec![ImNumber { real: 3.0, im_pow: 0.0 }],
+    //             pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+    //             mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+    //         }
+    //     ]};
+    //     let test_res = ImOutput { exprs: vec![
+    //         ImExpression {
+    //             elems: vec![ImNumber { real: 2.0, im_pow: 0.0 }],
+    //             pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+    //             mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+    //         },
+    //         ImExpression {
+    //             elems: vec![ImNumber { real: 3.0, im_pow: 0.0 }],
+    //             pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
+    //             mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
+    //         }
+    //     ]};
+    //     assert_eq!(expr1 * expr2, test_res);
+    // }
 }
