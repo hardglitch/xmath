@@ -11,14 +11,14 @@ impl ImValue<ImOutput> for f64 {
     fn r(self) -> ImOutput {
         let im_num = ImNumber::new(self, 0.0);
         let expr_one = ImNumber::new(1.0, 0.0);
-        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one.clone()], mul: vec![expr_one] };
+        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one], mul: vec![expr_one] };
         ImOutput { exprs: vec![im_expr] }
     }
 
     fn i(self) -> ImOutput {
         let im_num = ImNumber::new(self, 1.0);
         let expr_one = ImNumber::new(1.0, 0.0);
-        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one.clone()], mul: vec![expr_one] };
+        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one], mul: vec![expr_one] };
         ImOutput { exprs: vec![im_expr] }
     }
 }
@@ -27,14 +27,14 @@ impl ImValue<ImOutput> for i32 {
     fn r(self) -> ImOutput {
         let im_num = ImNumber::new(self as f64, 0.0);
         let expr_one = ImNumber::new(1.0, 0.0);
-        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one.clone()], mul: vec![expr_one] };
+        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one], mul: vec![expr_one] };
         ImOutput { exprs: vec![im_expr] }
     }
 
     fn i(self) -> ImOutput {
         let im_num = ImNumber::new(self as f64, 1.0);
         let expr_one = ImNumber::new(1.0, 0.0);
-        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one.clone()], mul: vec![expr_one] };
+        let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one], mul: vec![expr_one] };
         ImOutput { exprs: vec![im_expr] }
     }
 }

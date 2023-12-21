@@ -1,7 +1,5 @@
 #![feature(let_chains)]
 #![feature(isqrt)]
-#![feature(associated_type_defaults)]
-#![feature(unboxed_closures)]
 
 extern crate core;
 

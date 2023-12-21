@@ -1,4 +1,3 @@
-use std::error::Error;
 use std::ptr::swap;
 use crate::im_numbers::im_number::ImNumber;
 use crate::utils::{AdvancedEQ, default};
@@ -21,7 +20,7 @@ impl Default for ImExpression {
         let expr_one = ImNumber::new(1.0, 0.0);
         Self {
             base: vec![],
-            pow: vec![expr_one.clone()],
+            pow: vec![expr_one],
             mul: vec![expr_one],
         }
     }
@@ -131,21 +130,26 @@ impl ImExpression {
 
         let mut reals = ImNumber { real: 0.0, im_pow: 0.0 };
         let mut ims = ImNumber { real: 0.0, im_pow: 1.0 };
+        let mut ims_div = ImNumber { real: 0.0, im_pow: -1.0 };
+
         self.base.iter().for_each(|n| {
             if n.is_real() {
                 reals.real += n.real
-            } else {
+            } else if n.im_pow == ims.im_pow {
                 ims.real += n.real
+            } else if n.im_pow == ims_div.im_pow {
+                ims_div.real += n.real
             }
         });
-        self.base.clear();
-        if reals.real < 0.0 {
-            self.base.push(reals);
-            self.base.push(ims);
-        } else {
-            self.base.push(ims);
-            self.base.push(reals);
-        }
+
+        let mut list = vec![];
+        if ims_div.real != 0.0 { list.push(ims_div) }
+        if ims.real != 0.0 { list.push(ims) }
+        list.push(reals);
+
+        list.sort();
+        list.reverse();
+        self.base = list.to_vec();
     }
 
     pub(crate) unsafe fn add(&mut self, rhs: &mut Self) {
@@ -184,11 +188,11 @@ impl ImExpression {
                     if e.real != 0.0 { elems_mut.push(e)}
                 }
                 else if self.base.len() == 1 && rhs.base.len() == 1 {
-                    if e1.real != 0.0 { elems_mut.push(e1.clone())}
-                    if e2.real != 0.0 { elems_mut.push(e2.clone())}
+                    if e1.real != 0.0 { elems_mut.push(*e1)}
+                    if e2.real != 0.0 { elems_mut.push(*e2)}
                 }
                 else if self.base.len() > 1 && rhs.base.len() == 1 && e1.real != 0.0 {
-                    elems_mut.push(e1.clone())
+                    elems_mut.push(*e1)
                 }
             }
         }
@@ -235,15 +239,15 @@ impl ImExpression {
                     if e.real != 0.0 { elems_mut.push(e)}
                 }
                 else if self.base.len() == 1 && rhs.base.len() == 1 {
-                    if e1.real != 0.0 { elems_mut.push(e1.clone())}
+                    if e1.real != 0.0 { elems_mut.push(*e1)}
 
                     let mut e = Box::<ImNumber>::default();
-                    *e = e2.clone();
+                    *e = *e2;
                     e.real = -e.real;
                     if e.real != 0.0 { elems_mut.push(*e)}
                 }
                 else if self.base.len() > 1 && rhs.base.len() == 1 && e1.real != 0.0 {
-                    elems_mut.push(e1.clone())
+                    elems_mut.push(*e1)
                 }
             }
         }
@@ -326,12 +330,12 @@ impl ImExpression {
                 }
                 else if self.base.len() == 1 && rhs.base.len() == 1 {
                     let mut e = Box::<ImNumber>::default();
-                    if e1.is_real() { *e = e2.clone() } else { *e = e1.clone() }
+                    if e1.is_real() { *e = *e2 } else { *e = *e1 }
                     e.real = e2.real * e1.real;
                     if e.real != 0.0 { elems_mut.push(*e)}
                 }
                 else if self.base.len() > 1 && rhs.base.len() == 1 && e1.real != 0.0 {
-                    elems_mut.push(e1.clone())
+                    elems_mut.push(*e1)
                 }
             }
         }
@@ -341,8 +345,8 @@ impl ImExpression {
         self.collect();
     }
 
-    pub(crate) unsafe fn div(&mut self, rhs: &mut Self) -> Result<(), Box<dyn Error>> {
-        if rhs.is_base_zero() { return Err("Divide by 0".into()) }
+    pub(crate) unsafe fn div(&mut self, rhs: &mut Self) -> Option<()> {
+        if rhs.is_base_zero() { return None }
 
         if self.base.len() < rhs.base.len() {
             swap(self, rhs);
@@ -363,14 +367,14 @@ impl ImExpression {
             if let Some(b_mut) = self.real_base_mut() {
                 b_mut.real = b.powf(p1 - p2)
             }
-            return Ok(())
+            return Some(())
         }
 
         else if self.is_equal_by_abs(rhs) {
             self.mul = vec![ImNumber::new(1.0, 0.0)];
             self.pow = vec![ImNumber::new(1.0, 0.0)];
             self.base = vec![ImNumber::new(1.0, 0.0)];
-            return Ok(())
+            return Some(())
         }
 
         else if self.base == rhs.base {
@@ -383,7 +387,7 @@ impl ImExpression {
 
                 lhs_mul.div(&mut rhs_mul)?;
                 self.mul = lhs_mul.base;
-                if self.is_mul_zero() { return Ok(()) }
+                if self.is_mul_zero() { return Some(()) }
             }
 
             if self.pow.len() > 1 || self.real_pow().is_none() {
@@ -399,19 +403,22 @@ impl ImExpression {
                     self.mul = vec![ImNumber::new(1.0, 0.0)];
                     self.pow = vec![ImNumber::new(1.0, 0.0)];
                     self.base = vec![ImNumber::new(1.0, 0.0)];
-                    return Ok(())
+                    return Some(())
                 }
             }
-            return Ok(())
+            return Some(())
         }
 
         let div = |e1: &ImNumber, e2: &ImNumber| -> Option<ImNumber> {
-            if e1.is_equal_by_abs(e2) {
+            if e2.real == 0.0 { return None }
+            else if e1.is_equal_by_abs(e2) {
                 return Some(ImNumber::new(e1.real / e2.real, 0.0))
             } else if e1.is_real() {
                 return Some(ImNumber::new(e1.real / e2.real, -e2.im_pow))
             } else if e2.is_real() {
                 return Some(ImNumber::new(e1.real / e2.real, e1.im_pow))
+            } else if !e1.is_real() && !e2.is_real() {
+                return Some(ImNumber::new(e1.real / e2.real, 0.0))
             }
             None
         };
@@ -420,17 +427,18 @@ impl ImExpression {
 
         for e1 in self.base.iter() {
             for e2 in rhs.base.iter() {
-                if e2.real != 0.0 && let Some(e) = div(e1, e2) {
+                if let Some(e) = div(e1, e2) {
                     if e.real != 0.0 { elems_mut.push(e)}
                 }
-                else if e2.real != 0.0 && self.base.len() == 1 && rhs.base.len() == 1 {
+                else if self.base.len() == 1 && rhs.base.len() == 1 {
+                    if e2.real == 0.0 { return None }
                     let mut e = Box::<ImNumber>::default();
-                    if e1.is_real() { *e = e2.clone() } else { *e = e1.clone() }
+                    if e1.is_real() { *e = *e2 } else { *e = *e1 }
                     e.real = e1.real / e2.real;
                     if e.real != 0.0 { elems_mut.push(*e)}
                 }
                 else if self.base.len() > 1 && rhs.base.len() == 1 && e1.real != 0.0 {
-                    elems_mut.push(e1.clone())
+                    elems_mut.push(*e1)
                 }
             }
         }
@@ -438,6 +446,6 @@ impl ImExpression {
         if elems_mut.is_empty() { elems_mut.push(ImNumber { real: 0.0, im_pow: 0.0 }) }
         self.base = elems_mut;
         self.collect();
-        Ok(())
+        Some(())
     }
 }

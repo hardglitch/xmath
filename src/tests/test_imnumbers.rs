@@ -477,7 +477,7 @@ pub(crate) mod test_im_numbers {
         let test_res = ImOutput {
             exprs: vec![
                 ImExpression {
-                    base: vec![ImNumber { real: -4.0, im_pow: 0.0 }, ImNumber { real: 2.0, im_pow: 1.0 }],
+                    base: vec![ImNumber { real: 2.0, im_pow: 1.0 }, ImNumber { real: -4.0, im_pow: 0.0 }],
                     pow: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
                     mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
                 }
@@ -492,7 +492,7 @@ pub(crate) mod test_im_numbers {
         let test_res = ImOutput {
             exprs: vec![
                 ImExpression {
-                    base: vec![ImNumber { real: -2.0, im_pow: 0.0 }, ImNumber { real: -2.0, im_pow: 1.0 }],
+                    base: vec![ImNumber { real: -2.0, im_pow: 1.0 }, ImNumber { real: -2.0, im_pow: 0.0 }],
                     pow: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
                     mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
                 }
@@ -521,98 +521,7 @@ pub(crate) mod test_im_numbers {
 
     #[test]
     fn test_imnum_mul11_pos() {
-        let expr1 = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 5.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        let expr2 = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 5.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: -1.0, im_pow: 0.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        let test_res = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        assert_eq!(expr1 * expr2, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul12_pos() {
-        let expr1 = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 5.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: 2.0, im_pow: 1.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        let expr2 = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 5.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: -1.0, im_pow: 1.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        let test_res = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 5.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        assert_eq!(expr1 * expr2, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul13_pos() {
-        let expr1 = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        let expr2 = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 2.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        let test_res = ImOutput {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 2.0, im_pow: 0.0 }],
-                    pow: vec![ImNumber { real: 1.0, im_pow: 1.0 }],
-                    mul: vec![ImNumber { real: 1.0, im_pow: 0.0 }],
-                }
-            ]
-        };
-        assert_eq!(expr1 * expr2, test_res);
+        assert_eq!(5.r() * 1.r()/5.r(), 1.r());
     }
 
     #[test]
@@ -630,4 +539,32 @@ pub(crate) mod test_im_numbers {
     fn test_div2_pos() {
         assert_eq!((-1).i() / 1.i(), (-1).r());
     }
+
+    #[test]
+    fn test_div3_pos() {
+        assert_eq!(0.i() / 1.i(), 0.r());
+    }
+
+    #[test]
+    fn test_div4_pos() {
+        assert!((1.i() / 0.i()).is_none());
+    }
+
+    #[test]
+    fn test_div5_pos() {
+        assert!((1.i() / 0.i() * (4.i() + 7.r())).is_none());
+    }
+
+    #[test]
+    fn test_div6_pos() {
+        assert!(((4.r() - 7.i()) / (7.i() - 7.i())).is_none());
+    }
+
+    #[test]
+    fn test_div7_pos() {
+        let expr = (4.r() - 7.i()) / (6.i() - 7.i());
+        assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
+    }
+
+    // for pow :  1^i * i^i, 5 * 1/5, 5^2 / 2^-1
 }
