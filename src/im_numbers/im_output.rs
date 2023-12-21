@@ -19,7 +19,8 @@ fn format_im_number(num: &[ImNumber]) -> String {
             format!("{}{}{}", plus, n.real, i)
         })
         .collect::<Vec<String>>()
-        .join("")
+        .concat()[1..]
+        .to_string()
 }
 
 pub(crate) fn format_im_expr(expr: &[ImExpression]) -> String {
@@ -27,19 +28,31 @@ pub(crate) fn format_im_expr(expr: &[ImExpression]) -> String {
 
     expr.iter()
         .map(|e| {
-            let mut pow = "".to_string();
+            let pow = &mut "".to_string();
             if !e.real_pow().is_some_and(|n| n == 1.0) {
-                if e.pow.len() > 1 { pow = ["(", &format_im_number(&e.pow)[1..], ")"].join("") }
-                pow = ["^", &pow].join("");
+                if e.pow.len() > 1 {
+                    *pow = ["(", &format_im_number(&e.pow), ")"].concat()
+                } else {
+                    *pow = format_im_number(&e.pow)
+                }
+                *pow = ["^", &pow].concat();
             }
 
-            let mut mul = "".to_string();
-            if !e.real_mul().is_some_and(|n| n == 1.0) && e.mul.len() > 1 {
-                mul = ["(", &format_im_number(&e.mul)[1..], ")"].join("")
+            let mul = &mut "".to_string();
+            if !e.real_mul().is_some_and(|n| n == 1.0) {
+                if e.mul.len() > 1 {
+                    *mul = ["(", &format_im_number(&e.mul), ")"].concat()
+                } else {
+                    *mul = format_im_number(&e.mul)
+                }
             }
 
-            let mut base = "".to_string();
-            if e.base.len() > 1 { base = ["(", &format_im_number(&e.base)[1..], ")"].join("") }
+            let base = &mut "".to_string();
+            if e.base.len() > 1 {
+                *base = ["(", &format_im_number(&e.base), ")"].concat()
+            } else {
+                *base = format_im_number(&e.base)
+            }
 
             format!("{}{}{}", mul, base, pow)
         })
@@ -59,25 +72,6 @@ impl PartialEq for ImOutput {
     }
 }
 
-// impl Neg for ImOutput {
-//     type Output = Self;
-//
-//     // This is only used to create variables in outer API.
-//     fn neg(self) -> Self::Output {
-//         let mut im_num= ImNumber::default();
-//
-//         if let Some(real) = self.exprs.first().unwrap().real_base() &&
-//            let Some(im_pow) = self.exprs.first().unwrap().im_base()
-//         {
-//             im_num.real = real;
-//             im_num.im_pow = im_pow;
-//         }
-//         let expr_one = ImNumber::new(1.0, 0.0);
-//         let im_expr = ImExpression { base: vec![im_num], pow: vec![expr_one.clone()], mul: vec![expr_one] };
-//         ImOutput { exprs: vec![im_expr] }
-//     }
-// }
-
 impl Add for ImOutput {
     type Output = Self;
 
@@ -95,7 +89,6 @@ impl Add for ImOutput {
             });
         }
         self.exprs = exprs;
-        self.clean();
         self
     }
 }
@@ -117,7 +110,6 @@ impl Sub for ImOutput {
             });
         }
         self.exprs = exprs;
-        self.clean();
         self
     }
 }
@@ -169,27 +161,6 @@ impl Div for ImOutput {
 }
 
 impl ImOutput {
-    pub(crate) fn clean(&mut self) {
-        while let Some((i, _)) = self.exprs.iter()
-            .enumerate()
-            .find(|(_, n)|
-                if let Some(m) = n.mul.first() && n.mul.len() > 1 {
-                    m.real == 0.0
-                } else {false} )
-        {
-            self.exprs.remove(i);
-        }
-
-        let mut c = 0;
-        while c < self.exprs.len()
-        {
-            if let Some(e) = self.exprs.get(c) && e.base.is_empty() {
-                self.exprs.remove(c);
-            }
-            c += 1;
-        }
-    }
-
     pub fn is_zero(&self) -> bool {
         self.exprs.is_empty() || self.exprs.first().is_some_and(|e| e.is_base_zero())
     }

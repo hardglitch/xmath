@@ -54,18 +54,15 @@ pub(crate) mod test_im_numbers {
     }
 
     #[test]
-    fn test_expr_cleaner1_pos() {
-        let mut expr = 0.r();
-        expr.clean();
+    fn test_expr_is_zero1_pos() {
+        let expr = 0.r();
         assert!(expr.is_zero());
     }
 
     #[test]
-    fn test_expr_cleaner1_neg() {
-        let mut expr = 1.r();
-        expr.clean();
-        let test_res = ImOutput { exprs: vec![] };
-        assert_ne!(expr, test_res);
+    fn test_expr_is_zero1_neg() {
+        let expr = 1.r();
+        assert!(!expr.is_zero());
     }
 
     #[test]

@@ -178,6 +178,7 @@ impl ImExpression {
             }
         }
 
+        if elems_mut.is_empty() { elems_mut.push(ImNumber { real: 0.0, im_pow: 0.0 }) }
         self.base = elems_mut;
     }
 
@@ -232,6 +233,7 @@ impl ImExpression {
             }
         }
 
+        if elems_mut.is_empty() { elems_mut.push(ImNumber { real: 0.0, im_pow: 0.0 }) }
         self.base = elems_mut;
     }
 
@@ -319,6 +321,7 @@ impl ImExpression {
             }
         }
 
+        if elems_mut.is_empty() { elems_mut.push(ImNumber { real: 0.0, im_pow: 0.0 }) }
         self.base = elems_mut;
         self.collect();
     }
@@ -408,7 +411,9 @@ impl ImExpression {
             }
         }
 
+        if elems_mut.is_empty() { elems_mut.push(ImNumber { real: 0.0, im_pow: 0.0 }) }
         self.base = elems_mut;
+        self.collect();
         Ok(())
     }
 }
