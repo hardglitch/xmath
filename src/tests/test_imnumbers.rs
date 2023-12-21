@@ -620,4 +620,14 @@ pub(crate) mod test_im_numbers {
         let expr = (1.r() + 2.i()) * (3.r() + 1.i()) + 4.i() - (4.i() + 6.r()); // 7i - 5
         assert_eq!("(7i-5)", format_im_expr(expr.exprs.as_slice()));
     }
+
+    #[test]
+    fn test_div1_pos() {
+        assert_eq!(1.i() / 1.i(), 1.r());
+    }
+
+    #[test]
+    fn test_div2_pos() {
+        assert_eq!((-1).i() / 1.i(), (-1).r());
+    }
 }

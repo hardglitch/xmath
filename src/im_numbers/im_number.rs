@@ -25,4 +25,8 @@ impl ImNumber {
     pub(crate) fn is_real(&self) -> bool {
         self.im_pow == 0.0
     }
+
+    pub(crate) fn is_equal_by_abs(&self, other: &Self) -> bool {
+        self.real.abs() == other.real.abs() && self.im_pow == other.im_pow
+    }
 }

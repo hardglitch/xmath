@@ -10,7 +10,8 @@ fn main() {
     // let expr = (1.0.cast() + i_2i) * (i_1i.clone() + i_1i); // 2i - 4
     // let expr = (2.i() + 1.r()) * (3.r() + 1.i()); // 7i - 1
     // let expr = (1.r() + 2.i()) * (3.r() + 1.i()) + 4.i() - (4.i() + 6.r()); // 7i - 5
-    let expr = 1.r() * (2.i() - 2.i()) * 5.r() - (2.i() + 5.r()) * 2.i(); // 4 - 10i
+    // let expr = 1.r() * (2.i() - 2.i()) * 5.r() - (2.i() + 5.r()) * 2.i(); // 4 - 10i
+    let expr = 1.i() / 1.i();
     // dbg!(expr);
     println!("{}", expr);
 }
