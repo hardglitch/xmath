@@ -1,5 +1,4 @@
 use std::fmt::{Debug, Display, Formatter};
-use std::mem::swap;
 use std::ops::{Add, Div, Mul, Sub};
 use crate::im_numbers::im_expression::{ImExpression, Sign};
 use crate::im_numbers::im_number::ImNumber;
@@ -58,27 +57,35 @@ pub(crate) fn format_im_expr(expr: &[ImExpression]) -> String {
                 }
             }
 
-            let mul = &mut "".to_string();
-            if !e.real_mul().is_some_and(|n| n == 1.0) && let Some(m) = &e.mul {
-                if e.is_mul_len_big() {
-                    *mul = ["(", &format_im_number(&m.base), ")"].concat()
-                } else {
-                    *mul = format_im_number(&m.base)
-                }
-            }
-
             let base = &mut "".to_string();
             if e.is_base_len_big() {
                 *base = ["(", &format_im_number(&e.base), ")"].concat();
-                swap(mul, div);
+                // swap(mul, div);
             } else {
                 *base = format_im_number(&e.base)
+            }
+
+            let mul = &mut "".to_string();
+            if let Some(m) = &e.mul {
+                if e.is_mul_len_big() {
+                    *mul = ["(", &format_im_number(&m.base), ")"].concat()
+                } else if e.real_mul().is_some_and(|n| n != 1.0) {
+                    *mul = format_im_number(&m.base)
+                }
+                if let Some(m) = &e.mul &&
+                   let Some(p) = &m.pow &&
+                    (p.base.first().is_some_and(|n| n.real < 0.0) ||
+                     p.mul.as_ref().is_some_and(|e|
+                         e.base.first().is_some_and(|n| n.real < 0.0))) {
+                    *div = "/".to_string();
+                    return format!("{}{}{}{}", base, pow, div, mul)
+                }
             }
 
             format!("{}{}{}{}", mul, div, base, pow)
         })
         .collect::<Vec<String>>()
-        .join("")
+        .concat()
 }
 
 impl Display for Im {

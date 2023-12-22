@@ -363,5 +363,12 @@ pub(crate) mod test_im_numbers {
         assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
     }
 
+    #[test]
+    fn test_div8_pos() {
+        let expr = (4.r() - 7.i()) / (6.r() - 7.i());
+        assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
+    }
+
+
     // for pow :  1^i * i^i, 5 * 1/5, 5^2 / 2^-1
 }
