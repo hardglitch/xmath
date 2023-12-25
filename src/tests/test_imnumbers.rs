@@ -1,374 +1,577 @@
 #[cfg(test)]
 pub(crate) mod test_im_numbers {
-    use crate::im_numbers::cast::ImValue;
-    use crate::im_numbers::im_expression::ImExpression;
-    use crate::im_numbers::im_number::ImNumber;
-    use crate::im_numbers::im_output::{format_im_expr, Im};
 
-    #[test]
-    fn test_new_im_expr() {
-        ImExpression::new(1.0, 0.0);
+    #[cfg(test)]
+    mod test_let {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_let1_pos() {
+            let test_res = Im::new(1.0, 0.0);
+            assert_eq!(1.r(), test_res);
+        }
+
+        #[test]
+        fn test_let2_pos() {
+            let test_res = Im::new(-1.0, 0.0);
+            assert_eq!((-1.0).r(), test_res);
+        }
+
+        #[test]
+        fn test_let3_pos() {
+            let test_res = Im::new(2.0, 1.0);
+            assert_eq!(2.i(), test_res);
+        }
+
+        #[test]
+        fn test_let4_pos() {
+            let test_res = Im::new(-2.0, 1.0);
+            assert_eq!((-2).i(), test_res);
+        }
+
+        #[test]
+        fn test_let1_neg() {
+            let test_res = Im::new(-2.0, 1.0);
+            assert_ne!(2.i(), test_res);
+        }
     }
 
-    #[test]
-    fn test_pair_checker1_pos() {
-        let mut im_num = ImNumber { real: 1.0, im_pow: 1.0 };
-        im_num.pair_checker();
-        let test_res = ImNumber { real: 1.0, im_pow: 1.0 };
-        assert_eq!(im_num, test_res);
+    #[cfg(test)]
+    mod test_zero {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_expr_is_zero1_pos() {
+            assert!(0.r().is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero2_pos() {
+            assert!(0.i().is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero3_pos() {
+            let expr = 0.i() + 0.i();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero4_pos() {
+            let expr = 0.i() + 0.r();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero5_pos() {
+            let expr = 0.r() + 0.r();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero6_pos() {
+            let expr = 0.r() + 0.i();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero7_pos() {
+            let expr = (-1).r() + 1.r();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero8_pos() {
+            let expr = (-1).i() + 1.i();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero9_pos() {
+            let expr = Im::default();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_expr_is_zero1_neg() {
+            let expr = 0.i() + 1.r();
+            assert!(!expr.is_zero());
+        }
     }
 
-    #[test]
-    fn test_pair_checker2_pos() {
-        let mut im_num = ImNumber { real: 1.0, im_pow: 0.0 };
-        im_num.pair_checker();
-        let test_res = ImNumber { real: 1.0, im_pow: 0.0 };
-        assert_eq!(im_num, test_res);
+    #[cfg(test)]
+    mod test_pair_checker {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_pair_checker1_pos() {
+            let mut im_num = 1.i();
+            im_num.pair_checker();
+            let test_res = 1.i();
+            assert_eq!(im_num, test_res);
+        }
+
+        #[test]
+        fn test_pair_checker2_pos() {
+            let mut im_num = 1.r();
+            im_num.pair_checker();
+            let test_res = 1.r();
+            assert_eq!(im_num, test_res);
+        }
+
+        #[test]
+        fn test_pair_checker3_pos() {
+
+            let mut im_num = Im::new(1.0, 2.0);
+            im_num.pair_checker();
+            let test_res = (-1).r();
+            assert_eq!(im_num, test_res);
+        }
+
+        #[test]
+        fn test_pair_checker4_pos() {
+            let mut im_num = Im::new(3.0, 5.0);
+            im_num.pair_checker();
+            let test_res = (3).i();
+            assert_eq!(im_num, test_res);
+        }
+
+        #[test]
+        fn test_pair_checker5_pos() {
+            let mut im_num = Im::new(3.0, 4.0);
+            im_num.pair_checker();
+            let test_res = (3).r();
+            assert_eq!(im_num, test_res);
+        }
+
+        #[test]
+        fn test_pair_checker6_pos() {
+            let mut im_num = Im::new(-3.0, 3.0);
+            im_num.pair_checker();
+            let test_res = (3).i();
+            assert_eq!(im_num, test_res);
+        }
     }
 
-    #[test]
-    fn test_pair_checker3_pos() {
-        let mut im_num = ImNumber { real: 1.0, im_pow: 2.0 };
-        im_num.pair_checker();
-        let test_res = ImNumber { real: -1.0, im_pow: 0.0 };
-        assert_eq!(im_num, test_res);
+    #[cfg(test)]
+    mod test_neg {
+        use crate::im_numbers::cast::ImValue;
+
+        #[test]
+        fn test_neg1_pos() {
+            let mut expr = 1.i();
+            expr.neg();
+            let test_res = (-1).i();
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_neg2_pos() {
+            let mut expr = (-1).i();
+            expr.neg();
+            let test_res = (1).i();
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_neg3_pos() {
+            let mut expr = (-1).r();
+            expr.neg();
+            let test_res = (1).r();
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_neg4_pos() {
+            let mut expr = 1.r();
+            expr.neg();
+            let test_res = (-1).r();
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_neg1_neg() {
+            let mut expr = 1.i();
+            expr.neg();
+            let test_res = (-1).r();
+            assert_ne!(expr, test_res);
+        }
+
+        #[test]
+        fn test_neg2_neg() {
+            let mut expr = 1.r();
+            expr.neg();
+            let test_res = (-1).i();
+            assert_ne!(expr, test_res);
+        }
     }
 
-    #[test]
-    fn test_pair_checker4_pos() {
-        let mut im_num = ImNumber { real: 3.0, im_pow: 5.0 };
-        im_num.pair_checker();
-        let test_res = ImNumber { real: 3.0, im_pow: 1.0 };
-        assert_eq!(im_num, test_res);
+    #[cfg(test)]
+    mod test_abs {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Sign;
+
+        #[test]
+        fn test_abs1_pos() {
+            let sign = 1.r().is_equal_by_abs(&(-1).r());
+            assert_eq!(sign, Sign::Minus);
+        }
+
+        #[test]
+        fn test_abs2_pos() {
+            let sign = 1.r().is_equal_by_abs(&(1).r());
+            assert_eq!(sign, Sign::Plus);
+        }
+
+        #[test]
+        fn test_abs3_pos() {
+            let sign = 1.r().is_equal_by_abs(&(-2).r());
+            assert_eq!(sign, Sign::None);
+        }
     }
 
-    #[test]
-    fn test_pair_checker5_pos() {
-        let mut im_num = ImNumber { real: 3.0, im_pow: 4.0 };
-        im_num.pair_checker();
-        let test_res = ImNumber { real: 3.0, im_pow: 0.0 };
-        assert_eq!(im_num, test_res);
+    #[cfg(test)]
+    mod test_add {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_add1_pos() {
+            let expr = 1.i() + 2.i();
+            let test_res = Im::new(3.0, 1.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_add2_pos() {
+            let expr = 1.r() + 2.r();
+            let test_res = Im::new(3.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_add3_pos() {
+            let expr = 1.i() + 1.r();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(1.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(1.0, 0.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_add4_pos() {
+            let expr = 1.r() + 1.i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(1.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_add5_pos() {
+            let expr = 1.r() + (-1).i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(1.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_add6_pos() {
+            let expr = (-1).r() + (-1).i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(-1.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_add7_pos() {
+            let expr = 1.r() + 1.i() + 2.r();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(3.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_add8_pos() {
+            let expr = 1.i() + 1.r() + 2.i() + 2.r();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(3.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(3.0, 0.0));
+            assert_eq!(expr, test_res);
+        }
     }
 
-    #[test]
-    fn test_pair_checker6_pos() {
-        let mut im_num = ImNumber { real: 3.0, im_pow: 3.0 };
-        im_num.pair_checker();
-        let test_res = ImNumber { real: -3.0, im_pow: 1.0 };
-        assert_eq!(im_num, test_res);
+    #[cfg(test)]
+    mod test_sub {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_sub1_pos() {
+            let expr = 1.i() - 2.i();
+            let test_res = Im::new(-1.0, 1.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub2_pos() {
+            let expr = 1.r() - 2.r();
+            let test_res = Im::new(-1.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub3_pos() {
+            let expr = 1.i() - 1.r();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(1.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 0.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub4_pos() {
+            let expr = 1.r() - 1.i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(1.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub5_pos() {
+            let expr = 1.r() - (-1).i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(1.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub6_pos() {
+            let expr = (-1).r() - (-1).i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(-1.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub7_pos() {
+            let expr = 1.r() - 1.i() - 2.r();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(-1.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 1.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub8_pos() {
+            let expr = 1.i() - 1.r() - 2.i() - 2.r();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(-1.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-3.0, 0.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_sub9_pos() {
+            let expr = 1.i() - (-1).r() + 2.i() - 2.r() + (-1).i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(2.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 0.0));
+            assert_eq!(expr, test_res);
+        }
     }
 
-    #[test]
-    fn test_expr_is_zero1_pos() {
-        assert!(0.r().is_zero());
+    #[cfg(test)]
+    mod test_other {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_is_mixed_base_logic1_pos() {
+            let mut expr = Im::default();
+            expr.push_in_mixed_base(1.r());
+            expr.clear_mixed_base();
+            assert!(!expr.is_mixed_base_logic(&expr));
+        }
+
+        #[test]
+        fn test_is_mixed_base_logic1_neg() {
+            let expr = Im::default();
+            assert!(!expr.is_mixed_base_logic(&expr));
+        }
+
+        #[test]
+        fn test_collect1_pos() {
+            let mut expr = Im::default();
+            expr.push_in_mixed_base(Im::new(1.0, 1.0));
+            expr.push_in_mixed_base(Im::new(1.0, 0.0));
+            expr.push_in_mixed_base(Im::new(-1.0, 0.0));
+            expr.push_in_mixed_base(Im::new(1.0, 1.0));
+            unsafe { expr.collect(); }
+            assert_eq!(expr, 2.i());
+        }
+
     }
 
-    #[test]
-    fn test_expr_is_zero1_neg() {
-        assert!(!1.r().is_zero());
+    #[cfg(test)]
+    mod test_mul {
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_mul1_pos() {
+            let expr = 2.i() * (-1).i();
+            let test_res = Im::new(2.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_mul2_pos() {
+            let expr = 2.i() * 1.i();
+            let test_res = Im::new(-2.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_mul3_pos() {
+            let expr = 2.i() * (-1).i() * 2.i() * 2.i();
+            let test_res = Im::new(-8.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_mul4_pos() {
+            let expr = 2.i() * 2.r();
+            let test_res = Im::new(4.0, 1.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_mul5_pos() {
+            let expr = 2.r() * (-2.0).r();
+            let test_res = Im::new(-4.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_mul6_pos() {
+            let expr = (2.i() + 1.r()) * 2.i();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(2.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-4.0, 0.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_mul7_pos() {
+            let expr = (2.i() - 1.r()) * 2.i() + 2.r();
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(-2.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-2.0, 0.0));
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_mul8_pos() {
+            let expr = (2.i() - 2.r()) * 2.i() + 4.r() + 4.i();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_mul9_pos() {
+            let expr = 0.r() * (-2.0).r();
+            assert!(expr.is_zero());
+        }
+
+        #[test]
+        fn test_mul10_pos() {
+            let expr = 0.r() * (-2.0).r() * 2.i();
+            assert!(expr.is_zero());
+        }
+
+
+        #[test]
+        fn test_mul11_pos() {
+            let expr = (1.r() + 1.i()) * (1.i() + 1.r());
+            assert_eq!(expr, 2.i());
+        }
+
+        #[test]
+        fn test_mul12_pos() {
+            let expr1 = (1.r() + 2.i()) * (3.r() + 1.i()); // 1 + 7i
+            let expr2 = 4.i() - (4.i() + 6.r()); // 6
+            let mut test_res = Im::default();
+            test_res.push_in_mixed_base(Im::new(7.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(7.0, 1.0));
+            assert_eq!(expr1 + expr2, test_res);
+        }
     }
 
-    #[test]
-    fn test_imnum_let1_pos() {
-        let test_res = Im::new(1.0, 0.0);
-        assert_eq!(1.r(), test_res);
-    }
-
-    #[test]
-    fn test_imnum_let2_pos() {
-        let test_res = Im::new(-1.0, 0.0);
-        assert_eq!((-1.0).r(), test_res);
-    }
-
-    #[test]
-    fn test_imnum_let3_pos() {
-        let test_res = Im::new(2.0, 1.0);
-        assert_eq!(2.i(), test_res);
-    }
-
-    #[test]
-    fn test_imnum_let4_pos() {
-        let test_res = Im::new(-2.0, 1.0);
-        assert_eq!((-2).i(), test_res);
-    }
-
-    #[test]
-    fn test_imnum_let1_neg() {
-        let test_res = Im::new(-2.0, 1.0);
-        assert_ne!(2.i(), test_res);
-    }
-
-    #[test]
-    fn test_imnum_add1_pos() {
-        let expr = 1.i() + 2.i();
-        let test_res = Im::new(3.0, 1.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_add2_pos() {
-        let expr = 1.r() + 2.r();
-        let test_res = Im::new(3.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_add3_pos() {
-        let expr = 1.i() + 1.r();
-        let test_res = Im {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 1.0, im_pow: 1.0 }, ImNumber { real: 1.0, im_pow: 0.0 }],
-                    pow: Default::default(),
-                    mul: Default::default(),
-                }
-            ]
-        };
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_add4_pos() {
-        let expr = 1.r() + 1.i();
-        let test_res = Im {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 1.0, im_pow: 0.0 }, ImNumber { real: 1.0, im_pow: 1.0 }],
-                    pow: Default::default(),
-                    mul: Default::default(),
-                }
-            ]
-        };
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_add5_pos() {
-        let expr = 1.r() + (-1).i();
-        let test_res = Im {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 1.0, im_pow: 0.0 }, ImNumber { real: -1.0, im_pow: 1.0 }],
-                    pow: Default::default(),
-                    mul: Default::default(),
-                }
-            ]
-        };
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_add6_pos() {
-        let expr = (-1).i() - 1.i();
-        let test_res = Im::new(-2.0, 1.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_sub1_pos() {
-        let expr = 2.i() - 1.i();
-        let test_res = Im::new(1.0, 1.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_sub2_pos() {
-        let expr = 1.i() - 2.i();
-        let test_res = Im::new(-1.0, 1.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_sub3_pos() {
-        let expr = 2.i() - (-1).i();
-        let test_res = Im::new(3.0, 1.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_sub4_pos() {
-        let expr = (-1).r() - 2.i() - (-1).i();
-        let test_res = Im {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: -1.0, im_pow: 0.0 }, ImNumber { real: -1.0, im_pow: 1.0 }],
-                    pow: Default::default(),
-                    mul: Default::default(),
-                }
-            ]
-        };
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_sub5_pos() {
-        let expr = 2.i() - (1.0).r();
-        let test_res = Im {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 2.0, im_pow: 1.0 }, ImNumber { real: -1.0, im_pow: 0.0 }],
-                    pow: Default::default(),
-                    mul: Default::default(),
-                }
-            ]
-        };
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_sub6_pos() {
-        let expr = (2.i() - (1.0).r()) - 2.i();
-        let test_res = Im::new(-1.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul1_pos() {
-        let expr = 2.i() * (-1).i();
-        let test_res = Im::new(2.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul2_pos() {
-        let expr = 2.i() * 1.i();
-        let test_res = Im::new(-2.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul3_pos() {
-        let expr = 2.i() * (-1).i() * 2.i() * 2.i();
-        let test_res = Im::new(-8.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul4_pos() {
-        let expr = 2.i() * 2.r();
-        let test_res = Im::new(4.0, 1.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul5_pos() {
-        let expr = 2.r() * (-2.0).r();
-        let test_res = Im::new(-4.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul6_pos() {
-        let expr = (2.i() + 1.r()) * 2.i();
-        let test_res = Im {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: 2.0, im_pow: 1.0 }, ImNumber { real: -4.0, im_pow: 0.0 }],
-                    pow: Default::default(),
-                    mul: Default::default(),
-                }
-            ]
-        };
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul7_pos() {
-        let expr = (2.i() - 1.r()) * 2.i() + 2.r();
-        let test_res = Im {
-            exprs: vec![
-                ImExpression {
-                    base: vec![ImNumber { real: -2.0, im_pow: 1.0 }, ImNumber { real: -2.0, im_pow: 0.0 }],
-                    pow: Default::default(),
-                    mul: Default::default(),
-                }
-            ]
-        };
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_imnum_mul8_pos() {
-        let expr = (2.i() - 2.r()) * 2.i() + 4.r() + 4.i();
-        assert!(expr.is_zero());
-    }
-
-    #[test]
-    fn test_imnum_mul9_pos() {
-        let expr = 0.r() * (-2.0).r();
-        assert!(expr.is_zero());
-    }
-
-    #[test]
-    fn test_imnum_mul10_pos() {
-        let expr = 0.r() * (-2.0).r() * 2.i();
-        assert!(expr.is_zero());
-    }
-
-    #[test]
-    fn test_imnum_mul11_pos() {
-        let expr = 5.r() * 1.r()/5.r();
-        let test_res = Im::new(1.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_collect1_pos() {
-        let expr = (1.r() + 2.i()) * (3.r() + 1.i()) + 4.i() - (4.i() + 6.r());
-        assert_eq!("(7i-5)", format_im_expr(expr.exprs.as_slice()));
-    }
-
-    #[test]
-    fn test_div1_pos() {
-        let expr = 1.i() / 1.i();
-        let test_res = Im::new(1.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_div2_pos() {
-        let expr = (-1).i() / 1.i();
-        let test_res = Im::new(-1.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_div3_pos() {
-        let expr = 0.i() / 1.i();
-        let test_res = Im::new(0.0, 0.0);
-        assert_eq!(expr, test_res);
-    }
-
-    #[test]
-    fn test_div4_pos() {
-        let expr = 1.i() / 0.i();
-        assert!(expr.is_none());
-    }
-
-    #[test]
-    fn test_div5_pos() {
-        let expr = 1.i() / 0.i() * (4.i() + 7.r());
-        assert!(expr.is_none());
-    }
-
-    #[test]
-    fn test_div6_pos() {
-        let expr = (4.r() - 7.i()) / (7.i() - 7.i());
-        assert!(expr.is_none());
-    }
-
-    #[test]
-    fn test_div7_pos() {
-        let expr = (4.r() - 7.i()) / (6.i() - 7.i());
-        assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
-    }
-
-    #[test]
-    fn test_div8_pos() {
-        let expr = (4.r() - 7.i()) / (6.r() - 7.i());
-        assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
-    }
-
-
-    // for pow :  1^i * i^i, 5 * 1/5, 5^2 / 2^-1
+//     #[test]
+//     fn test_div1_pos() {
+//         let expr = 1.i() / 1.i();
+//         let test_res = Im::new(1.0, 0.0);
+//         assert_eq!(expr, test_res);
+//     }
+//
+//     #[test]
+//     fn test_div2_pos() {
+//         let expr = (-1).i() / 1.i();
+//         let test_res = Im::new(-1.0, 0.0);
+//         assert_eq!(expr, test_res);
+//     }
+//
+//     #[test]
+//     fn test_div3_pos() {
+//         let expr = 0.i() / 1.i();
+//         let test_res = Im::new(0.0, 0.0);
+//         assert_eq!(expr, test_res);
+//     }
+//
+//     #[test]
+//     fn test_div4_pos() {
+//         let expr = 1.i() / 0.i();
+//         assert!(expr.is_none());
+//     }
+//
+//     #[test]
+//     fn test_div5_pos() {
+//         let expr = 1.i() / 0.i() * (4.i() + 7.r());
+//         assert!(expr.is_none());
+//     }
+//
+//     #[test]
+//     fn test_div6_pos() {
+//         let expr = (4.r() - 7.i()) / (7.i() - 7.i());
+//         assert!(expr.is_none());
+//     }
+//
+//     #[test]
+//     fn test_div7_pos() {
+//         let expr = (4.r() - 7.i()) / (6.i() - 7.i());
+//         assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
+//     }
+//
+//     #[test]
+//     fn test_div8_pos() {
+//         let expr = (4.r() - 7.i()) / (6.r() - 7.i());
+//         assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
+//     }
+//
+//     #[test]
+//     fn test_mul11_pos() {
+//         let expr = 5.r() * 1.r()/5.r();
+//         let test_res = Im::new(1.0, 0.0);
+//         assert_eq!(expr, test_res);
+//     }
+//     // for pow :  1^i * i^i, 5 * 1/5, 5^2 / 2^-1
 }

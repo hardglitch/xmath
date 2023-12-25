@@ -1,13 +1,8 @@
 use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Add, Div, Mul, Sub};
-use crate::im_numbers::im_expression::{ImExpression, Sign};
+use crate::im_numbers::core::{ImExpression, Sign};
 use crate::im_numbers::im_number::ImNumber;
 
-
-#[derive(Debug, Clone, Default)]
-pub struct Im {
-    pub(crate) exprs: Vec<ImExpression>,
-}
 
 fn format_im_number(num: &[ImNumber]) -> String {
     num.iter()
@@ -100,54 +95,6 @@ impl PartialEq for Im {
     }
 }
 
-impl Add for Im {
-    type Output = Self;
-
-    fn add(mut self, mut rhs: Self) -> Self {
-        if self.is_none() { return self }
-        if rhs.is_none() { return rhs }
-
-        let mut exprs = Vec::<ImExpression>::new();
-        while let Some(e2) = rhs.exprs.pop().as_mut() {
-            self.exprs.iter_mut().for_each(|e1| unsafe {
-                if e1.pow == e2.pow {
-                    e1.add(e2);
-                    exprs.push(e1.clone());
-                } else {
-                    exprs.push(e1.clone());
-                    exprs.push(e2.clone());
-                }
-            });
-        }
-        self.exprs = exprs;
-        self
-    }
-}
-
-impl Sub for Im {
-    type Output = Self;
-
-    fn sub(mut self, mut rhs: Self) -> Self {
-        if self.is_none() { return self }
-        if rhs.is_none() { return rhs }
-
-        let mut exprs = Vec::<ImExpression>::new();
-        while let Some(e2) = rhs.exprs.pop().as_mut() {
-            self.exprs.iter_mut().for_each(|e1| unsafe {
-                if e1.pow == e2.pow {
-                    e1.sub(e2);
-                    exprs.push(e1.clone());
-                } else {
-                    exprs.push(e1.clone());
-                    exprs.push(e2.clone());
-                }
-            });
-        }
-        self.exprs = exprs;
-        self
-    }
-}
-
 impl Mul for Im {
     type Output = Self;
 
@@ -192,7 +139,7 @@ impl Div for Im {
                     if let Some(p) = &mut e2.pow {
                         p.neg();
                     } else {
-                        e2.pow = Some(Box::from(ImExpression::new(-1.0, 0.0)))
+                        e2.pow = Some(Box::new(ImExpression::new(-1.0, 0.0)))
                     }
                     if let Some(m) = &mut e1.mul {
                         m.mul(e2)
@@ -205,19 +152,5 @@ impl Div for Im {
         }
         self.exprs = exprs;
         self
-    }
-}
-
-impl Im {
-    pub(crate) fn new(real: f64, im_pow: f64) -> Self {
-        Im { exprs: vec![ ImExpression::new(real, im_pow) ] }
-    }
-
-    pub fn is_zero(&self) -> bool {
-        self.exprs.is_empty() ||
-        self.exprs.first().is_some_and(|e| e.is_base_zero() || e.is_mul_zero())
-    }
-    pub fn is_none(&self) -> bool {
-        self.exprs.is_empty()
     }
 }

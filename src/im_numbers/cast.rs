@@ -1,4 +1,4 @@
-use crate::im_numbers::im_output::Im;
+use crate::im_numbers::core::Im;
 
 pub trait ImValue<T> {
     fn r(self) -> T;
