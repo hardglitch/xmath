@@ -4,5 +4,6 @@ pub(crate) mod core;
 pub(crate) mod add;
 pub(crate) mod mul;
 pub(crate) mod sub;
-// pub(crate) mod div;
-// pub(crate) mod pow;
+pub(crate) mod div;
+pub(crate) mod pow;
+pub(crate) mod logic;

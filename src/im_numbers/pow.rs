@@ -1,45 +1,61 @@
-use crate::im_numbers::core::ImExpression;
+use crate::im_numbers::core::Im;
 
-impl ImExpression {
-        pub(crate) unsafe fn pow(&mut self, other: &mut Self) {
-        self.pair_checker();
-        other.pair_checker();
+impl Im {
+    pub fn pow(&mut self, mut rhs: Self) -> Self {
+        let rhs= &mut rhs;
 
-        if self.mixed_pow_zero_check(other) ||
-           self.real_mixed_base().is_some_and(|n| n == 1.0)
-        { return }
+        self.im_pow_fixer();
+        rhs.im_pow_fixer();
 
-        if  self.mixed_mul.is_none() &&
-            other.mixed_mul.is_none() &&
-            self.mixed_pow.is_none() &&
-            other.mixed_pow.is_none() &&
-            let Some(p) = other.real_mixed_base()
-        {
-            if let Some(b_mut) = self.real_mixed_base_mut() {
-                b_mut.real = b_mut.real.mixed_powf(p)
-            }
-            return
-        }
+        self.pow_logic(rhs);
 
-        else if self.mixed_pow.is_none() && self.mixed_mul.is_none() && other.is_im_value() {
-            self.mixed_pow = Some(Box::new(other.clone()))
-        }
+        self.pow_fixer();
+        self.mul_fixer();
+        self.simple_fixer();
 
-        else if self.is_im_value() {
-            if !other.is_im_value() && let Some(n) = other.real_mixed_base() && n.fract().abs() == 0.0 {
-                let mut stable = self.clone();
-                for _ in 0..(n as i64 - 1) {
-                    self.mixed_mul(&mut stable)
-                }
-            }
-            else if let Some(p) = &mut self.mixed_pow &&
-                    let Some(m) = &mut self.mixed_mul
-            {
-                p.mixed_mul(other);
-                m.mixed_mul(other)
-            }
-        }
-
+        self.clone()
     }
 
+    fn pow_logic(&mut self, rhs: &mut Self) {
+        if rhs.is_zero() {
+            *self = Im::new(1.0, 0.0);
+            return
+        }
+        if (rhs.is_real() && rhs.real == 1.0) ||
+           (self.is_real() && self.real == 1.0) ||
+            self.is_zero()
+        { return }
+
+        if rhs.is_real() && self.is_simple() {
+            self.real = self.real.powf(rhs.real);
+            if self.is_simple_im() {
+                self.im_pow = rhs.real;
+                self.im_pow_fixer();
+            }
+        }
+
+        else if self.is_simple() && rhs.is_simple_im() {
+            self.simple_to_mixed_base();
+            self.push_in_mixed_pow(rhs.clone())
+        }
+
+        else if self.is_mixed_base_only() {
+            if rhs.is_real() && rhs.real.fract() == 0.0 {
+                let stable = self.clone();
+                for _ in 0..(rhs.real.abs() - 1.0) as usize {
+                    *self = self.clone() * stable.clone();
+                }
+            }
+            else  {
+                self.push_in_mixed_pow(rhs.clone())
+            }
+        }
+
+        else if (self.is_mixed_pow_and_base_only() || self.is_mixed_all()) &&
+            let Some(v) = &mut self.mixed_pow &&
+            let Some(p) = v.first_mut()
+        {
+            *p = p.clone() * rhs.clone()
+        }
+    }
 }

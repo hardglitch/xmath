@@ -16,30 +16,38 @@ impl Sub for Im {
 
 impl Im {
     pub(crate) unsafe fn sub_core(&mut self, rhs: &mut Self) {
-        self.pair_checker();
-        rhs.pair_checker();
+        self.im_pow_fixer();
+        rhs.im_pow_fixer();
 
         self.sub_logic(rhs);
 
-        if self.is_mixed_base_simple() {
-            self.mixed_base_to_simple()
-        }
+        self.pow_fixer();
+        self.mul_fixer();
+        self.simple_fixer();
     }
 
     unsafe fn sub_logic(&mut self, rhs: &mut Self) {
-        if self.is_simple_logic(rhs) { self.sub_simple_logic(rhs) }
+        if self == rhs { self.sub_fast_logic() }
+        else if self.is_simple_logic(rhs) { self.sub_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.sub_mixed_base_logic(rhs) }
+        else if self.is_mixed_pow_logic(rhs) { self.sub_mixed_pow_logic(rhs) }
         else if self.is_mixed_mul_logic(rhs) { self.sub_mixed_mul_logic(rhs) }
     }
 
-    fn sub_simple_logic(&mut self, rhs: &mut Self) {
+    fn sub_fast_logic(&mut self) {
+        *self = Self::default();
+    }
 
-        if (self.is_real() && rhs.is_real()) || (self.is_simple_im() && rhs.is_simple_im()) {
+    unsafe fn sub_simple_logic(&mut self, rhs: &Self) {
+
+        // Sr - Sr , Si - Si
+        if self.is_sr_sr(rhs) || self.is_si_si(rhs) {
             self.real -= rhs.real;
             if self.real == 0.0 { *self = Self::default() }
         }
 
-        else if (self.is_real() && rhs.is_simple_im()) || (self.is_simple_im() && rhs.is_real()) {
+        // Sr - Si , Si - Sr
+        else if self.is_sr_si(rhs) || self.is_si_sr(rhs) {
             if self.is_zero() && rhs.is_zero() {
                 *self = Self::default()
             } else {
@@ -57,13 +65,17 @@ impl Im {
 
     unsafe fn sub_mixed_base_logic(&mut self, rhs: &mut Self) {
 
-        if (self.is_real() || self.is_simple_im()) && rhs.mixed_base.is_some() {
-            self.simple_to_mixed_base()
-        }
-        else if self.mixed_base.is_some() && (rhs.is_real() || rhs.is_simple_im()) {
-            rhs.simple_to_mixed_base()
+        // a - S
+        if self.is_a_s(rhs) {
+            rhs.simple_to_mixed_base();
         }
 
+        // S - a
+        else if self.is_s_a(rhs) {
+            self.simple_to_mixed_base();
+        }
+
+        // a - a
         Self::sub_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.real_mixed_base().is_some_and(|n| n == 0.0) {
@@ -71,28 +83,53 @@ impl Im {
         };
     }
 
+    unsafe fn sub_mixed_pow_logic(&mut self, rhs: &mut Self) {
+
+        // a^n + a , a^n + S , a^n + b , a^n + b^n , a^n1 + a^n2
+        if self.is_an_a(rhs) || self.is_an_s(rhs) || self.is_an_b(rhs) || self.is_an_bn(rhs) || self.is_an1_an2(rhs)
+        {
+            rhs.neg();
+            self.add_ass_mixed_base(rhs);
+        }
+
+        // a - a^n , S - a^n , b - a^n
+        else if self.is_a_an(rhs) || self.is_s_an(rhs) || self.is_b_an(rhs)
+        {
+            swap(self, rhs);
+            self.neg();
+            self.add_ass_mixed_base(rhs);
+        }
+    }
+
     unsafe fn sub_mixed_mul_logic(&mut self, rhs: &mut Self) {
-        if self.is_mixed_mul_variable(rhs) {
 
-            if self.mixed_mul.is_none() && rhs.mixed_mul.is_none() {
-                *self = Self::default();
-            }
+        // Ma^n - a^n
+        if self.is_man_an(rhs) {
+            self.sub_ass_mixed_mul(&mut Self::new(1.0, 0.0));
+        }
 
-            else if self.mixed_mul.is_none() && rhs.mixed_mul.is_some() {
-                swap(&mut self.mixed_mul, &mut rhs.mixed_mul);
-                self.neg();
-            }
+        // a^n - Ma^n
+        else if self.is_an_man(rhs) {
+            swap(self, rhs);
+            self.neg();
+            self.add_ass_mixed_mul(&mut Self::new(1.0, 0.0));
+        }
 
-            else if let Some(mut m1) = self.real_mixed_mul() &&
-                let Some(m2) = rhs.real_mixed_mul()
-            {
-                m1 -= m2;
-                if m1 == 0.0 { *self = Self::default() };
-            }
+        // Ma^n - S , Ma^n - a , Ma^n - b , Ma^n1 - Mb^n2 , Ma^n1 - b^n2 , Ma^n1 - Ma^n2
+        else if self.is_man_s(rhs) || self.is_man_a(rhs) || self.is_man_b(rhs) ||
+            self.is_man_mbn(rhs) || self.is_man_bn(rhs) || self.is_man_man(rhs)
+        {
+            rhs.neg();
+            self.add_ass_mixed_base(rhs);
+        }
 
-            else {
-                Self::sub_vec(&mut self.mixed_mul, &mut rhs.mixed_mul);
-            }
+        // S - Ma^n , b - Ma^n , Mb^n1 - Ma^n2 , a - Ma^n , b^n1 - Ma^n2
+        else if self.is_s_man(rhs) || self.is_b_man(rhs) || self.is_mbn_man(rhs) ||
+            self.is_a_man(rhs) || self.is_bn_man(rhs)
+        {
+            swap(self, rhs);
+            self.neg();
+            self.add_ass_mixed_base(rhs);
         }
     }
 
