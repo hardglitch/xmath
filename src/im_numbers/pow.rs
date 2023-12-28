@@ -16,7 +16,7 @@ impl Im {
         self.clone()
     }
 
-    fn pow_logic(&mut self, rhs: &mut Self) {
+    fn pow_logic(&mut self, rhs: &Self) {
         if rhs.is_zero() {
             *self = Im::new(1.0, 0.0);
             return

@@ -77,7 +77,7 @@ impl Im {
         // a * a
         Self::mul_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
-        if self.real_mixed_base().is_some_and(|n| n == 0.0) {
+        if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
             *self = Self::default()
         }
     }

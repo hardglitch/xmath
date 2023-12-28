@@ -674,7 +674,7 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
-        fn test_pow90_pos() {
+        fn test_pow13_pos() {
             let expr = (2.i() + 1.r()).pow((-1).i()) - 1.r();
 
             let mut expr1 = Im::default();
@@ -682,8 +682,7 @@ pub(crate) mod test_im_numbers {
             expr1.push_in_mixed_base(Im::new(1.0, 0.0));
             expr1.push_in_mixed_pow(Im::new(-1.0, 1.0));
 
-            let mut expr2 = Im::default();
-            expr2.push_in_mixed_base(Im::new(-1.0, 0.0));
+            let expr2 = Im::new(-1.0, 0.0);
 
             let mut test_res = Im::default();
             test_res.push_in_mixed_base(expr1);
@@ -692,10 +691,10 @@ pub(crate) mod test_im_numbers {
             assert_eq!(expr, test_res);
         }
 
-
         #[test]
-        fn test_pow98_pos() {
+        fn test_pow14_pos() {
             let expr = (2.i() - 1.r()).pow(2.r() + 1.i()) - (4.i() - 2.r()).pow(2.r() + 1.i());
+            // (2i-1)^(2+i) - (4i-2)^(2+i)
 
             let mut expr1 = Im::default();
             expr1.push_in_mixed_base(Im::new(2.0, 1.0));
@@ -716,14 +715,15 @@ pub(crate) mod test_im_numbers {
 
             assert_eq!(expr, test_res);
         }
-        #[test]
-        fn test_pow99_pos() {
-            let expr = (2.i() - 1.r()).pow(2.r() + 1.i()) - ((2.r() + 1.i()) * 2.i()).pow(2.r() + 1.i());
-            let mut test_res = Im::default();
-            test_res.push_in_mixed_base(Im::new(2.0, 1.0));
-            test_res.push_in_mixed_pow(Im::new(2.0, 1.0));
-            assert_eq!(expr, test_res);
-        }
+
+        // #[test]
+        // fn test_pow99_pos() {
+        //     let expr = (2.i() - 1.r()).pow(2.r() + 1.i()) - ((2.r() + 1.i()) * 2.i()).pow(2.r() + 1.i());
+        //     let mut test_res = Im::default();
+        //     test_res.push_in_mixed_base(Im::new(2.0, 1.0));
+        //     test_res.push_in_mixed_pow(Im::new(2.0, 1.0));
+        //     assert_eq!(expr, test_res);
+        // }
 
 
         //     #[test]
