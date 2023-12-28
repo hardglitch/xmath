@@ -1,22 +1,24 @@
 use crate::im_numbers::core::Im;
 
 impl Im {
-    pub fn pow(&mut self, mut rhs: Self) -> Self {
-        let rhs= &mut rhs;
+    pub fn pow(mut self, mut rhs: Self) -> Self {
+        // if self.is_none() { return self }
+        // if rhs.is_none() { return rhs }
 
+        unsafe { self.pow_core(&mut rhs); }
+        self
+    }
+
+    pub(crate) unsafe fn pow_core(&mut self, rhs: &mut Self) {
         self.im_pow_fixer();
         rhs.im_pow_fixer();
 
         self.pow_logic(rhs);
 
-        self.pow_fixer();
-        self.mul_fixer();
-        self.simple_fixer();
-
-        self.clone()
+        self.fixer_pack();
     }
 
-    fn pow_logic(&mut self, rhs: &Self) {
+    unsafe fn pow_logic(&mut self, rhs: &mut Self) {
         if rhs.is_zero() {
             *self = Im::new(1.0, 0.0);
             return
@@ -43,7 +45,7 @@ impl Im {
             if rhs.is_real() && rhs.real.fract() == 0.0 {
                 let stable = self.clone();
                 for _ in 0..(rhs.real.abs() - 1.0) as usize {
-                    *self = self.clone() * stable.clone();
+                    self.mul_core(&mut stable.clone());
                 }
             }
             else  {
@@ -52,10 +54,9 @@ impl Im {
         }
 
         else if (self.is_mixed_pow_and_base_only() || self.is_mixed_all()) &&
-            let Some(v) = &mut self.mixed_pow &&
-            let Some(p) = v.first_mut()
+            let Some(p) = self.simple_mixed_pow()
         {
-            *p = p.clone() * rhs.clone()
+            p.mul_core(rhs)
         }
     }
 }

@@ -110,7 +110,8 @@ impl Im {
     pub(crate) fn simple_to_mixed_base(&mut self) {
         if (self.is_real() || self.is_simple_im()) && !self.is_zero() {
             self.push_in_mixed_base(self.clone());
-            self.clear_simples();
+            self.real = 0.0;
+            self.im_pow = 0.0;
         }
     }
 
@@ -120,11 +121,6 @@ impl Im {
                 *self = Self::new(r, i);
             }
         }
-    }
-
-    pub(crate) fn clear_simples(&mut self) {
-        self.real = 0.0;
-        self.im_pow = 0.0;
     }
 
     pub(crate) unsafe fn neg(&mut self) {
@@ -150,6 +146,39 @@ impl Im {
         {
             m.mul_core(&mut Self::new(-1.0, 0.0))
         }
+    }
+
+    pub(crate) unsafe fn pow_neg(&mut self) -> Option<()> {
+        if self.is_zero() { return None }
+
+        if self.is_simple() || self.is_mixed_base_only() {
+            let mut expr = Self::new(1.0, 0.0);
+            if expr.div_core(self).is_none() { return None }
+            *self = expr;
+        }
+
+        else if self.is_mixed_pow_and_base_only() &&
+            let Some(p) = self.simple_mixed_pow()
+        {
+            p.mul_core(&mut Self::new(-1.0, 0.0));
+        }
+
+        else if self.is_mixed_all()
+        {
+            if let Some(p) = self.simple_mixed_pow() {
+                p.mul_core(&mut Self::new(-1.0, 0.0));
+            }
+
+            if let Some(m) = self.simple_mixed_mul() {
+                if let Some(mp) = m.simple_mixed_pow() {
+                    mp.mul_core(&mut Self::new(-1.0, 0.0))
+                } else {
+                    m.push_in_mixed_pow(Self::new(-1.0, 0.0))
+                }
+            }
+        }
+
+        Some(())
     }
 
     pub(crate) fn im_pow_fixer(&mut self) {
@@ -199,7 +228,9 @@ impl Im {
     }
 
     pub(crate) unsafe fn base_fixer(&mut self) {
-        if let Some(b) = self.simple_mixed_base()
+        if let Some(v) = &mut self.mixed_base && v.len() == 1 &&
+            let Some(b) = v.first_mut()
+
         {
             if b.is_zero() {
                 *self = Self::default()
@@ -207,32 +238,34 @@ impl Im {
 
             // b = 1 , m ;  p - ignored
             else if b.is_real() && b.real == 1.0 &&
-                let Some(m) = self.simple_mixed_mul()
+                let Some(v) = &mut self.mixed_mul && v.len() == 1 &&
+                    let Some(m) = v.first_mut()
             {
                 swap(b, m);
+                self.mixed_pow = None;
+                self.mixed_mul = None;
             }
 
             // b, p - real; m
-            else if b.is_real() &&
-                let Some(m) = self.simple_mixed_mul() && m.is_simple() &&
-                let Some(p) = self.simple_mixed_pow() && p.is_real()
+            else if let Some(v) = &mut self.mixed_mul && v.len() == 1 &&
+                    let Some(m) = v.first_mut() && m.is_simple() &&
+                    let Some(v) = &mut self.mixed_pow && v.len() == 1 &&
+                    let Some(p) = v.first_mut() && p.is_real()
             {
-                b.real = b.real.powf(p.real);
-                b.real *= m.real;
-                b.im_pow = m.im_pow;
-            }
+                if b.is_real() {
+                    b.real = b.real.powf(p.real);
+                    b.real *= m.real;
+                    b.im_pow = m.im_pow;
+                }
 
-            // p - real; b, m
-            else if b.is_simple() &&
-                let Some(m) = self.simple_mixed_mul() && m.is_simple() &&
-                let Some(p) = self.simple_mixed_pow() && p.is_real()
-            {
-                b.im_pow = p.real;
-                b.mul_core(m);
+                // p - real; b, m
+                else if b.is_simple() {
+                    b.im_pow = p.real;
+                    b.mul_core(m);
+                }
+                self.mixed_pow = None;
+                self.mixed_mul = None;
             }
-
-            self.mixed_pow = None;
-            self.mixed_mul = None;
         }
     }
 
