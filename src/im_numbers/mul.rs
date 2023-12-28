@@ -22,10 +22,7 @@ impl Im {
 
         self.mul_logic(rhs);
 
-        self.pow_fixer();
-        self.mul_fixer();
-        self.simple_fixer();
-
+        self.fixer_pack();
         unsafe { self.collect(); }
     }
 
@@ -71,7 +68,7 @@ impl Im {
             self.simple_to_mixed_base();
         }
 
-        // a * a
+        // a * a , a * x
         Self::mul_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
@@ -81,8 +78,8 @@ impl Im {
 
     unsafe fn mul_mixed_pow_logic(&mut self, rhs: &mut Self) {
 
-        // a^n * a , a^n * a^n , a^n1 * a^n2
-        if self.is_an_a(rhs) || self.is_an_an(rhs) || self.is_an1_an2(rhs)
+        // a^n * a , a^n * a^n , a^n * a^x
+        if self.is_an_a(rhs) || self.is_an_an(rhs) || self.is_an_ax(rhs)
         {
             self.add_ass_mixed_pow(rhs);
         }
@@ -94,13 +91,13 @@ impl Im {
             self.add_ass_mixed_pow(rhs);
         }
 
-        // a^n * S , a^n * b , a^n * b^n (any n)
-        else if self.is_an_s(rhs) || self.is_an_b(rhs) || self.is_an_bn(rhs) {
+        // a^n * S , a^n * x , a^n * x^x
+        else if self.is_an_s(rhs) || self.is_an_x(rhs) || self.is_an_xx(rhs) {
             self.mul_ass_mixed_mul(rhs);
         }
 
-        // S * a^n , b * a^n
-        else if self.is_s_an(rhs) || self.is_b_an(rhs) {
+        // S * a^n , x * a^n
+        else if self.is_s_an(rhs) || self.is_x_an(rhs) {
             swap(self, rhs);
             self.mul_ass_mixed_mul(rhs);
         }
@@ -108,30 +105,30 @@ impl Im {
 
     unsafe fn mul_mixed_mul_logic(&mut self, rhs: &mut Self) {
 
-        // Ma^n * S , Ma^n * b , Ma^n * Mb^n
-        if self.is_man_s(rhs) || self.is_man_b(rhs) || self.is_man_mbn(rhs) {
+        // Ma^n * S , Ma^n * x , Ma^n * x^x , Ma^n * Xx^x
+        if self.is_man_s(rhs) || self.is_man_x(rhs) || self.is_man_xx(rhs) || self.is_man_xxx(rhs) {
             self.mul_ass_mixed_mul(rhs);
         }
 
-        // S * Ma^n , b * Ma^n
-        else if self.is_man_s(rhs) || self.is_man_b(rhs) {
+        // S * Ma^n , x * Ma^n , x^x * Ma^n
+        else if self.is_s_man(rhs) || self.is_x_man(rhs) || self.is_xx_man(rhs) {
             swap(self, rhs);
             self.mul_ass_mixed_mul(rhs);
         }
 
-        // Ma^n * a , Ma^n * a^n , Ma^n * b^n
-        else if self.is_man_a(rhs) || self.is_man_an(rhs) || self.is_man_bn(rhs) {
+        // Ma^n * a , Ma^n * a^n
+        else if self.is_man_a(rhs) || self.is_man_an(rhs) {
             self.add_ass_mixed_pow(rhs);
         }
 
-        // a * Ma^n , a^n * Ma^n , b^n * Ma^n
-        else if self.is_a_man(rhs) || self.is_an_man(rhs) || self.is_bn_man(rhs) {
+        // a * Ma^n , a^n * Ma^n
+        else if self.is_a_man(rhs) || self.is_an_man(rhs) {
             swap(self, rhs);
             self.add_ass_mixed_pow(rhs);
         }
 
-        // Ma^n * Ma^n , Ma^n1 * Ma^n2
-        else if self.is_man_man(rhs) || self.is_man1_man2(rhs) {
+        // Ma^n * Ma^n , Ma^n * Xa^x
+        else if self.is_man_man(rhs) || self.is_man_xax(rhs) {
             self.add_ass_mixed_pow(rhs);
             self.mul_ass_mixed_mul(rhs);
         }

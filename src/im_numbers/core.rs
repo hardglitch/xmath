@@ -47,6 +47,24 @@ impl Im {
         None
     }
 
+    pub(crate) fn simple_mixed_pow(&mut self) -> Option<&mut Self> {
+        if let Some(b) = &mut self.mixed_pow && b.len() == 1 &&
+            let Some(e) = b.first_mut()
+        {
+            return Some(e)
+        }
+        None
+    }
+
+    pub(crate) fn simple_mixed_mul(&mut self) -> Option<&mut Self> {
+        if let Some(b) = &mut self.mixed_mul && b.len() == 1 &&
+            let Some(e) = b.first_mut()
+        {
+            return Some(e)
+        }
+        None
+    }
+
     pub(crate) fn mixed_base_simple_values(&self) -> Option<(f64, f64)> {
         if let Some(b) = &self.mixed_base && b.len() == 1 &&
             let Some(e) = b.first()
@@ -74,10 +92,6 @@ impl Im {
             self.mixed_pow = Some(vec![expr]);
         }
     }
-
-    // pub(crate) fn set_mixed_pow(&mut self, real: f64, im_pow: f64) {
-    //     self.mixed_pow = Some(vec![Self::new(real, im_pow)])
-    // }
 
     pub(crate) fn push_in_mixed_mul(&mut self, expr: Self) {
         if let Some(v) = &mut self.mixed_mul &&
@@ -172,11 +186,53 @@ impl Im {
     }
 
     pub(crate) fn mul_fixer(&mut self) {
-        if let Some(v) = &mut self.mixed_pow &&
+        if let Some(v) = &mut self.mixed_mul &&
             let Some(m) = v.first_mut()
         {
-            if m.is_zero() { *self = Self::default() }
-            else if m.real == 1.0 { self.mixed_mul = None }
+            if m.is_zero() {
+                *self = Self::default()
+            }
+            else if m.is_real() && m.real == 1.0 {
+                self.mixed_mul = None
+            }
+        }
+    }
+
+    pub(crate) unsafe fn base_fixer(&mut self) {
+        if let Some(b) = self.simple_mixed_base()
+        {
+            if b.is_zero() {
+                *self = Self::default()
+            }
+
+            // b = 1 , m ;  p - ignored
+            else if b.is_real() && b.real == 1.0 &&
+                let Some(m) = self.simple_mixed_mul()
+            {
+                swap(b, m);
+            }
+
+            // b, p - real; m
+            else if b.is_real() &&
+                let Some(m) = self.simple_mixed_mul() && m.is_simple() &&
+                let Some(p) = self.simple_mixed_pow() && p.is_real()
+            {
+                b.real = b.real.powf(p.real);
+                b.real *= m.real;
+                b.im_pow = m.im_pow;
+            }
+
+            // p - real; b, m
+            else if b.is_simple() &&
+                let Some(m) = self.simple_mixed_mul() && m.is_simple() &&
+                let Some(p) = self.simple_mixed_pow() && p.is_real()
+            {
+                b.im_pow = p.real;
+                b.mul_core(m);
+            }
+
+            self.mixed_pow = None;
+            self.mixed_mul = None;
         }
     }
 
@@ -188,6 +244,13 @@ impl Im {
         }
     }
 
+    pub(crate) unsafe fn fixer_pack(&mut self) {
+        self.pow_fixer();
+        self.mul_fixer();
+        self.base_fixer();
+        self.simple_fixer();
+    }
+
     pub(crate) unsafe fn add_ass_mixed_pow(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_pow &&
             let Some(p1) = v1.first_mut()
@@ -196,27 +259,37 @@ impl Im {
                 let Some(p2) = v2.first_mut()
             {
                 p1.add_core(p2);
-                self.pow_fixer();
             }
-        } else {
+            else
+            {
+                p1.add_core(&mut Self::new(1.0, 0.0));
+            }
+            self.pow_fixer();
+        }
+        else {
             self.push_in_mixed_pow(rhs.clone());
         }
     }
 
-    // pub(crate) unsafe fn sub_ass_mixed_pow(&mut self, rhs: &mut Self) {
-    //     if let Some(v1) = &mut self.mixed_pow &&
-    //         let Some(p1) = v1.first_mut()
-    //     {
-    //         if let Some(v2) = &mut rhs.mixed_pow &&
-    //             let Some(p2) = v2.first_mut()
-    //         {
-    //             p1.sub_core(p2);
-    //             self.pow_fixer();
-    //         }
-    //     } else {
-    //         self.push_in_mixed_pow(rhs.clone());
-    //     }
-    // }
+    pub(crate) unsafe fn sub_ass_mixed_pow(&mut self, rhs: &mut Self) {
+        if let Some(v1) = &mut self.mixed_pow &&
+            let Some(p1) = v1.first_mut()
+        {
+            if let Some(v2) = &mut rhs.mixed_pow &&
+                let Some(p2) = v2.first_mut()
+            {
+                p1.sub_core(p2);
+            }
+            else
+            {
+                p1.sub_core(&mut Self::new(1.0, 0.0));
+            }
+            self.pow_fixer();
+        }
+        else {
+            self.push_in_mixed_pow(rhs.clone());
+        }
+    }
 
     // pub(crate) unsafe fn mul_ass_mixed_pow(&mut self, rhs: &mut Self) {
     //     if let Some(v1) = &mut self.mixed_pow &&
@@ -263,20 +336,20 @@ impl Im {
         }
     }
 
-    // pub(crate) unsafe fn div_ass_mixed_mul(&mut self, rhs: &mut Self) {
-    //     if let Some(v1) = &mut self.mixed_mul &&
-    //         let Some(m1) = v1.first_mut()
-    //     {
-    //         if let Some(v2) = &mut rhs.mixed_mul &&
-    //             let Some(m2) = v2.first_mut()
-    //         {
-    //             m1.div_core(m2);
-    //             self.mul_fixer();
-    //         }
-    //     } else {
-    //         self.push_in_mixed_mul(rhs.clone());
-    //     }
-    // }
+    pub(crate) unsafe fn div_ass_mixed_mul(&mut self, rhs: &mut Self) {
+        if let Some(v1) = &mut self.mixed_mul &&
+            let Some(m1) = v1.first_mut()
+        {
+            if let Some(v2) = &mut rhs.mixed_mul &&
+                let Some(m2) = v2.first_mut()
+            {
+                m1.div_core(m2);
+                self.mul_fixer();
+            }
+        } else {
+            self.push_in_mixed_mul(rhs.clone());
+        }
+    }
 
     pub(crate) unsafe fn add_ass_mixed_mul(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_mul &&

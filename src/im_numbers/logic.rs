@@ -111,18 +111,11 @@ impl Im {
     pub(crate) fn is_an_a(&self, rhs: &Self) -> bool {
         rhs.is_a_an(self)
     }
-    pub(crate) fn is_an_an(&self, rhs: &Self) -> bool {
-        rhs.is_mixed_pow_and_base_only() && self == rhs
+    pub(crate) fn is_a_xn(&self, rhs: &Self) -> bool {
+        self.is_mixed_base_only() && rhs.is_mixed_pow_and_base_only() && self.mixed_base != rhs.mixed_base
     }
-    pub(crate) fn is_an1_an2(&self, rhs: &Self) -> bool {
-        rhs.is_mixed_pow_and_base_only() && self.is_mixed_pow_and_base_only() &&
-        self.mixed_base == rhs.mixed_base && self.mixed_pow != rhs.mixed_pow
-    }
-    pub(crate) fn is_an_bn(&self, rhs: &Self) -> bool {
-        self.is_mixed_pow_and_base_only() && rhs.is_mixed_pow_and_base_only()
-    }
-    pub(crate) fn is_bn_an(&self, rhs: &Self) -> bool {
-        rhs.is_an_bn(self)
+    pub(crate) fn is_xn_a(&self, rhs: &Self) -> bool {
+        rhs.is_a_xn(self)
     }
     pub(crate) fn is_an_s(&self, rhs: &Self) -> bool {
         self.is_mixed_pow_and_base_only() && rhs.is_simple()
@@ -130,11 +123,22 @@ impl Im {
     pub(crate) fn is_s_an(&self, rhs: &Self) -> bool {
         rhs.is_an_s(self)
     }
-    pub(crate) fn is_an_b(&self, rhs: &Self) -> bool {
-        self.is_mixed_pow_and_base_only() && rhs.is_mixed_base_only()
+    pub(crate) fn is_an_x(&self, rhs: &Self) -> bool {
+        self.is_mixed_pow_and_base_only() && rhs.is_mixed_base_only() && self.mixed_base != rhs.mixed_base
     }
-    pub(crate) fn is_b_an(&self, rhs: &Self) -> bool {
-        rhs.is_an_b(self)
+    pub(crate) fn is_x_an(&self, rhs: &Self) -> bool {
+        rhs.is_an_x(self)
+    }
+    pub(crate) fn is_an_an(&self, rhs: &Self) -> bool {
+        rhs.is_mixed_pow_and_base_only() && self == rhs
+    }
+    pub(crate) fn is_an_ax(&self, rhs: &Self) -> bool {
+        rhs.is_mixed_pow_and_base_only() && self.is_mixed_pow_and_base_only() &&
+        self.mixed_base == rhs.mixed_base && self.mixed_pow != rhs.mixed_pow
+    }
+    pub(crate) fn is_an_xx(&self, rhs: &Self) -> bool {
+        self.is_mixed_pow_and_base_only() && rhs.is_mixed_pow_and_base_only() &&
+            self != rhs
     }
     pub(crate) fn is_man_s(&self, rhs: &Self) -> bool {
         self.is_mixed_all() && rhs.is_simple()
@@ -148,11 +152,11 @@ impl Im {
     pub(crate) fn is_a_man(&self, rhs: &Self) -> bool {
         rhs.is_man_a(self)
     }
-    pub(crate) fn is_man_b(&self, rhs: &Self) -> bool {
+    pub(crate) fn is_man_x(&self, rhs: &Self) -> bool {
         self.is_mixed_all() && rhs.is_mixed_base_only() && self.mixed_base != rhs.mixed_base
     }
-    pub(crate) fn is_b_man(&self, rhs: &Self) -> bool {
-        rhs.is_man_b(self)
+    pub(crate) fn is_x_man(&self, rhs: &Self) -> bool {
+        rhs.is_man_x(self)
     }
     pub(crate) fn is_man_an(&self, rhs: &Self) -> bool {
         self.is_mixed_all() && rhs.is_mixed_pow_and_base_only() &&
@@ -161,27 +165,28 @@ impl Im {
     pub(crate) fn is_an_man(&self, rhs: &Self) -> bool {
         rhs.is_man_an(self)
     }
-    pub(crate) fn is_man1_an2(&self, rhs: &Self) -> bool {
+    pub(crate) fn is_man_ax(&self, rhs: &Self) -> bool {
         self.is_mixed_all() && rhs.is_mixed_pow_and_base_only() &&
         self.mixed_base == rhs.mixed_base && self.mixed_pow != rhs.mixed_pow
     }
-    pub(crate) fn is_man_bn(&self, rhs: &Self) -> bool {
-        self.is_mixed_all() && rhs.is_mixed_pow_and_base_only() && self.mixed_base != rhs.mixed_base
+    pub(crate) fn is_ax_man(&self, rhs: &Self) -> bool {
+        rhs.is_man_ax(self)
     }
-    pub(crate) fn is_bn_man(&self, rhs: &Self) -> bool {
-        rhs.is_man_an(self)
+    pub(crate) fn is_man_xx(&self, rhs: &Self) -> bool {
+        self.is_mixed_all() && rhs.is_mixed_pow_and_base_only() &&
+        self.mixed_base != rhs.mixed_base && self.mixed_pow != rhs.mixed_pow
+    }
+    pub(crate) fn is_xx_man(&self, rhs: &Self) -> bool {
+        rhs.is_man_xx(self)
     }
     pub(crate) fn is_man_man(&self, rhs: &Self) -> bool {
         self.is_mixed_all() && self == rhs
     }
-    pub(crate) fn is_man1_man2(&self, rhs: &Self) -> bool {
-        self.is_mixed_all() && rhs.is_mixed_all() &&
-        self.mixed_base == rhs.mixed_base && self.mixed_pow != rhs.mixed_pow
+    pub(crate) fn is_man_xax(&self, rhs: &Self) -> bool {
+        self.is_mixed_all() && rhs.is_mixed_all() && self.mixed_base == rhs.mixed_base &&
+        self.mixed_mul != rhs.mixed_mul && self.mixed_pow != rhs.mixed_pow
     }
-    pub(crate) fn is_man_mbn(&self, rhs: &Self) -> bool {
-        self.is_mixed_all() && rhs.is_mixed_all() && self.mixed_base != rhs.mixed_base
-    }
-    pub(crate) fn is_mbn_man(&self, rhs: &Self) -> bool {
-        rhs.is_man_mbn(self)
+    pub(crate) fn is_man_xxx(&self, rhs: &Self) -> bool {
+        self.is_mixed_all() && rhs.is_mixed_all() && self != rhs
     }
 }

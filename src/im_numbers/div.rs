@@ -21,12 +21,8 @@ impl Im {
 
         self.div_logic(rhs)?;
 
-        self.pow_fixer();
-        self.mul_fixer();
-        self.simple_fixer();
-
+        self.fixer_pack();
         unsafe { self.collect(); }
-
         Some(())
     }
 
@@ -71,58 +67,112 @@ impl Im {
 
     unsafe fn div_mixed_base_logic(&mut self, rhs: &mut Self) -> Option<()> {
 
-        if rhs.is_real() && rhs.real == 1.0 { return Some(()) }
-
-        // a * S
+        // a / S
         if self.is_a_s(rhs) {
             rhs.simple_to_mixed_base();
         }
 
-        // S * a
+        // S / a
         else if self.is_s_a(rhs) {
             self.simple_to_mixed_base();
         }
 
-        // a * a
+        // a / x
         Self::div_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
             *self = Self::default()
         }
+
         Some(())
     }
 
     unsafe fn div_mixed_pow_logic(&mut self, rhs: &mut Self) -> Option<()> {
 
-            Self::add_vec(&mut self.mixed_pow, &mut rhs.mixed_pow);
+        // a^n / a , a^n / a^x
+        if self.is_an_a(rhs) || self.is_an_ax(rhs)
+        {
+            self.sub_ass_mixed_pow(rhs);
+        }
+
+        // a / a^n
+        else if self.is_a_an(rhs)
+        {
+            swap(self, rhs);
+            self.sub_ass_mixed_pow(rhs);
+        }
+
+        // a^n / S , a^n / x
+        else if self.is_an_s(rhs) || self.is_an_x(rhs) {
+            rhs.simple_to_mixed_base();
+            rhs.push_in_mixed_pow(Self::new(-1.0, 0.0));
+            self.push_in_mixed_mul(rhs.clone());
+        }
+
+        // S / a^n , x / a^n
+        else if self.is_s_an(rhs) || self.is_x_an(rhs) {
+            swap(self, rhs);
+            rhs.simple_to_mixed_base();
+            rhs.push_in_mixed_pow(Self::new(-1.0, 0.0));
+            self.push_in_mixed_mul(rhs.clone());
+        }
+
+        // a^n / x^x
+        else if self.is_an_xx(rhs) {
+            rhs.push_in_mixed_pow(Self::new(-1.0, 0.0));
+            rhs.push_in_mixed_mul(self.clone());
+            swap(self, rhs);
+        }
 
         Some(())
     }
 
     unsafe fn div_mixed_mul_logic(&mut self, rhs: &mut Self) -> Option<()> {
-        if self.is_simple() {
-            rhs.push_in_mixed_mul(Self::new(self.real, self.im_pow));
-            self.clear_simples();
+
+        // Ma^n / S
+        if self.is_man_s(rhs) {
+            rhs.simple_to_mixed_base();
+            rhs.push_in_mixed_pow(Self::new(-1.0, 0.0));
+            self.mul_ass_mixed_mul(rhs);
+        }
+
+        // S / Ma^n
+        else if self.is_s_man(rhs) {
             swap(self, rhs);
+            rhs.simple_to_mixed_base();
+            rhs.push_in_mixed_pow(Self::new(-1.0, 0.0));
+            self.mul_ass_mixed_mul(rhs);
         }
 
-        else if rhs.is_simple() {
-            self.push_in_mixed_mul(Self::new(rhs.real, rhs.im_pow));
-            rhs.clear_simples();
+        // Ma^n / a , Ma^n / a^n
+        else if self.is_man_a(rhs) || self.is_man_an(rhs) {
+            self.sub_ass_mixed_pow(rhs);
         }
 
-        else if rhs.is_mixed_pow_and_base_only() && self.mixed_base != rhs.mixed_base {
-            rhs.push_in_mixed_mul(self.clone());
+        // a / Ma^n , a^n / Ma^n
+        else if self.is_a_man(rhs) || self.is_an_man(rhs) {
             swap(self, rhs);
+            self.pow_neg();
+            self.sub_ass_mixed_pow(rhs);
         }
 
-        else if self.is_mixed_pow_and_base_only() && self.mixed_base != rhs.mixed_base {
-            self.push_in_mixed_mul(rhs.clone());
+        // Ma^n / b , Ma^n / b^n
+        else if self.is_man_b(rhs) || self.is_man_bn(rhs) {
+            self.sub_ass_mixed_pow(rhs);
         }
 
-        else if self == rhs {
+        // Ma^n / Xa^x , Ma^n / Xx^x
+        else if self.is_man1_man2(rhs) || self.is_man_mbn(rhs) {
+            self.add_ass_mixed_pow(rhs);
+            self.mul_ass_mixed_mul(rhs);
+        }
+
+        // b^n / Ma^n
+        else if self.is_bn_man(rhs) {
+            swap(self, rhs);
 
         }
+
         Some(())
     }
 
