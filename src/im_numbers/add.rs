@@ -50,13 +50,8 @@ impl Im {
 
         // Sr + Si , Si + Sr
         else if self.is_sr_si(rhs) || self.is_si_sr(rhs) {
-            if self.is_zero() && rhs.is_zero() {
-                *self = Self::default();
-            }
-            else {
-                self.simple_to_mixed_base();
-                self.push_in_mixed_base(rhs.clone());
-            }
+            self.simple_to_mixed_base();
+            self.push_in_mixed_base(rhs.clone());
         }
     }
 
