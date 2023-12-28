@@ -31,7 +31,7 @@ impl Im {
     }
 
     unsafe fn div_logic(&mut self, rhs: &mut Self) -> Option<()> {
-        if self.is_fast_logic(rhs) { self.div_fast_logic(rhs) }
+        if self.is_fast_logic1(rhs) { self.div_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.div_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.div_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.div_mixed_pow_logic(rhs) }
@@ -54,25 +54,15 @@ impl Im {
 
     fn div_simple_logic(&mut self, rhs: &Self) -> Option<()> {
 
-        if self.is_zero() {
-            *self = Self::default();
-            return Some(())
-        }
-        if rhs.is_zero() {
-            return None
-        }
-
         // Sr / Sr , Si / Si
         if self.is_sr_sr(rhs) || self.is_si_si(rhs) {
             self.real /= rhs.real;
             self.im_pow -= rhs.im_pow;
             if self.is_simple_im() { self.im_pow_fixer() }
-            if self.real == 0.0 { *self = Self::default() }
         }
 
         // Sr / Si , Si / Sr
         else if self.is_sr_si(rhs) || self.is_si_sr(rhs) {
-
             self.real /= rhs.real;
             if self.is_real() { self.im_pow = rhs.im_pow }
         }

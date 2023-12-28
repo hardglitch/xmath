@@ -27,7 +27,7 @@ impl Im {
     }
 
     unsafe fn add_logic(&mut self, rhs: &mut Self) {
-        if self.is_fast_logic(rhs) { self.add_fast_logic(rhs) }
+        if self.is_fast_logic2(rhs) { self.add_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.add_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.add_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.add_mixed_pow_logic(rhs) }
@@ -45,7 +45,7 @@ impl Im {
         // Sr + Sr , Si + Si
         if self.is_sr_sr(rhs) || self.is_si_si(rhs) {
             self.real += rhs.real;
-            if self.real == 0.0 { self.im_pow = 0.0 }
+            if self.real == 0.0 { *self = Self::default() }
         }
 
         // Sr + Si , Si + Sr
@@ -54,12 +54,8 @@ impl Im {
                 *self = Self::default();
             }
             else {
-                if !self.is_zero() {
-                    self.simple_to_mixed_base();
-                }
-                if !rhs.is_zero() {
-                    self.push_in_mixed_base(rhs.clone());
-                }
+                self.simple_to_mixed_base();
+                self.push_in_mixed_base(rhs.clone());
             }
         }
     }

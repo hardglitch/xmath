@@ -27,7 +27,7 @@ impl Im {
     }
 
     unsafe fn sub_logic(&mut self, rhs: &mut Self) {
-        if self.is_fast_logic(rhs) { self.sub_fast_logic(rhs) }
+        if self.is_fast_logic1(rhs) { self.sub_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.sub_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.sub_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.sub_mixed_pow_logic(rhs) }
@@ -44,7 +44,7 @@ impl Im {
         }
     }
 
-    unsafe fn sub_simple_logic(&mut self, rhs: &Self) {
+    unsafe fn sub_simple_logic(&mut self, rhs: &mut Self) {
 
         // Sr - Sr , Si - Si
         if self.is_sr_sr(rhs) || self.is_si_si(rhs) {
@@ -54,18 +54,9 @@ impl Im {
 
         // Sr - Si , Si - Sr
         else if self.is_sr_si(rhs) || self.is_si_sr(rhs) {
-            if self.is_zero() && rhs.is_zero() {
-                *self = Self::default()
-            } else {
-                if !self.is_zero() {
-                    self.simple_to_mixed_base();
-                }
-                if !rhs.is_zero() {
-                    let mut expr = rhs.clone();
-                    expr.neg();
-                    self.push_in_mixed_base(expr);
-                }
-            }
+            self.simple_to_mixed_base();
+            rhs.neg();
+            self.push_in_mixed_base(rhs.clone());
         }
     }
 

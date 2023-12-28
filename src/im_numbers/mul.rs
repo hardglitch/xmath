@@ -30,7 +30,7 @@ impl Im {
     }
 
     unsafe fn mul_logic(&mut self, rhs: &mut Self) {
-        if self.is_fast_logic(rhs) { self.mul_fast_logic(rhs) }
+        if self.is_fast_logic2(rhs) { self.mul_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.mul_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.mul_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.mul_mixed_pow_logic(rhs) }
@@ -50,17 +50,12 @@ impl Im {
             self.real *= rhs.real;
             self.im_pow += rhs.im_pow;
             if self.is_simple_im() { self.im_pow_fixer() }
-            if self.real == 0.0 { *self = Self::default() }
         }
 
         // Sr * Si , Si * Sr
         else if self.is_sr_si(rhs) || self.is_si_sr(rhs) {
-            if self.is_zero() || rhs.is_zero() {
-                *self = Self::default()
-            } else {
-                self.real *= rhs.real;
-                if self.is_real() { self.im_pow = rhs.im_pow }
-            }
+            self.real *= rhs.real;
+            if self.is_real() { self.im_pow = rhs.im_pow }
         }
     }
 
