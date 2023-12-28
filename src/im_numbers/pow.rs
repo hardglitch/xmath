@@ -2,8 +2,7 @@ use crate::im_numbers::core::Im;
 
 impl Im {
     pub fn pow(mut self, mut rhs: Self) -> Self {
-        // if self.is_none() { return self }
-        // if rhs.is_none() { return rhs }
+        if self.is_none() || rhs.is_none() { return Self::none() }
 
         unsafe { self.pow_core(&mut rhs); }
         self
@@ -14,6 +13,10 @@ impl Im {
         rhs.im_pow_fixer();
 
         self.pow_logic(rhs);
+        if self.is_none() || rhs.is_none() {
+            *self = Self::none();
+            return
+        }
 
         self.fixer_pack();
     }

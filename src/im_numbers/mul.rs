@@ -7,8 +7,7 @@ impl Mul for Im {
     type Output = Self;
 
     fn mul(mut self, mut rhs: Self) -> Self {
-        // if self.is_none() { return self }
-        // if rhs.is_none() { return rhs }
+        if self.is_none() || rhs.is_none() { return Self::none() }
 
         unsafe { self.mul_core(&mut rhs); }
         self
@@ -21,6 +20,10 @@ impl Im {
         rhs.im_pow_fixer();
 
         self.mul_logic(rhs);
+        if self.is_none() || rhs.is_none() {
+            *self = Self::none();
+            return
+        }
 
         self.fixer_pack();
         unsafe { self.collect(); }

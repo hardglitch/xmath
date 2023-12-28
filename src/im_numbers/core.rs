@@ -38,6 +38,16 @@ impl Im {
         }
     }
 
+    pub(crate) fn none() -> Self {
+        Self {
+            real: Default::default(),
+            im_pow: Default::default(),
+            mixed_base: Some(vec![]),
+            mixed_pow: Some(vec![]),
+            mixed_mul: Some(vec![]),
+        }
+    }
+
     pub(crate) fn simple_mixed_base(&mut self) -> Option<&mut Self> {
         if let Some(b) = &mut self.mixed_base && b.len() == 1 &&
             let Some(e) = b.first_mut()
@@ -148,12 +158,15 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn pow_neg(&mut self) -> Option<()> {
-        if self.is_zero() { return None }
+    pub(crate) unsafe fn pow_neg(&mut self) {
+        if self.is_zero() {
+            *self = Self::none();
+            return
+        }
 
         if self.is_simple() || self.is_mixed_base_only() {
             let mut expr = Self::new(1.0, 0.0);
-            if expr.div_core(self).is_none() { return None }
+            expr.div_core(self);
             *self = expr;
         }
 
@@ -177,8 +190,6 @@ impl Im {
                 }
             }
         }
-
-        Some(())
     }
 
     pub(crate) fn im_pow_fixer(&mut self) {

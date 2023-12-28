@@ -6,8 +6,7 @@ impl Div for Im {
     type Output = Self;
 
     fn div(mut self, mut rhs: Self) -> Self {
-        // if self.is_none() { return self }
-        // if rhs.is_none() { return rhs }
+        if self.is_none() || rhs.is_none() { return Self::none() }
 
         unsafe { self.div_core(&mut rhs); }
         self
@@ -15,29 +14,31 @@ impl Div for Im {
 }
 
 impl Im {
-    pub(crate) unsafe fn div_core(&mut self, rhs: &mut Self) -> Option<()> {
+    pub(crate) unsafe fn div_core(&mut self, rhs: &mut Self) {
         self.im_pow_fixer();
         rhs.im_pow_fixer();
 
-        self.div_logic(rhs)?;
+        self.div_logic(rhs);
+        if self.is_none() || rhs.is_none() {
+            *self = Self::none();
+            return
+        }
 
         self.fixer_pack();
         unsafe { self.collect(); }
-        Some(())
     }
 
-    unsafe fn div_logic(&mut self, rhs: &mut Self) -> Option<()> {
+    unsafe fn div_logic(&mut self, rhs: &mut Self) {
         if self.is_fast_logic1(rhs) { self.div_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.div_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.div_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.div_mixed_pow_logic(rhs) }
         else if self.is_mixed_mul_logic(rhs) { self.div_mixed_mul_logic(rhs) }
-        else { Some(()) }
     }
 
-    fn div_fast_logic(&mut self, rhs: &Self) -> Option<()> {
+    fn div_fast_logic(&mut self, rhs: &Self) {
         if rhs.is_zero() {
-            return None
+            *self = Self::none();
         }
         else if self.is_zero() {
             *self = Self::default()
@@ -45,10 +46,9 @@ impl Im {
         else if self == rhs {
             *self = Self::new(1.0, 0.0);
         }
-        Some(())
     }
 
-    fn div_simple_logic(&mut self, rhs: &Self) -> Option<()> {
+    fn div_simple_logic(&mut self, rhs: &Self) {
 
         // Sr / Sr , Si / Si
         if self.is_sr_sr(rhs) || self.is_si_si(rhs) {
@@ -62,10 +62,9 @@ impl Im {
             self.real /= rhs.real;
             if self.is_real() { self.im_pow = rhs.im_pow }
         }
-        Some(())
     }
 
-    unsafe fn div_mixed_base_logic(&mut self, rhs: &mut Self) -> Option<()> {
+    unsafe fn div_mixed_base_logic(&mut self, rhs: &mut Self) {
 
         // a / S
         if self.is_a_s(rhs) {
@@ -83,11 +82,9 @@ impl Im {
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
             *self = Self::default()
         }
-
-        Some(())
     }
 
-    unsafe fn div_mixed_pow_logic(&mut self, rhs: &mut Self) -> Option<()> {
+    unsafe fn div_mixed_pow_logic(&mut self, rhs: &mut Self) {
 
         // a^n / a , a^n / a^x
         if self.is_an_a(rhs) || self.is_an_ax(rhs)
@@ -123,11 +120,9 @@ impl Im {
             rhs.push_in_mixed_mul(self.clone());
             swap(self, rhs);
         }
-
-        Some(())
     }
 
-    unsafe fn div_mixed_mul_logic(&mut self, rhs: &mut Self) -> Option<()> {
+    unsafe fn div_mixed_mul_logic(&mut self, rhs: &mut Self) {
 
         // Ma^n / S
         if self.is_man_s(rhs) {
@@ -153,6 +148,7 @@ impl Im {
         else if self.is_a_man(rhs) || self.is_an_man(rhs) || self.is_ax_man(rhs) {
             swap(self, rhs);
             self.pow_neg();
+            if self.is_none() { return }
             self.add_ass_mixed_pow(rhs);
         }
 
@@ -171,10 +167,9 @@ impl Im {
         else if self.is_x_man(rhs) || self.is_xx_man(rhs) {
             swap(self, rhs);
             self.pow_neg();
+            if self.is_none() { return }
             self.mul_ass_mixed_mul(rhs);
         }
-
-        Some(())
     }
 
     unsafe fn div_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {

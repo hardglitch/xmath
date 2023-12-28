@@ -1,6 +1,14 @@
 use crate::im_numbers::core::{Im, Sign};
 
 impl Im {
+    pub fn is_zero(&self) -> bool {
+        self.is_simple() && self.real == 0.0
+    }
+    pub fn is_none(&self) -> bool {
+        self.mixed_base.as_ref().is_some_and(|v| v.is_empty()) &&
+            self.mixed_pow.as_ref().is_some_and(|v| v.is_empty()) &&
+            self.mixed_mul.as_ref().is_some_and(|v| v.is_empty())
+    }
     pub(crate) fn is_real(&self) -> bool {
         self.mixed_base.is_none() &&
         self.mixed_pow.is_none() &&
@@ -9,15 +17,12 @@ impl Im {
     }
     pub(crate) fn is_simple_im(&self) -> bool {
         self.mixed_base.is_none() &&
-            self.mixed_pow.is_none() &&
-            self.mixed_mul.is_none() &&
-            self.im_pow != 0.0
+        self.mixed_pow.is_none() &&
+        self.mixed_mul.is_none() &&
+        self.im_pow != 0.0
     }
     pub(crate) fn is_simple(&self) -> bool {
         self.is_real() || self.is_simple_im()
-    }
-    pub(crate) fn is_zero(&self) -> bool {
-        self.is_simple() && self.real == 0.0
     }
     pub(crate) fn is_vec_greater(lhs: &Option<Vec<Im>>, rhs: &Option<Vec<Im>>) -> bool {
         if let Some(v1) = lhs &&

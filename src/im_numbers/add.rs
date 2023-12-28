@@ -6,8 +6,7 @@ impl Add for Im {
     type Output = Self;
 
     fn add(mut self, mut rhs: Self) -> Self {
-        // if self.is_none() { return self }
-        // if rhs.is_none() { return rhs }
+        if self.is_none() || rhs.is_none() { return Self::none() }
 
         unsafe { self.add_core(&mut rhs); }
         self
@@ -16,10 +15,16 @@ impl Add for Im {
 
 impl Im {
     pub(crate) unsafe fn add_core(&mut self, rhs: &mut Self) {
+        if self.is_none() || rhs.is_none() { return }
+
         self.im_pow_fixer();
         rhs.im_pow_fixer();
 
         self.add_logic(rhs);
+        if self.is_none() || rhs.is_none() {
+            *self = Self::none();
+            return
+        }
 
         self.fixer_pack();
     }

@@ -95,6 +95,16 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
+        fn test_expr_is_zero10_pos() {
+            assert!(0.r() == 0.i());
+        }
+
+        #[test]
+        fn test_expr_is_zero11_pos() {
+            assert_eq!(0.r(), 0.i());
+        }
+
+        #[test]
         fn test_expr_is_zero1_neg() {
             let expr = 0.i() + 1.r();
             assert!(!expr.is_zero());
@@ -731,62 +741,66 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_div {
-//     #[test]
-//     fn test_div1_pos() {
-//         let expr = 1.i() / 1.i();
-//         let test_res = Im::new(1.0, 0.0);
-//         assert_eq!(expr, test_res);
-//     }
-//
-//     #[test]
-//     fn test_div2_pos() {
-//         let expr = (-1).i() / 1.i();
-//         let test_res = Im::new(-1.0, 0.0);
-//         assert_eq!(expr, test_res);
-//     }
-//
-//     #[test]
-//     fn test_div3_pos() {
-//         let expr = 0.i() / 1.i();
-//         let test_res = Im::new(0.0, 0.0);
-//         assert_eq!(expr, test_res);
-//     }
-//
-//     #[test]
-//     fn test_div4_pos() {
-//         let expr = 1.i() / 0.i();
-//         assert!(expr.is_none());
-//     }
-//
-//     #[test]
-//     fn test_div5_pos() {
-//         let expr = 1.i() / 0.i() * (4.i() + 7.r());
-//         assert!(expr.is_none());
-//     }
-//
-//     #[test]
-//     fn test_div6_pos() {
-//         let expr = (4.r() - 7.i()) / (7.i() - 7.i());
-//         assert!(expr.is_none());
-//     }
-//
-//     #[test]
-//     fn test_div7_pos() {
-//         let expr = (4.r() - 7.i()) / (6.i() - 7.i());
-//         assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
-//     }
-//
-//     #[test]
-//     fn test_div8_pos() {
-//         let expr = (4.r() - 7.i()) / (6.r() - 7.i());
-//         assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
-//     }
-//
-//     #[test]
-//     fn test_mul11_pos() {
-//         let expr = 5.r() * 1.r()/5.r();
-//         let test_res = Im::new(1.0, 0.0);
-//         assert_eq!(expr, test_res);
-//     }
+        use crate::im_numbers::cast::ImValue;
+        use crate::im_numbers::core::Im;
+
+        #[test]
+        fn test_div1_pos() {
+            let expr = 1.i() / 1.i();
+            let test_res = Im::new(1.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_div2_pos() {
+            let expr = (-1).i() / 1.i();
+            let test_res = Im::new(-1.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_div3_pos() {
+            let expr = 0.i() / 1.i();
+            let test_res = Im::new(0.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+        #[test]
+        fn test_div1_neg() {
+            let expr = 1.i() / 0.i();
+            assert!(expr.is_none());
+        }
+
+        #[test]
+        fn test_div5_pos() {
+            let expr = 1.i() / 0.i() * (4.i() + 7.r());
+            assert!(expr.is_none());
+        }
+
+        #[test]
+        fn test_div6_pos() {
+            let expr = (4.r() - 7.i()) / (7.i() - 7.i());
+            assert!(expr.is_none());
+        }
+
+        #[test]
+        fn test_div7_pos() {
+            let expr = 5.r() * 1.r()/5.r();
+            let test_res = Im::new(1.0, 0.0);
+            assert_eq!(expr, test_res);
+        }
+
+    //     #[test]
+    //     fn test_div7_pos() {
+    //         let expr = (4.r() - 7.i()) / (6.i() - 7.i());
+    //         assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
+    //     }
+    //
+    //     #[test]
+    //     fn test_div8_pos() {
+    //         let expr = (4.r() - 7.i()) / (6.r() - 7.i());
+    //         assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
+    //     }
+    //
     }
 }
