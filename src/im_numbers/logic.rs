@@ -57,6 +57,9 @@ impl Im {
         self.mixed_mul.is_some() && self.mixed_pow.is_some() && self.mixed_base.is_some() &&
             self.real == 0.0 && self.im_pow == 0.0
     }
+    pub(crate) fn is_fast_logic(&self, rhs: &Self) -> bool {
+        self == rhs || self.is_zero() || rhs.is_zero()
+    }
     pub(crate) fn is_simple_logic(&self, rhs: &Self) -> bool {
         self.is_simple() && rhs.is_simple()
     }

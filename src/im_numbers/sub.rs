@@ -27,15 +27,21 @@ impl Im {
     }
 
     unsafe fn sub_logic(&mut self, rhs: &mut Self) {
-        if self == rhs { self.sub_fast_logic() }
+        if self.is_fast_logic(rhs) { self.sub_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.sub_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.sub_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.sub_mixed_pow_logic(rhs) }
         else if self.is_mixed_mul_logic(rhs) { self.sub_mixed_mul_logic(rhs) }
     }
 
-    fn sub_fast_logic(&mut self) {
-        *self = Self::default();
+    unsafe fn sub_fast_logic(&mut self, rhs: &mut Self) {
+        if self.is_zero() {
+            swap(self, rhs);
+            self.neg();
+        }
+        else if self == rhs {
+            *self = Self::default();
+        }
     }
 
     unsafe fn sub_simple_logic(&mut self, rhs: &Self) {

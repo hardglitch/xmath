@@ -30,15 +30,17 @@ impl Im {
     }
 
     unsafe fn mul_logic(&mut self, rhs: &mut Self) {
-        if self.is_zero() || rhs.is_zero() { self.mul_fast_logic() }
+        if self.is_fast_logic(rhs) { self.mul_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.mul_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.mul_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.mul_mixed_pow_logic(rhs) }
         else if self.is_mixed_mul_logic(rhs) { self.mul_mixed_mul_logic(rhs) }
     }
 
-    fn mul_fast_logic(&mut self) {
-        *self = Self::default();
+    fn mul_fast_logic(&mut self, rhs: &Self) {
+        if self.is_zero() || rhs.is_zero() {
+            *self = Self::default()
+        }
     }
 
     fn mul_simple_logic(&mut self, rhs: &Self) {

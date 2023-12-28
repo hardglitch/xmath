@@ -27,10 +27,17 @@ impl Im {
     }
 
     unsafe fn add_logic(&mut self, rhs: &mut Self) {
-        if self.is_simple_logic(rhs) { self.add_simple_logic(rhs) }
+        if self.is_fast_logic(rhs) { self.add_fast_logic(rhs) }
+        else if self.is_simple_logic(rhs) { self.add_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.add_mixed_base_logic(rhs) }
         else if self.is_mixed_pow_logic(rhs) { self.add_mixed_pow_logic(rhs) }
         else if self.is_mixed_mul_logic(rhs) { self.add_mixed_mul_logic(rhs) }
+    }
+
+    unsafe fn add_fast_logic(&mut self, rhs: &mut Self) {
+        if self.is_zero() {
+            swap(self, rhs);
+        }
     }
 
     fn add_simple_logic(&mut self, rhs: &Self) {

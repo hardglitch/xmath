@@ -31,37 +31,50 @@ impl Im {
     }
 
     unsafe fn div_logic(&mut self, rhs: &mut Self) -> Option<()> {
-        if self == rhs { self.div_fast_logic() }
+        if self.is_fast_logic(rhs) { self.div_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.div_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.div_mixed_base_logic(rhs) }
-        // else if self.is_mixed_pow_logic(rhs) { self.div_mixed_pow_logic(rhs) }
+        else if self.is_mixed_pow_logic(rhs) { self.div_mixed_pow_logic(rhs) }
         else if self.is_mixed_mul_logic(rhs) { self.div_mixed_mul_logic(rhs) }
         else { Some(()) }
     }
 
-    fn div_fast_logic(&mut self) -> Option<()> {
-        *self = Self::new(1.0, 0.0);
+    fn div_fast_logic(&mut self, rhs: &Self) -> Option<()> {
+        if rhs.is_zero() {
+            return None
+        }
+        else if self.is_zero() {
+            *self = Self::default()
+        }
+        else if self == rhs {
+            *self = Self::new(1.0, 0.0);
+        }
         Some(())
     }
 
     fn div_simple_logic(&mut self, rhs: &Self) -> Option<()> {
 
-        if (self.is_real() && rhs.is_real()) || (self.is_simple_im() && rhs.is_simple_im()) {
-            if rhs.real == 0.0 { return None }
+        if self.is_zero() {
+            *self = Self::default();
+            return Some(())
+        }
+        if rhs.is_zero() {
+            return None
+        }
+
+        // Sr / Sr , Si / Si
+        if self.is_sr_sr(rhs) || self.is_si_si(rhs) {
             self.real /= rhs.real;
             self.im_pow -= rhs.im_pow;
             if self.is_simple_im() { self.im_pow_fixer() }
             if self.real == 0.0 { *self = Self::default() }
         }
 
-        else if (self.is_real() && rhs.is_simple_im()) || (self.is_simple_im() && rhs.is_real()) {
-            if self.is_zero() {
-                *self = Self::default()
-            } else {
-                if rhs.real == 0.0 { return None }
-                self.real /= rhs.real;
-                if self.is_real() { self.im_pow = rhs.im_pow }
-            }
+        // Sr / Si , Si / Sr
+        else if self.is_sr_si(rhs) || self.is_si_sr(rhs) {
+
+            self.real /= rhs.real;
+            if self.is_real() { self.im_pow = rhs.im_pow }
         }
         Some(())
     }
@@ -70,11 +83,17 @@ impl Im {
 
         if rhs.is_real() && rhs.real == 1.0 { return Some(()) }
 
-        if self.is_real() {
-            // rhs.pow(-1.0); todo()
+        // a * S
+        if self.is_a_s(rhs) {
+            rhs.simple_to_mixed_base();
         }
 
+        // S * a
+        else if self.is_s_a(rhs) {
+            self.simple_to_mixed_base();
+        }
 
+        // a * a
         Self::div_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
@@ -83,12 +102,12 @@ impl Im {
         Some(())
     }
 
-    // unsafe fn div_mixed_pow_logic(&mut self, rhs: &mut Self) -> Option<()> {
-    //
-    //         Self::add_vec(&mut self.mixed_pow, &mut rhs.mixed_pow);
-    //
-    //     Some(())
-    // }
+    unsafe fn div_mixed_pow_logic(&mut self, rhs: &mut Self) -> Option<()> {
+
+            Self::add_vec(&mut self.mixed_pow, &mut rhs.mixed_pow);
+
+        Some(())
+    }
 
     unsafe fn div_mixed_mul_logic(&mut self, rhs: &mut Self) -> Option<()> {
         if self.is_simple() {

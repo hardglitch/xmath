@@ -716,70 +716,21 @@ pub(crate) mod test_im_numbers {
             assert_eq!(expr, test_res);
         }
 
-        // #[test]
-        // fn test_pow99_pos() {
-        //     let expr = (2.i() - 1.r()).pow(2.r() + 1.i()) - ((2.r() + 1.i()) * 2.i()).pow(2.r() + 1.i());
-        //     let mut test_res = Im::default();
-        //     test_res.push_in_mixed_base(Im::new(2.0, 1.0));
-        //     test_res.push_in_mixed_pow(Im::new(2.0, 1.0));
-        //     assert_eq!(expr, test_res);
-        // }
+        #[test]
+        fn test_pow15_pos() {
+            assert_eq!(1.r().pow(1.i()), 1.r())
+        }
 
+        #[test]
+        fn test_pow16_pos() {
+            assert_eq!(1.r().pow(1.i()) * 1.i().pow(1.i()), 1.i().pow(1.i()))
+        }
 
-        //     #[test]
-    //     fn test_pow_neg1_pos() {
-    //         let mut expr = 2.r();
-    //         expr.push_in_mixed_pow(Im::new(1.0, 1.0));
-    //         expr.pow_neg();
-    //         let mut test_expr = 2.r();
-    //         test_expr.push_in_mixed_pow(Im::new(-1.0, 1.0));
-    //         assert_eq!(expr, test_expr);
-    //     }
-    //
-    //     #[test]
-    //     fn test_pow_neg2_pos() {
-    //         let mut expr = 2.i();
-    //         expr.pow_neg();
-    //         let mut test_expr = 2.i();
-    //         test_expr.push_in_mixed_pow(Im::new(-1.0, 0.0));
-    //         assert_eq!(expr, test_expr);
-    //     }
-    //
-    //     #[test]
-    //     fn test_pow_neg3_pos() {
-    //         let mut expr = 2.r() + 3.i();
-    //         expr.push_in_mixed_pow(Im::new(1.0, 1.0));
-    //         expr.push_in_mixed_pow(Im::new(2.0, 0.0));
-    //         expr.pow_neg();
-    //         let mut test_expr = 2.r() + 3.i();
-    //         test_expr.push_in_mixed_pow(Im::new(-1.0, 1.0));
-    //         test_expr.push_in_mixed_pow(Im::new(-2.0, 0.0));
-    //         assert_eq!(expr, test_expr);
-    //     }
-    //
-    //     #[test]
-    //     fn test_pow_neg4_pos() {
-    //         let mut expr = 2.r() + 3.i();
-    //         expr.push_in_mixed_pow(Im::new(1.0, 1.0));
-    //         expr.push_in_mixed_pow(Im::new(2.0, 0.0));
-    //         expr.push_in_mixed_mul(Im::new(1.0, 1.0));
-    //         expr.push_in_mixed_mul(Im::new(2.0, 0.0));
-    //         expr.pow_neg();
-    //
-    //         let mut test_expr = 2.r() + 3.i();
-    //         test_expr.push_in_mixed_pow(Im::new(-1.0, 1.0));
-    //         test_expr.push_in_mixed_pow(Im::new(-2.0, 0.0));
-    //         test_expr.push_in_mixed_mul(Im::new(1.0, 1.0));
-    //         test_expr.push_in_mixed_mul(Im::new(2.0, 0.0));
-    //         test_expr.mixed_mul.as_mut().unwrap()
-    //             .first_mut().unwrap()
-    //             .push_in_mixed_pow(Im::new(-1.0, 0.0));
-    //
-    //         assert_eq!(expr, test_expr);
-    //     }
+        // for pow :  5 * 1/5, 5^2 / 2^-1
     }
 
-
+    #[cfg(test)]
+    mod test_div {
 //     #[test]
 //     fn test_div1_pos() {
 //         let expr = 1.i() / 1.i();
@@ -837,5 +788,5 @@ pub(crate) mod test_im_numbers {
 //         let test_res = Im::new(1.0, 0.0);
 //         assert_eq!(expr, test_res);
 //     }
-//     // for pow :  1^i * i^i, 5 * 1/5, 5^2 / 2^-1
+    }
 }
