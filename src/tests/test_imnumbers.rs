@@ -3,8 +3,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_let {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_let1_pos() {
@@ -39,8 +39,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_zero {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_expr_is_zero1_pos() {
@@ -113,8 +113,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_im_pow_fixer {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_pair_checker1_pos() {
@@ -168,8 +168,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_neg {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_neg1_pos() {
@@ -260,8 +260,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_abs {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Sign;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Sign;
 
         #[test]
         fn test_abs1_pos() {
@@ -284,8 +284,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_add {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_add1_pos() {
@@ -358,8 +358,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_sub {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_sub1_pos() {
@@ -441,8 +441,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_other {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_is_mixed_base_logic1_pos() {
@@ -472,8 +472,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_mul {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_mul1_pos() {
@@ -566,8 +566,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_pow {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_pow1_pos() {
@@ -741,8 +741,8 @@ pub(crate) mod test_im_numbers {
 
     #[cfg(test)]
     mod test_div {
-        use crate::im_numbers::cast::ImValue;
-        use crate::im_numbers::core::Im;
+        use crate::im::cast::ImValue;
+        use crate::im::core::Im;
 
         #[test]
         fn test_div1_pos() {
@@ -789,18 +789,68 @@ pub(crate) mod test_im_numbers {
             let test_res = Im::new(1.0, 0.0);
             assert_eq!(expr, test_res);
         }
+    }
 
-    //     #[test]
-    //     fn test_div7_pos() {
-    //         let expr = (4.r() - 7.i()) / (6.i() - 7.i());
-    //         assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
-    //     }
-    //
-    //     #[test]
-    //     fn test_div8_pos() {
-    //         let expr = (4.r() - 7.i()) / (6.r() - 7.i());
-    //         assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
-    //     }
-    //
+    #[cfg(test)]
+    mod test_format {
+        use crate::im::cast::ImValue;
+
+        #[test]
+        fn test_format1_pos() {
+            assert_eq!("1", 1.r().format());
+        }
+
+        #[test]
+        fn test_format2_pos() {
+            assert_eq!("-1", (-1).r().format());
+        }
+
+        #[test]
+        fn test_format3_pos() {
+            assert_eq!("i", (1).i().format());
+        }
+
+        #[test]
+        fn test_format4_pos() {
+            assert_eq!("-i", (-1).i().format());
+        }
+
+        #[test]
+        fn test_format5_pos() {
+            assert_eq!("0", 0.i().format());
+        }
+
+        #[test]
+        fn test_format6_pos() {
+            assert_eq!("0", (-0).r().format());
+        }
+
+        #[test]
+        fn test_format7_pos() {
+            assert_eq!("-1/8i", 2.i().pow((-3).r()).format());
+        }
+
+        #[test]
+        fn test_format8_pos() {
+            assert_eq!("0.25", 2.r().pow((-2).r()).format());
+        }
+
+        #[test]
+        fn test_format1_neg() {
+            assert_eq!("None", (1.r() / 0.r()).format());
+        }
+
+        //     #[test]
+        //     fn test_div7_pos() {
+        //         let expr = (4.r() - 7.i()) / (6.i() - 7.i());
+        //         assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
+        //     }
+        //
+        //     #[test]
+        //     fn test_div8_pos() {
+        //         let expr = (4.r() - 7.i()) / (6.r() - 7.i());
+        //         assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
+        //     }
+        //
     }
 }

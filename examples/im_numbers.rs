@@ -1,4 +1,4 @@
-use xmath::im_numbers::cast::ImValue;
+use xmath::im::cast::ImValue;
 
 fn main() {
     // (1 + 2i)(3 - i) = ?   =>  (2i^1 + 1)(-1i^1 + 3)

@@ -5,7 +5,7 @@
 !/src/*.rs
 !/src/tests/
 !/src/tests/*.rs
-!/src/im_numbers/
+!/src/im/
 !/src/im_numbers/*.rs
 !Cargo.lock
 !Cargo.toml
