@@ -1,12 +1,14 @@
 *
 !/examples/
 !/examples/*.rs
-!/src
+!/src/
 !/src/*.rs
 !/src/tests/
 !/src/tests/*.rs
 !/src/im/
-!/src/im_numbers/*.rs
+!/src/im/*.rs
+!/src/im/ops/
+!/src/im/ops/*.rs
 !Cargo.lock
 !Cargo.toml
 !.gitignore
