@@ -182,32 +182,39 @@ impl Im {
             return
         }
 
-        if self.is_simple() || self.is_mixed_base_only() {
-            let mut expr = Self::new(1.0, 0.0);
-            expr.div_core(self);
-            *self = expr;
-        }
+        self.pow_core(&mut Self::new(-1.0, 0.0));
 
-        else if self.is_mixed_pow_and_base_only() &&
-            let Some(p) = self.mixed_pow_mut()
-        {
-            p.mul_core(&mut Self::new(-1.0, 0.0));
-        }
-
-        else if self.is_mixed_all()
-        {
-            if let Some(p) = self.mixed_pow_mut() {
-                p.mul_core(&mut Self::new(-1.0, 0.0));
-            }
-
-            if let Some(m) = self.mixed_mul_mut() {
-                if let Some(mp) = m.mixed_pow_mut() {
-                    mp.mul_core(&mut Self::new(-1.0, 0.0))
-                } else {
-                    m.push_in_mixed_pow(Self::new(-1.0, 0.0))
-                }
-            }
-        }
+        // if self.is_simple() {
+        //     self.pow_core(&mut Self::new(-1.0, 0.0));
+        //     // let mut expr = Self::new(1.0, 0.0);
+        //     // expr.div_core(self);
+        //     // *self = expr;
+        // }
+        //
+        // else if self.is_mixed_base_only() {
+        //     self.pow_core(&mut Self::new(-1.0, 0.0))
+        // }
+        //
+        // else if self.is_mixed_pow_and_base_only() &&
+        //     let Some(p) = self.mixed_pow_mut()
+        // {
+        //     p.mul_core(&mut Self::new(-1.0, 0.0));
+        // }
+        //
+        // else if self.is_mixed_all()
+        // {
+        //     if let Some(p) = self.mixed_pow_mut() {
+        //         p.mul_core(&mut Self::new(-1.0, 0.0));
+        //     }
+        //
+        //     if let Some(m) = self.mixed_mul_mut() {
+        //         if let Some(mp) = m.mixed_pow_mut() {
+        //             mp.mul_core(&mut Self::new(-1.0, 0.0))
+        //         } else {
+        //             m.push_in_mixed_pow(Self::new(-1.0, 0.0))
+        //         }
+        //     }
+        // }
     }
 
     pub(crate) fn im_pow_fixer(&mut self) {

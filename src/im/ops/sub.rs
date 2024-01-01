@@ -75,7 +75,7 @@ impl Im {
             self.simple_to_mixed_base();
         }
 
-        // a - x
+        // a - x , x - a
         Self::sub_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {

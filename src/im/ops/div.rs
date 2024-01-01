@@ -60,7 +60,7 @@ impl Im {
         // Sr / Si , Si / Sr
         else if self.is_sr_si(rhs) || self.is_si_sr(rhs) {
             self.real /= rhs.real;
-            if self.is_real() { self.im_pow = rhs.im_pow }
+            if self.is_real() { self.im_pow = -rhs.im_pow }
         }
     }
 
@@ -69,15 +69,15 @@ impl Im {
         // a / S
         if self.is_a_s(rhs) {
             rhs.simple_to_mixed_base();
+            Self::div_vec(&mut self.mixed_base, &mut rhs.mixed_base);
         }
 
-        // S / a
-        else if self.is_s_a(rhs) {
-            self.simple_to_mixed_base();
+        // S / a , a / x , x / a
+        else {
+            rhs.pow_neg();
+            swap(self, rhs);
+            self.mul_ass_mixed_mul(rhs);
         }
-
-        // a / x
-        Self::div_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
             *self = Self::default()

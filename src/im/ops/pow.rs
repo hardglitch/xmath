@@ -32,9 +32,7 @@ impl Im {
         { return }
 
         if self.is_simple() && rhs.is_real() {
-            if self.is_simple_im() {
-                self.real = self.real.powf(rhs.real.abs());
-            } else {
+            if self.is_real() {
                 self.real = self.real.powf(rhs.real);
             }
             if self.is_simple_im() {
@@ -45,7 +43,7 @@ impl Im {
 
         else if self.is_simple() && rhs.is_simple_im() {
             self.simple_to_mixed_base();
-            self.push_in_mixed_pow(rhs.clone())
+            self.push_in_mixed_pow(rhs.clone());
         }
 
         else if self.is_mixed_base_only() {
@@ -54,6 +52,7 @@ impl Im {
                 for _ in 0..(rhs.real.abs() - 1.0) as usize {
                     self.mul_core(&mut stable.clone());
                 }
+                self.push_in_mixed_pow(Self::new(-1.0, 0.0));
             }
             else  {
                 self.push_in_mixed_pow(rhs.clone())

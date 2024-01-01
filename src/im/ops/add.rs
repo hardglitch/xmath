@@ -70,7 +70,7 @@ impl Im {
             self.simple_to_mixed_base();
         }
 
-        // a + a , a + x
+        // a + a , a + x , x + a
         Self::add_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {

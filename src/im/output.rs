@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+use std::mem::swap;
 use crate::im::core::Im;
 
 impl Display for Im {
@@ -24,23 +25,26 @@ impl Im {
 
         let mut div = "";
         if self.is_simple_im() && self.im_pow < 0.0 {
-            div = "1/";
+            div = "/";
         }
 
         if self.is_simple_im() && (self.real == 1.0 || self.real == -1.0) {
             real.clear()
         }
 
-        format!("{}{}{}{}", sign, div, real, i)
+        format!("{}{}{}{}", sign, real, div, i)
     }
 
     fn format_complex(&self) -> String {
 
         let mut mul = "".to_string();
         let mut sign = "".to_string();
-        if let Some(m) = self.mixed_pow() {
+        if let Some(m) = self.mixed_mul() {
             if !m.is_simple() {
-                mul = ["(", &m.format_complex(), ")"].concat()
+                mul = m.format_complex();
+                if mul.find('+') == Some(0) {
+                    mul.remove(0);
+                }
             }
             else if m.is_real() && m.real != 1.0 {
                 mul = m.format_simple();
@@ -55,21 +59,44 @@ impl Im {
         let mut div = "".to_string();
         if let Some(p) = self.mixed_pow() {
             if !p.is_simple() {
-                pow = ["(", &p.format_complex(), ")"].concat()
+                pow = p.format_complex();
+                if pow.find('+') == Some(0) {
+                    pow.remove(0);
+                }
+                if (p.is_simple() && p.real < 0.0) || p.is_mul_neg() {
+                    div = "/".to_string();
+                    swap(&mut mul, &mut div);
+                }
             }
             else if p.is_simple() && p.real > 0.0 && (p.is_real() && p.real != 1.0) {
                 pow = ["^", &p.format_simple()].concat();
             }
-            else if p.is_simple() && p.real < 0.0 && (p.is_real() && p.real != -1.0) {
-                div = "1/".to_string();
-                // sign = m.remove(0).to_string();
+            else if p.is_simple() && p.real < 0.0 {
+                if p.is_real() && p.real != -1.0 && self.mixed_mul.is_none() {
+                    div = "1/".to_string();
+                } else {
+                    div = "/".to_string();
+                    swap(&mut mul, &mut div);
+                }
             }
         }
 
-        let mut base = "".to_string();
-        base = ["(", &Self::format_vec(&self.mixed_base), ")"].concat();
+        // let mut base = "".to_string();
+        let mut value = Self::format_vec(&self.mixed_base);
+        if value.find('+') == Some(0) {
+            value.remove(0);
+        }
+        let base = ["(", &value, ")"].concat();
 
         format!("{}{}{}{}{}", sign, div, mul, base, pow)
+    }
+
+    fn is_mul_neg(&self) -> bool {
+        if let Some(m) = self.mixed_mul() && m.is_simple() && m.real < 0.0 {
+            return true
+        }
+        self.is_mul_neg();
+        false
     }
 
     fn format_vec(vec: &Option<Vec<Im>>) -> String {

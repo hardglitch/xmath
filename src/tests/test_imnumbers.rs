@@ -827,7 +827,7 @@ pub(crate) mod test_im_numbers {
 
         #[test]
         fn test_format7_pos() {
-            assert_eq!("-1/8i", 2.i().pow((-3).r()).format());
+            assert_eq!("-2/i", 2.i().pow((-3).r()).format());
         }
 
         #[test]
@@ -840,17 +840,17 @@ pub(crate) mod test_im_numbers {
             assert_eq!("None", (1.r() / 0.r()).format());
         }
 
-        //     #[test]
-        //     fn test_div7_pos() {
-        //         let expr = (4.r() - 7.i()) / (6.i() - 7.i());
-        //         assert_eq!("(7-4/i)", format_im_expr(expr.exprs.as_slice()));
-        //     }
-        //
-        //     #[test]
-        //     fn test_div8_pos() {
-        //         let expr = (4.r() - 7.i()) / (6.r() - 7.i());
-        //         assert_eq!("(4-7i)/(6-7i)", format_im_expr(expr.exprs.as_slice()));
-        //     }
-        //
+        #[test]
+        fn test_div7_pos() {
+            let expr = (4.r() - 7.i()) / (6.i() - 7.i());
+            assert_eq!("(7-4/i)", expr.format());
+        }
+
+            #[test]
+            fn test_div8_pos() {
+                let expr = (4.r() - 7.i()) / (6.r() - 7.i());
+                assert_eq!("(4-7i)/(6-7i)", expr.format());
+            }
+
     }
 }
