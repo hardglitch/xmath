@@ -126,8 +126,6 @@ impl Im {
 
         // Ma^n / S
         if self.is_man_s(rhs) {
-            // rhs.simple_to_mixed_base();
-            // rhs.push_in_mixed_pow(Self::new(-1.0, 0.0));
             rhs.pow_neg();
             self.mul_ass_mixed_mul(rhs);
         }
@@ -135,8 +133,7 @@ impl Im {
         // S / Ma^n
         else if self.is_s_man(rhs) {
             swap(self, rhs);
-            rhs.simple_to_mixed_base();
-            rhs.push_in_mixed_pow(Self::new(-1.0, 0.0));
+            rhs.pow_neg();
             self.mul_ass_mixed_mul(rhs);
         }
 

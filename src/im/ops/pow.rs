@@ -2,6 +2,17 @@ use crate::im::core::Im;
 
 impl Im {
     pub fn pow(mut self, mut rhs: Self) -> Self {
+
+        //! Pow raises an entire expression to a power.
+        //! # Example
+        //!```
+        //! use xmath::im::cast::ImValue;
+        //!
+        //! let expr = 2.i().pow(3.r()); // (2i)^3
+        //! println!("{}" ,expr);
+        //! // -8i
+        //!```
+
         if self.is_none() || rhs.is_none() { return Self::none() }
 
         unsafe { self.pow_core(&mut rhs, false); }

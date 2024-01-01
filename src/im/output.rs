@@ -42,15 +42,20 @@ impl Im {
         if let Some(m) = self.mixed_mul() {
             if !m.is_simple() {
                 mul = m.format_complex();
-                if mul.find('+') == Some(0) {
+                if &mul[..1] == "+" {
                     mul.remove(0);
                 }
             }
-            else if m.is_real() && m.real != 1.0 {
+            else if m.is_simple() && m.real > 0.0 && !(m.is_real() && m.real == 1.0) {
                 mul = m.format_simple();
-                if m.im_pow >= 0.0 {
-                    if self.real >= 0.0 { sign = "+".to_string() }
-                    else if self.real < 0.0 && &mul[..1] != "-" { sign = "-".to_string() }
+                if m.im_pow >= 0.0 && self.real >= 0.0 && &mul[..1] != "+" {
+                    sign = "+".to_string()
+                }
+            }
+            else if m.is_simple() && m.real < 0.0 && !(m.is_real() && m.real == -1.0) {
+                mul = m.format_simple();
+                if m.im_pow >= 0.0 && self.real < 0.0 && &mul[..1] != "-" {
+                    sign = "-".to_string()
                 }
             }
         }
@@ -60,7 +65,7 @@ impl Im {
         if let Some(p) = self.mixed_pow() {
             if !p.is_simple() {
                 pow = p.format_complex();
-                if pow.find('+') == Some(0) {
+                if &pow[..1] == "+" {
                     pow.remove(0);
                 }
                 if (p.is_simple() && p.real < 0.0) || p.is_mul_neg() {
@@ -70,7 +75,7 @@ impl Im {
             }
             else if p.is_simple() && p.real > 0.0 && !(p.is_real() && p.real == 1.0) {
                 pow = p.format_simple();
-                if pow.find('+') == Some(0) {
+                if &pow[..1] == "+" {
                     pow.remove(0);
                 }
                 pow = ["^", &pow].concat();
@@ -86,7 +91,7 @@ impl Im {
         }
 
         let mut base = Self::format_vec(&self.mixed_base);
-        if base.find('+') == Some(0) {
+        if &base[..1] == "+" {
             base.remove(0);
         }
         base = ["(", &base, ")"].concat();

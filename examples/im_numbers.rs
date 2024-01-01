@@ -1,14 +1,16 @@
 use xmath::im::cast::ImValue;
 
 fn main() {
-    // (1 + 2i)(3 - i) = ?   =>  (2i^1 + 1)(-1i^1 + 3)
-    // (1 + 3i^2 - 2i)(3 - i) = ?   =>  (3i^2 - 2i^1 + 1)(-1i^1 + 3)
-    // let expr = (1.r() + 2.i()) * (3.r() + 1.i()) + 4.i() - (4.i() + 6.r()); // 7i - 5
-    // let expr = 1.r() * (2.i() - 2.i()) * 5.r() - (2.i() + 5.r()) * 2.i(); // 4 - 10i
-    // let expr = 2.r() / 1.i();
-    // let expr = (4.r() - 7.i()) / (6.i() - 7.i()); // 7 - 4/i
-    // let expr = (4.r() - 7.i()) / (6.r() - 7.i()); // (4-7i)/(6-7i)
-    let expr = 3.i() * (1.r() - 1.i()).pow(3.i()) / (1.i() - 1.r()).pow(2.r()); // -1.5(1-i)^3i
-    // dbg!(expr);
+
+    // Import ImValue to implement im-power!
+    //
+    // .i() - imaginary number
+    // .r() - real number
+    //
+    // Use standard operators such as +, -, *, /.
+
+    // 3i (1 - i)^3i / (i^2 - 1)^2
+    let expr = 3.i() * (1.r() - 1.i()).pow(3.i()) / (1.i().powi(2.r()) - 1.r()).pow(2.r());
     println!("{}", expr);
+    // 0.75i(1-i)^3i
 }
