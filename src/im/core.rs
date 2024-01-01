@@ -84,14 +84,14 @@ impl Im {
         None
     }
 
-    pub(crate) fn mixed_mul_mut(&mut self) -> Option<&mut Self> {
-        if let Some(b) = &mut self.mixed_mul && b.len() == 1 &&
-            let Some(e) = b.first_mut()
-        {
-            return Some(e)
-        }
-        None
-    }
+    // pub(crate) fn mixed_mul_mut(&mut self) -> Option<&mut Self> {
+    //     if let Some(b) = &mut self.mixed_mul && b.len() == 1 &&
+    //         let Some(e) = b.first_mut()
+    //     {
+    //         return Some(e)
+    //     }
+    //     None
+    // }
 
     pub(crate) fn mixed_base_simple_values(&self) -> Option<(f64, f64)> {
         if let Some(b) = &self.mixed_base && b.len() == 1 &&
@@ -182,32 +182,39 @@ impl Im {
             return
         }
 
-        if self.is_simple() || self.is_mixed_base_only() {
-            let mut expr = Self::new(1.0, 0.0);
-            expr.div_core(self);
-            *self = expr;
-        }
+        self.pow_core(&mut Self::new(-1.0, 0.0), false);
 
-        else if self.is_mixed_pow_and_base_only() &&
-            let Some(p) = self.mixed_pow_mut()
-        {
-            p.mul_core(&mut Self::new(-1.0, 0.0));
-        }
-
-        else if self.is_mixed_all()
-        {
-            if let Some(p) = self.mixed_pow_mut() {
-                p.mul_core(&mut Self::new(-1.0, 0.0));
-            }
-
-            if let Some(m) = self.mixed_mul_mut() {
-                if let Some(mp) = m.mixed_pow_mut() {
-                    mp.mul_core(&mut Self::new(-1.0, 0.0))
-                } else {
-                    m.push_in_mixed_pow(Self::new(-1.0, 0.0))
-                }
-            }
-        }
+        // if self.is_simple() {
+        //     self.pow_core(&mut Self::new(-1.0, 0.0));
+        //     // let mut expr = Self::new(1.0, 0.0);
+        //     // expr.div_core(self);
+        //     // *self = expr;
+        // }
+        //
+        // else if self.is_mixed_base_only() {
+        //     self.pow_core(&mut Self::new(-1.0, 0.0))
+        // }
+        //
+        // else if self.is_mixed_pow_and_base_only() &&
+        //     let Some(p) = self.mixed_pow_mut()
+        // {
+        //     p.mul_core(&mut Self::new(-1.0, 0.0));
+        // }
+        //
+        // else if self.is_mixed_all()
+        // {
+        //     if let Some(p) = self.mixed_pow_mut() {
+        //         p.mul_core(&mut Self::new(-1.0, 0.0));
+        //     }
+        //
+        //     if let Some(m) = self.mixed_mul_mut() {
+        //         if let Some(mp) = m.mixed_pow_mut() {
+        //             mp.mul_core(&mut Self::new(-1.0, 0.0))
+        //         } else {
+        //             m.push_in_mixed_pow(Self::new(-1.0, 0.0))
+        //         }
+        //     }
+        // }
     }
 
     pub(crate) fn im_pow_fixer(&mut self) {
@@ -311,6 +318,18 @@ impl Im {
         self.mul_fixer();
         self.base_fixer();
         self.simple_fixer();
+        self.mixed_base_elems_swapper();
+    }
+
+    pub(crate) fn mixed_base_elems_swapper(&mut self) {
+        if self.is_mixed_base_only() &&
+           let Some(b) = &mut self.mixed_base &&
+           let Some(fe) = b.first() &&
+           let Some(se) = b.last() &&
+           fe.real < 0.0 && se.real > 0.0
+        {
+            b.swap(0, 1)
+        }
     }
 
     pub(crate) unsafe fn add_ass_mixed_pow(&mut self, rhs: &mut Self) {
@@ -391,9 +410,13 @@ impl Im {
                 let Some(m2) = v2.first_mut()
             {
                 m1.mul_core(m2);
-                self.mul_fixer();
             }
-        } else {
+            else if rhs.is_simple() {
+                m1.mul_core(rhs);
+            }
+            self.mul_fixer();
+        }
+        else {
             self.push_in_mixed_mul(rhs.clone());
         }
     }
@@ -453,10 +476,9 @@ impl Im {
     pub(crate) unsafe fn collect(&mut self) {
         if self.is_mixed_base_only() {
             let e = &mut Im::default();
-
-            if let Some(v) = &mut self.mixed_base {
-                while !v.is_empty() {
-                    if let Some(e1) = v.pop().as_mut() {
+            if let Some(b) = &mut self.mixed_base {
+                while !b.is_empty() {
+                    if let Some(e1) = b.pop().as_mut() {
                         e.add_core(e1);
                     }
                 }

@@ -75,12 +75,18 @@ impl Im {
             self.simple_to_mixed_base();
         }
 
-        // a - x
-        Self::sub_vec(&mut self.mixed_base, &mut rhs.mixed_base);
+        // a - x , x - a
+        rhs.neg();
+        if let Some(b1) = &mut self.mixed_base &&
+           let Some(b2) = &mut rhs.mixed_base
+        {
+            b1.append(b2);
+            self.collect();
+        }
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
             *self = Self::default()
-        };
+        }
     }
 
     unsafe fn sub_mixed_pow_logic(&mut self, rhs: &mut Self) {
@@ -129,30 +135,6 @@ impl Im {
             swap(self, rhs);
             self.neg();
             self.add_ass_mixed_base(rhs);
-        }
-    }
-
-    pub(crate) unsafe fn sub_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {
-        let is_gr = Im::is_vec_greater(lhs, rhs);
-        if !is_gr { swap(lhs, rhs) }
-
-        let mut exprs = Vec::<Im>::new();
-
-        if let Some(v1) = &mut lhs &&
-            let Some(v2) = &mut rhs
-        {
-            for e1 in v1.iter_mut() {
-                for e2 in v2.iter_mut() {
-                    if e1.im_pow == e2.im_pow {
-                        Im::sub_core(e1, e2);
-                    }
-                    if !e1.is_zero() {
-                        exprs.push(e1.clone())
-                    }
-                }
-            }
-
-            *lhs = Some(exprs);
         }
     }
 }

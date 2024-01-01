@@ -116,12 +116,6 @@ impl Im {
     pub(crate) fn is_an_a(&self, rhs: &Self) -> bool {
         rhs.is_a_an(self)
     }
-    pub(crate) fn is_a_xn(&self, rhs: &Self) -> bool {
-        self.is_mixed_base_only() && rhs.is_mixed_pow_and_base_only() && self.mixed_base != rhs.mixed_base
-    }
-    pub(crate) fn is_xn_a(&self, rhs: &Self) -> bool {
-        rhs.is_a_xn(self)
-    }
     pub(crate) fn is_an_s(&self, rhs: &Self) -> bool {
         self.is_mixed_pow_and_base_only() && rhs.is_simple()
     }

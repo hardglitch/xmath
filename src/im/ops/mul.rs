@@ -71,7 +71,7 @@ impl Im {
             self.simple_to_mixed_base();
         }
 
-        // a * a , a * x
+        // a * a , a * x , x * a
         Self::mul_vec(&mut self.mixed_base, &mut rhs.mixed_base);
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
@@ -148,9 +148,10 @@ impl Im {
         {
             for e1 in v1.iter_mut() {
                 for e2 in v2.iter_mut() {
-                    Im::mul_core(e1, e2);
-                    if !e1.is_zero() {
-                        exprs.push(e1.clone())
+                    let mut e = e1.clone();
+                    Im::mul_core(&mut e, e2);
+                    if !e.is_zero() {
+                        exprs.push(e)
                     }
                 }
             }
