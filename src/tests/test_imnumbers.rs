@@ -890,6 +890,12 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
+        fn test_format18_pos() {
+            let expr = (2.i() + 2.i().powi(5.r())).pow(3.r());
+            assert_eq!("-64i", expr.format());
+        }
+
+        #[test]
         fn test_format1_neg() {
             assert_eq!("None", (1.r() / 0.r()).format());
         }
