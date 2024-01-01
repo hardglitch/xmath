@@ -143,7 +143,7 @@ impl<F> Expression<F>
         Ok(())
     }
 
-    pub fn find_extremums(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<Vec<Point>>> {
+    pub fn find_extremes(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<Vec<Point>>> {
         self.flags.is_extrs = true;
         let mut upscaled_x_min = (x_min / self.settings.precision) as i64;
         let mut upscaled_x_max = (x_max / self.settings.precision) as i64;
@@ -197,10 +197,10 @@ impl<F> Expression<F>
         self.extrs.push(*raw_data.last().unwrap());   // max point
 
         // Other style of data returning
-        Ok(self.extremums())
+        Ok(self.extremes())
     }
 
-    pub fn extremums(&self) -> Option<Vec<Point>> {
+    pub fn extremes(&self) -> Option<Vec<Point>> {
         match self.flags.is_extrs && !self.extrs.is_empty() {
             false => None,
             true => {
@@ -247,7 +247,7 @@ impl<F> Expression<F>
 
         if self.flags.is_extrs {
             match self.extrs.is_empty() {
-                true  => println!("No extremums"),
+                true  => println!("No extremes"),
                 false => {
                     if self.min() == self.max() {
                         println!("Min=Max F(x)={:.2}, x={:.2}", self.min().unwrap().y, self.min().unwrap().x);
