@@ -148,9 +148,10 @@ impl Im {
         {
             for e1 in v1.iter_mut() {
                 for e2 in v2.iter_mut() {
-                    Im::mul_core(e1, e2);
-                    if !e1.is_zero() {
-                        exprs.push(e1.clone())
+                    let mut e = e1.clone();
+                    Im::mul_core(&mut e, e2);
+                    if !e.is_zero() {
+                        exprs.push(e)
                     }
                 }
             }

@@ -84,14 +84,14 @@ impl Im {
         None
     }
 
-    pub(crate) fn mixed_mul_mut(&mut self) -> Option<&mut Self> {
-        if let Some(b) = &mut self.mixed_mul && b.len() == 1 &&
-            let Some(e) = b.first_mut()
-        {
-            return Some(e)
-        }
-        None
-    }
+    // pub(crate) fn mixed_mul_mut(&mut self) -> Option<&mut Self> {
+    //     if let Some(b) = &mut self.mixed_mul && b.len() == 1 &&
+    //         let Some(e) = b.first_mut()
+    //     {
+    //         return Some(e)
+    //     }
+    //     None
+    // }
 
     pub(crate) fn mixed_base_simple_values(&self) -> Option<(f64, f64)> {
         if let Some(b) = &self.mixed_base && b.len() == 1 &&
@@ -318,6 +318,18 @@ impl Im {
         self.mul_fixer();
         self.base_fixer();
         self.simple_fixer();
+        self.mixed_base_elems_swapper();
+    }
+
+    pub(crate) fn mixed_base_elems_swapper(&mut self) {
+        if self.is_mixed_base_only() &&
+           let Some(b) = &mut self.mixed_base &&
+           let Some(fe) = b.first() &&
+           let Some(se) = b.last() &&
+           fe.real < 0.0 && se.real > 0.0
+        {
+            b.swap(0, 1)
+        }
     }
 
     pub(crate) unsafe fn add_ass_mixed_pow(&mut self, rhs: &mut Self) {
@@ -460,10 +472,9 @@ impl Im {
     pub(crate) unsafe fn collect(&mut self) {
         if self.is_mixed_base_only() {
             let e = &mut Im::default();
-
-            if let Some(v) = &mut self.mixed_base {
-                while !v.is_empty() {
-                    if let Some(e1) = v.pop().as_mut() {
+            if let Some(b) = &mut self.mixed_base {
+                while !b.is_empty() {
+                    if let Some(e1) = b.pop().as_mut() {
                         e.add_core(e1);
                     }
                 }

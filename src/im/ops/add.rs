@@ -63,15 +63,22 @@ impl Im {
         // a + S
         if self.is_a_s(rhs) {
             rhs.simple_to_mixed_base();
+            Self::add_vec(&mut self.mixed_base, &mut rhs.mixed_base);
         }
 
         // S + a
         else if self.is_s_a(rhs) {
             self.simple_to_mixed_base();
+            Self::add_vec(&mut self.mixed_base, &mut rhs.mixed_base);
         }
 
         // a + a , a + x , x + a
-        Self::add_vec(&mut self.mixed_base, &mut rhs.mixed_base);
+        else if let Some(b1) = &mut self.mixed_base &&
+            let Some(b2) = &mut rhs.mixed_base
+        {
+            b1.append(b2);
+            self.collect();
+        }
 
         if self.simple_mixed_base().is_some_and(|n| n.is_zero()) {
             *self = Self::default()
@@ -143,11 +150,12 @@ impl Im {
         {
             for e1 in v1.iter_mut() {
                 for e2 in v2.iter_mut() {
+                    let mut e = e1.clone();
                     if e1.im_pow == e2.im_pow {
-                        Im::add_core(e1, e2);
+                        Im::add_core(&mut e, e2);
                     }
-                    if !e1.is_zero() {
-                        exprs.push(e1.clone())
+                    if !e.is_zero() {
+                        exprs.push(e)
                     }
                 }
             }

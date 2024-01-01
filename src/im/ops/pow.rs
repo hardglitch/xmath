@@ -52,7 +52,9 @@ impl Im {
                 for _ in 0..(rhs.real.abs() - 1.0) as usize {
                     self.mul_core(&mut stable.clone());
                 }
-                self.push_in_mixed_pow(Self::new(-1.0, 0.0));
+                if rhs.real < 0.0 {
+                    self.push_in_mixed_pow(Self::new(-1.0, 0.0));
+                }
             }
             else  {
                 self.push_in_mixed_pow(rhs.clone())

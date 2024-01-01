@@ -406,8 +406,8 @@ pub(crate) mod test_im_numbers {
         fn test_sub6_pos() {
             let expr = (-1).r() - (-1).i();
             let mut test_res = Im::default();
-            test_res.push_in_mixed_base(Im::new(-1.0, 0.0));
             test_res.push_in_mixed_base(Im::new(1.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 0.0));
             assert_eq!(expr, test_res);
         }
 
@@ -424,8 +424,8 @@ pub(crate) mod test_im_numbers {
         fn test_sub8_pos() {
             let expr = 1.i() - 1.r() - 2.i() - 2.r();
             let mut test_res = Im::default();
-            test_res.push_in_mixed_base(Im::new(-1.0, 1.0));
             test_res.push_in_mixed_base(Im::new(-3.0, 0.0));
+            test_res.push_in_mixed_base(Im::new(-1.0, 1.0));
             assert_eq!(expr, test_res);
         }
 
@@ -556,10 +556,10 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_mul12_pos() {
             let expr1 = (1.r() + 2.i()) * (3.r() + 1.i()); // 1 + 7i
-            let expr2 = 4.i() - (4.i() + 6.r()); // 6
+            let expr2 = 4.i() - (4.i() + 6.r()); // -6
             let mut test_res = Im::default();
-            test_res.push_in_mixed_base(Im::new(7.0, 0.0));
             test_res.push_in_mixed_base(Im::new(7.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-5.0, 0.0));
             assert_eq!(expr1 + expr2, test_res);
         }
     }
@@ -608,15 +608,15 @@ pub(crate) mod test_im_numbers {
         fn test_pow6_pos() {
             let expr = (1.r() + 2.i()).pow(2.r());
             let mut test_res = Im::default();
-            test_res.push_in_mixed_base(Im::new(-3.0, 0.0));
             test_res.push_in_mixed_base(Im::new(4.0, 1.0));
+            test_res.push_in_mixed_base(Im::new(-3.0, 0.0));
             assert_eq!(expr, test_res);
         }
 
         #[test]
         fn test_pow7_pos() {
             let expr = 2.i().pow(3.r());
-            let test_res = Im::new(-8.0, 1.0);
+            let test_res = Im::new(-2.0, 1.0);
             assert_eq!(expr, test_res);
         }
 
@@ -836,21 +836,38 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
-        fn test_format1_neg() {
-            assert_eq!("None", (1.r() / 0.r()).format());
-        }
-
-        #[test]
-        fn test_div7_pos() {
+        fn test_format9_pos() {
             let expr = (4.r() - 7.i()) / (6.i() - 7.i());
             assert_eq!("(7-4/i)", expr.format());
         }
 
-            #[test]
-            fn test_div8_pos() {
-                let expr = (4.r() - 7.i()) / (6.r() - 7.i());
-                assert_eq!("(4-7i)/(6-7i)", expr.format());
-            }
+        #[test]
+        fn test_format10_pos() {
+            let expr = (4.r() - 7.i()) / (6.r() - 7.i());
+            assert_eq!("(4-7i)/(6-7i)", expr.format());
+        }
 
+        #[test]
+        fn test_format11_pos() {
+            let expr = (2.i() + 1.r()) * (3.r() + 1.i());
+            assert_eq!("(7i+1)", expr.format());
+        }
+
+        #[test]
+        fn test_format12_pos() {
+            let expr = (1.r() + 2.i()) * (3.r() + 1.i()) + 4.i() - (4.i() + 6.r());
+            assert_eq!("(7i-5)", expr.format());
+        }
+
+        #[test]
+        fn test_format13_pos() {
+            let expr = 1.r() * (2.i() - 2.i()) * 5.r() - (2.i() + 5.r()) * 2.i();
+            assert_eq!("(4-10i)", expr.format());
+        }
+
+        #[test]
+        fn test_format1_neg() {
+            assert_eq!("None", (1.r() / 0.r()).format());
+        }
     }
 }
