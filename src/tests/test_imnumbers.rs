@@ -565,7 +565,7 @@ pub(crate) mod test_im_numbers {
     }
 
     #[cfg(test)]
-    mod test_pow {
+    mod test_pow_powi {
         use crate::im::cast::ImValue;
         use crate::im::core::Im;
 
@@ -615,7 +615,7 @@ pub(crate) mod test_im_numbers {
 
         #[test]
         fn test_pow7_pos() {
-            let expr = 2.i().pow(3.r());
+            let expr = 2.i().powi(3.r());
             let test_res = Im::new(-2.0, 1.0);
             assert_eq!(expr, test_res);
         }
@@ -827,7 +827,7 @@ pub(crate) mod test_im_numbers {
 
         #[test]
         fn test_format7_pos() {
-            assert_eq!("-2/i", 2.i().pow((-3).r()).format());
+            assert_eq!("-2/i", 2.i().powi((-3).r()).format());
         }
 
         #[test]
@@ -863,6 +863,18 @@ pub(crate) mod test_im_numbers {
         fn test_format13_pos() {
             let expr = 1.r() * (2.i() - 2.i()) * 5.r() - (2.i() + 5.r()) * 2.i();
             assert_eq!("(4-10i)", expr.format());
+        }
+
+        #[test]
+        fn test_format14_pos() {
+            let expr = 2.i().pow(3.r());
+            assert_eq!("-8i", expr.format());
+        }
+
+        #[test]
+        fn test_format15_pos() {
+            let expr = 2.i().powi(3.r());
+            assert_eq!("-2i", expr.format());
         }
 
         #[test]

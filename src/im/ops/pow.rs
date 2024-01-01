@@ -4,15 +4,15 @@ impl Im {
     pub fn pow(mut self, mut rhs: Self) -> Self {
         if self.is_none() || rhs.is_none() { return Self::none() }
 
-        unsafe { self.pow_core(&mut rhs); }
+        unsafe { self.pow_core(&mut rhs, false); }
         self
     }
 
-    pub(crate) unsafe fn pow_core(&mut self, rhs: &mut Self) {
+    pub(crate) unsafe fn pow_core(&mut self, rhs: &mut Self, is_powi: bool) {
         self.im_pow_fixer();
         rhs.im_pow_fixer();
 
-        self.pow_logic(rhs);
+        self.pow_logic(rhs, is_powi);
         if self.is_none() || rhs.is_none() {
             *self = Self::none();
             return
@@ -21,7 +21,7 @@ impl Im {
         self.fixer_pack();
     }
 
-    unsafe fn pow_logic(&mut self, rhs: &mut Self) {
+    unsafe fn pow_logic(&mut self, rhs: &mut Self, is_powi: bool) {
         if rhs.is_zero() {
             *self = Im::new(1.0, 0.0);
             return
@@ -32,7 +32,7 @@ impl Im {
         { return }
 
         if self.is_simple() && rhs.is_real() {
-            if self.is_real() {
+            if (!is_powi && self.is_simple()) || (is_powi && self.is_real()) {
                 self.real = self.real.powf(rhs.real);
             }
             if self.is_simple_im() {

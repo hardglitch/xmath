@@ -182,7 +182,7 @@ impl Im {
             return
         }
 
-        self.pow_core(&mut Self::new(-1.0, 0.0));
+        self.pow_core(&mut Self::new(-1.0, 0.0), false);
 
         // if self.is_simple() {
         //     self.pow_core(&mut Self::new(-1.0, 0.0));
