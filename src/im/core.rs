@@ -84,15 +84,6 @@ impl Im {
         None
     }
 
-    // pub(crate) fn mixed_mul_mut(&mut self) -> Option<&mut Self> {
-    //     if let Some(b) = &mut self.mixed_mul && b.len() == 1 &&
-    //         let Some(e) = b.first_mut()
-    //     {
-    //         return Some(e)
-    //     }
-    //     None
-    // }
-
     pub(crate) fn mixed_base_simple_values(&self) -> Option<(f64, f64)> {
         if let Some(b) = &self.mixed_base && b.len() == 1 &&
             let Some(e) = b.first()
@@ -371,36 +362,6 @@ impl Im {
             self.push_in_mixed_pow(rhs.clone());
         }
     }
-
-    // pub(crate) unsafe fn mul_ass_mixed_pow(&mut self, rhs: &mut Self) {
-    //     if let Some(v1) = &mut self.mixed_pow &&
-    //         let Some(p1) = v1.first_mut()
-    //     {
-    //         if let Some(v2) = &mut rhs.mixed_pow &&
-    //             let Some(p2) = v2.first_mut()
-    //         {
-    //             p1.mul_core(p2);
-    //             self.pow_fixer();
-    //         }
-    //     } else {
-    //         self.push_in_mixed_pow(rhs.clone());
-    //     }
-    // }
-
-    // pub(crate) unsafe fn div_ass_mixed_pow(&mut self, rhs: &mut Self) {
-    //     if let Some(v1) = &mut self.mixed_pow &&
-    //         let Some(p1) = v1.first_mut()
-    //     {
-    //         if let Some(v2) = &mut rhs.mixed_pow &&
-    //             let Some(p2) = v2.first_mut()
-    //         {
-    //             p1.div_core(p2);
-    //             self.pow_fixer();
-    //         }
-    //     } else {
-    //         self.push_in_mixed_pow(rhs.clone());
-    //     }
-    // }
 
     pub(crate) unsafe fn mul_ass_mixed_mul(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_mul &&
