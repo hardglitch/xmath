@@ -138,7 +138,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn add_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {
+    unsafe fn add_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {
 
         let is_gr = Im::is_vec_greater(lhs, rhs);
         if !is_gr { swap(lhs, rhs) }
