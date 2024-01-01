@@ -878,6 +878,18 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
+        fn test_format16_pos() {
+            let expr = 3.r() * (1.r() - 1.i()).pow(2.r());
+            assert_eq!("-6i", expr.format());
+        }
+
+        #[test]
+        fn test_format17_pos() {
+            let expr = 3.i() * (1.r() - 1.i()).pow(3.i()) / (1.i() - 1.r()).pow(2.r());
+            assert_eq!("-1.5(1-i)^3i", expr.format());
+        }
+
+        #[test]
         fn test_format1_neg() {
             assert_eq!("None", (1.r() / 0.r()).format());
         }

@@ -410,9 +410,13 @@ impl Im {
                 let Some(m2) = v2.first_mut()
             {
                 m1.mul_core(m2);
-                self.mul_fixer();
             }
-        } else {
+            else if rhs.is_simple() {
+                m1.mul_core(rhs);
+            }
+            self.mul_fixer();
+        }
+        else {
             self.push_in_mixed_mul(rhs.clone());
         }
     }

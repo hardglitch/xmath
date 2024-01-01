@@ -50,7 +50,7 @@ impl Im {
                 mul = m.format_simple();
                 if m.im_pow >= 0.0 {
                     if self.real >= 0.0 { sign = "+".to_string() }
-                    else if self.real < 0.0 { sign = "-".to_string() }
+                    else if self.real < 0.0 && &mul[..1] != "-" { sign = "-".to_string() }
                 }
             }
         }
@@ -68,8 +68,12 @@ impl Im {
                     swap(&mut mul, &mut div);
                 }
             }
-            else if p.is_simple() && p.real > 0.0 && (p.is_real() && p.real != 1.0) {
-                pow = ["^", &p.format_simple()].concat();
+            else if p.is_simple() && p.real > 0.0 && !(p.is_real() && p.real == 1.0) {
+                pow = p.format_simple();
+                if pow.find('+') == Some(0) {
+                    pow.remove(0);
+                }
+                pow = ["^", &pow].concat();
             }
             else if p.is_simple() && p.real < 0.0 {
                 if p.is_real() && p.real != -1.0 && self.mixed_mul.is_none() {
@@ -81,12 +85,11 @@ impl Im {
             }
         }
 
-        // let mut base = "".to_string();
-        let mut value = Self::format_vec(&self.mixed_base);
-        if value.find('+') == Some(0) {
-            value.remove(0);
+        let mut base = Self::format_vec(&self.mixed_base);
+        if base.find('+') == Some(0) {
+            base.remove(0);
         }
-        let base = ["(", &value, ")"].concat();
+        base = ["(", &base, ")"].concat();
 
         format!("{}{}{}{}{}", sign, div, mul, base, pow)
     }
@@ -115,7 +118,11 @@ impl Im {
             s
         }
         else {
-            self.format_complex()
+            let mut s = self.format_complex();
+            if &s[..1] == "+" {
+                s.remove(0);
+            }
+            s
         }
     }
 }
