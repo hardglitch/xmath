@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // 0.75i(1-i)^3i
 
 
-    // ImMatrix - Im version of the Matrix module.
+    // ImMatrix - Im version of the Matrix structure.
     let m1 = ImMatrix::new(2, 2, vec![
         (-1).r() - 3.i(), 4.r() + 2.i(),
         1.r() + 1.i(), (-2).r() + 1.i(),
