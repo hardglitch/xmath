@@ -1,3 +1,4 @@
+use std::iter::Sum;
 use std::ptr::swap;
 
 #[derive(PartialEq, Debug)]
@@ -23,6 +24,17 @@ impl PartialEq for Im {
         self.mixed_mul == other.mixed_mul &&
         self.real == other.real &&
         self.im_pow == other.im_pow
+    }
+}
+
+impl Sum for Im {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Im::default(), |a, b| a + b)
+    }
+}
+impl<'a> Sum<&'a Im> for Im {
+    fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
+        iter.fold(Im::default(), |a, b| a + b.clone())
     }
 }
 

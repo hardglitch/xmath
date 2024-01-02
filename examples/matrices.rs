@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         0.0, 1.0, 7.0, 8.0, 6.0,
         0.0, 1.0, 4.0, 4.0, 7.0,
     ])?;
-    println!("det = {:?}", m.det());
+    println!("det = {}", m.det());
     // det = 156.0
 
 
@@ -26,10 +26,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         1.0, 2.0, 3.0,
         5.0, 2.0, 1.0,
     ])?;
-    println!("m1 * m2 = {:?}", m1.mul_by_ref(&m2)?);
-    println!("m1 * m2 = {:?}", m1 * m2);
-    // m1 * m2 = Matrix { strings: 3, rows: 3, body: [18.0, 12.0, 12.0, 39.0, 30.0, 33.0, 18.0, 12.0, 12.0] }
-    // m1 * m2 = Matrix { strings: 3, rows: 3, body: [18.0, 12.0, 12.0, 39.0, 30.0, 33.0, 18.0, 12.0, 12.0] }
+    println!("m1 * m2 = {}", m1.mul_by_ref(&m2)?);
+    println!("m1 * m2 = {}", m1 * m2);
+    // m1 * m2 = Matrix (3x3) = [
+    // 18 12 12
+    // 12 12 39
+    // 12 39 30
+    // ]
+    // m1 * m2 = Matrix (3x3) = [
+    // 18 12 12
+    // 12 12 39
+    // 12 39 30
+    // ]
 
 
 
@@ -38,8 +46,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         1.0, 2.0, 3.0,
         5.0, 2.0, 1.0,
     ])?;
-    println!("m * 2 = {:?}", m.mul_num(2.0));
-    // m * 2 = Matrix { strings: 3, rows: 3, body: [2.0, 4.0, 6.0, 2.0, 4.0, 6.0, 10.0, 4.0, 2.0] }
+    println!("m * 2 = {}", m.mul_num(2.0));
+    // m * 2 = Matrix (3x3) = [
+    // 2 4 6
+    // 4 6 2
+    // 6 2 4
+    // ]
 
 
 
@@ -53,10 +65,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         3.0, -4.0, 5.0,
         6.0, 7.0, 8.0,
     ])?;
-    println!("m1 + m2 = {:?}", m1.add_by_ref(&m2)?);
-    println!("m1 + m2 = {:?}", m1 + m2);
-    // m1 + m2 = Matrix { strings: 3, rows: 3, body: [2.0, 3.0, 5.0, 7.0, 1.0, 11.0, 13.0, 15.0, 17.0] }
-    // m1 + m2 = Matrix { strings: 3, rows: 3, body: [2.0, 3.0, 5.0, 7.0, 1.0, 11.0, 13.0, 15.0, 17.0] }
+    println!("m1 + m2 = {}", m1.add_by_ref(&m2)?);
+    println!("m1 + m2 = {}", m1 + m2);
+    // m1 + m2 = Matrix (3x3) = [
+    // 2 3 5
+    // 3 5 7
+    // 5 7 1
+    // ]
+    // m1 + m2 = Matrix (3x3) = [
+    // 2 3 5
+    // 3 5 7
+    // 5 7 1
+    // ]
 
 
 
@@ -70,10 +90,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         3.0, -4.0, 5.0,
         6.0, 7.0, 8.0,
     ])?;
-    println!("m1 - m2 = {:?}", m1.sub_by_ref(&m2)?);
-    println!("m1 - m2 = {:?}", m1 - m2);
-    // m1 - m2 = Matrix { strings: 3, rows: 3, body: [0.0, 1.0, 1.0, 1.0, 9.0, 1.0, 1.0, 1.0, 1.0] }
-    // m1 - m2 = Matrix { strings: 3, rows: 3, body: [0.0, 1.0, 1.0, 1.0, 9.0, 1.0, 1.0, 1.0, 1.0] }
+    println!("m1 - m2 = {}", m1.sub_by_ref(&m2)?);
+    println!("m1 - m2 = {}", m1 - m2);
+    // m1 - m2 = Matrix (3x3) = [
+    // 0 1 1
+    // 1 1 1
+    // 1 1 9
+    // ]
+    // m1 - m2 = Matrix (3x3) = [
+    // 0 1 1
+    // 1 1 1
+    // 1 1 9
+    // ]
 
 
 
@@ -82,8 +110,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         3.0, -4.0, 5.0,
         6.0, 7.0, 8.0,
     ])?;
-    println!("Cofactor matrix of m = {:?}", m.cofactor_matrix().unwrap());
-    // Cofactor matrix of m = Matrix { strings: 3, rows: 3, body: [-67.0, 6.0, 45.0, 6.0, -4.0, -1.0, 13.0, 1.0, -7.0] }
+    println!("Cofactor matrix of m = {}", m.cofactor_matrix().unwrap());
+    // Cofactor matrix of m = Matrix (3x3) = [
+    // -67 6 45
+    // 6 45 6
+    // 45 6 -4
+    // ]
 
 
 
@@ -92,8 +124,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         3.0, -4.0, 5.0,
         6.0, 7.0, 8.0,
     ])?;
-    println!("Transposed m = {:?}", m.transpose());
-    // Transposed m = Matrix { strings: 3, rows: 3, body: [1.0, 3.0, 6.0, 1.0, -4.0, 7.0, 2.0, 5.0, 8.0] }
+    println!("Transposed m = {}", m.transpose());
+    // Transposed m = Matrix (3x3) = [
+    // 1 3 6
+    // 3 6 1
+    // 6 1 -4
+    // ]
 
 
 
@@ -103,15 +139,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         6.0, 7.0, 8.0,
     ])?;
     let im = m.inverse().unwrap();
-    println!("m * im = im * m: {:?}", m.mul_by_ref(&im)? == im.mul_by_ref(&m)?);
-    // or
-    // println!("m * im = im * m: {:?}", m.clone() * im.clone() == im.clone() * m.clone());
-    println!("m * im = {:?}", m * im);
-    // m * im = im * m: true
-    // m * im = Matrix { strings: 3, rows: 3, body: [1.0, 0.0, 5.551115123125783e-17, 0.0, 1.0, 0.0, 0.0, 1.1102230246251565e-16, 1.0] }
-    // 1
-    //   1       - identity matrix
-    //     1
+    println!("im = {}", im);
+    // im = Matrix (3x3) = [
+    // -2.310344827586207 0.20689655172413793 0.4482758620689655
+    // 0.20689655172413793 0.4482758620689655 0.20689655172413793
+    // 0.4482758620689655 0.20689655172413793 -0.13793103448275862
+    // ]
 
 
 
@@ -120,15 +153,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         3.0, -4.0, 5.0,
         6.0, 7.0, 8.0,
     ])?;
-    let m1 = m.pow(3)?;
-    let m2 = m.mul_by_ref(&m)?.mul_by_ref(&m)?;
-    let m3 = m.clone() * m.clone() * m;
-    println!("m1 = {:?}", m1);
-    println!("m2 = {:?}", m2);
-    println!("m3 = {:?}", m3);
-    // m1 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
-    // m2 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
-    // m3 = Matrix { strings: 3, rows: 3, body: [187.0, 133.0, 271.0, 339.0, -13.0, 520.0, 843.0, 716.0, 1208.0] }
+    println!("m^3 = {}", m.pow(3)?);
+    // m = Matrix (3x3) = [
+    // 187 133 271
+    // 133 271 339
+    // 271 339 -13
+    // ]
 
 
 
@@ -140,7 +170,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     ])?;
     let d = &[1.0, 3.0, 2.0];
     for (i, x) in m.slae(d)?.unwrap().iter().enumerate() {
-        println!("x{} = {:?}", i+1, x);
+        println!("x{} = {}", i+1, x);
     }
     // x1 = 2.0
     // x2 = 1.0
@@ -162,9 +192,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         2.0, 1.0,
     ])?;
     println!("(m1 * x) + (m2 * 2) - m3 = 0");
-    println!("x = {:?}", (m3 - m2.mul_num(2.0)) * m1.inverse().unwrap() );
+    println!("x = {}", (m3 - m2.mul_num(2.0)) * m1.inverse().unwrap() );
     // (m1 * x) + (m2 * 2) - m3 = 0
-    // x = Matrix { strings: 2, rows: 2, body: [11.0, -7.0, 1.0, -2.0] }
+    // x = Matrix (2x2) = [
+    // 11 -7
+    // -7 1
+    // ]
 
 
 
@@ -182,10 +215,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         2.0, 4.0,
     ])?;
     println!("m1 * x * m2 = m3");
-    println!("x = {:?}", m1.inverse().unwrap() * m3 * m2.inverse().unwrap() );
+    println!("x = {}", m1.inverse().unwrap() * m3 * m2.inverse().unwrap() );
     // m1 * x * m2 = m3
-    // x = Matrix { strings: 2, rows: 2, body: [-0.1875, -0.1875, 0.0625, 2.0625] }
-
+    // x = Matrix (2x2) = [
+    // -0.1875 -0.1875
+    // -0.1875 0.0625
+    // ]
 
 
     Ok(())
