@@ -2,9 +2,26 @@ use crate::im::core::{Im, Sign};
 
 impl Im {
     pub fn is_zero(&self) -> bool {
+        //! Returns True if Im is zero, False otherwise.
+        //! # Example
+        //! ```
+        //! use xmath::im::cast::ImValue;
+        //!
+        //! assert!(0.i().is_zero());
+        //! ```
+
         self.is_simple() && self.real == 0.0
     }
     pub fn is_none(&self) -> bool {
+        //! Returns True if Im is None, False otherwise.
+        //! None is a special Im value that indicates division by zero within an expression.
+        //! # Example
+        //! ```
+        //! use xmath::im::cast::ImValue;
+        //!
+        //! assert!(!0.i().is_none());
+        //! ```
+
         self.mixed_base.as_ref().is_some_and(|v| v.is_empty()) &&
             self.mixed_pow.as_ref().is_some_and(|v| v.is_empty()) &&
             self.mixed_mul.as_ref().is_some_and(|v| v.is_empty())
