@@ -19,7 +19,7 @@ impl Im {
         //! ```
         //! use xmath::im::cast::ImValue;
         //!
-        //! assert!(!0.i().is_none());
+        //! assert!((1.i() / 0.i()).is_none());
         //! ```
 
         self.mixed_base.as_ref().is_some_and(|v| v.is_empty()) &&
