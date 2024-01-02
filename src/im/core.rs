@@ -1,12 +1,12 @@
 use std::iter::Sum;
 use std::ptr::swap;
 
-// #[derive(PartialEq, Debug)]
-// pub(crate) enum Sign {
-//     Plus,
-//     Minus,
-//     None,
-// }
+#[derive(PartialEq, Debug)]
+pub(crate) enum Sign {
+    Plus,
+    Minus,
+    None,
+}
 
 #[derive(Debug, Clone, Default)]
 pub struct Im {

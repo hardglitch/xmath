@@ -1,4 +1,4 @@
-use crate::im::core::Im;
+use crate::im::core::{Im, Sign};
 
 impl Im {
     pub fn is_zero(&self) -> bool {
@@ -47,13 +47,14 @@ impl Im {
         { return true }
         false
     }
-    // pub(crate) unsafe fn is_equal_by_abs(&self, other: &Self) -> Sign {
-    //     let mut neg_self = self.clone();
-    //     neg_self.neg();
-    //     if self == other { Sign::Plus }
-    //     else if &neg_self == other { Sign::Minus }
-    //     else { Sign::None }
-    // }
+    #[allow(dead_code)]
+    pub(crate) unsafe fn is_equal_by_abs(&self, other: &Self) -> Sign {
+        let mut neg_self = self.clone();
+        neg_self.neg();
+        if self == other { Sign::Plus }
+        else if &neg_self == other { Sign::Minus }
+        else { Sign::None }
+    }
     pub(crate) fn is_mixed_base_only(&self) -> bool {
         self.mixed_mul.is_none() && self.mixed_pow.is_none() && self.mixed_base.is_some() &&
             self.real == 0.0 && self.im_pow == 0.0
