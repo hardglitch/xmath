@@ -117,7 +117,7 @@ pub(crate) mod test_im_numbers {
         use crate::im::core::Im;
 
         #[test]
-        fn test_pair_checker1_pos() {
+        fn test_pow_fixer1_pos() {
             let mut im_num = 1.i();
             im_num.im_pow_fixer();
             let test_res = 1.i();
@@ -125,7 +125,7 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
-        fn test_pair_checker2_pos() {
+        fn test_pow_fixer2_pos() {
             let mut im_num = 1.r();
             im_num.im_pow_fixer();
             let test_res = 1.r();
@@ -133,7 +133,7 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
-        fn test_pair_checker3_pos() {
+        fn test_pow_fixer3_pos() {
 
             let mut im_num = Im::new(1.0, 2.0);
             im_num.im_pow_fixer();
@@ -142,7 +142,7 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
-        fn test_pair_checker4_pos() {
+        fn test_pow_fixer4_pos() {
             let mut im_num = Im::new(3.0, 5.0);
             im_num.im_pow_fixer();
             let test_res = (3).i();
@@ -150,7 +150,7 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
-        fn test_pair_checker5_pos() {
+        fn test_pow_fixer5_pos() {
             let mut im_num = Im::new(3.0, 4.0);
             im_num.im_pow_fixer();
             let test_res = (3).r();
@@ -158,7 +158,7 @@ pub(crate) mod test_im_numbers {
         }
 
         #[test]
-        fn test_pair_checker6_pos() {
+        fn test_pow_fixer6_pos() {
             let mut im_num = Im::new(-3.0, 3.0);
             im_num.im_pow_fixer();
             let test_res = (3).i();
@@ -467,6 +467,16 @@ pub(crate) mod test_im_numbers {
             expr.push_in_mixed_base(Im::new(1.0, 1.0));
             unsafe { expr.collect(); }
             assert_eq!(expr, 2.i());
+        }
+
+        #[test]
+        fn test_is_none1_pos() {
+            assert!((1.i() / 0.i()).is_none());
+        }
+
+        #[test]
+        fn test_is_none1_neg() {
+            assert!(!(0.i() / 1.i()).is_none());
         }
     }
 

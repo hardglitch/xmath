@@ -2,9 +2,26 @@ use crate::im::core::{Im, Sign};
 
 impl Im {
     pub fn is_zero(&self) -> bool {
+        //! Returns True if Im is zero, False otherwise.
+        //! # Example
+        //! ```
+        //! use xmath::im::cast::ImValue;
+        //!
+        //! assert!(0.i().is_zero());
+        //! ```
+
         self.is_simple() && self.real == 0.0
     }
     pub fn is_none(&self) -> bool {
+        //! Returns True if Im is None, False otherwise.
+        //! None is a special Im value that indicates division by zero within an expression.
+        //! # Example
+        //! ```
+        //! use xmath::im::cast::ImValue;
+        //!
+        //! assert!((1.i() / 0.i()).is_none());
+        //! ```
+
         self.mixed_base.as_ref().is_some_and(|v| v.is_empty()) &&
             self.mixed_pow.as_ref().is_some_and(|v| v.is_empty()) &&
             self.mixed_mul.as_ref().is_some_and(|v| v.is_empty())
@@ -37,18 +54,6 @@ impl Im {
         if self == other { Sign::Plus }
         else if &neg_self == other { Sign::Minus }
         else { Sign::None }
-    }
-    #[allow(dead_code)]
-    pub(crate) fn is_mixed_base_len_big(&self) -> bool {
-        self.mixed_base.as_ref().is_some_and(|e| e.len() > 1)
-    }
-    #[allow(dead_code)]
-    pub(crate) fn is_mixed_base_len_bigger(&self, other: &Self) -> bool {
-        if let Some(b1) = &self.mixed_base &&
-            let Some(b2) = &other.mixed_base &&
-            b1.len() > b2.len()
-        { return true }
-        false
     }
     pub(crate) fn is_mixed_base_only(&self) -> bool {
         self.mixed_mul.is_none() && self.mixed_pow.is_none() && self.mixed_base.is_some() &&
