@@ -89,7 +89,7 @@ struct Flags {
 pub struct Expression<F> {
     expr: Box<F>,
     roots: Vec<f64>,
-    extrs: Vec<RawPoint>,
+    extrema: Vec<RawPoint>,
     settings: Settings,
     flags: Flags,
 }
@@ -101,7 +101,7 @@ impl<F> Expression<F>
         Self {
             expr: Box::new(func),
             roots: Default::default(),
-            extrs: Default::default(),
+            extrema: Default::default(),
             settings: Default::default(),
             flags: Default::default(),
         }
@@ -143,7 +143,7 @@ impl<F> Expression<F>
         Ok(())
     }
 
-    pub fn find_extremes(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<Vec<Point>>> {
+    pub fn find_extrema(&mut self, x_min: f64, x_max: f64) -> std::io::Result<Option<Vec<Point>>> {
         self.flags.is_extrs = true;
         let mut upscaled_x_min = (x_min / self.settings.precision) as i64;
         let mut upscaled_x_max = (x_max / self.settings.precision) as i64;
@@ -193,18 +193,18 @@ impl<F> Expression<F>
         }
         if raw_data.is_empty() { return Ok(None) }
         raw_data.sort();
-        self.extrs.push(*raw_data.first().unwrap());  // min point
-        self.extrs.push(*raw_data.last().unwrap());   // max point
+        self.extrema.push(*raw_data.first().unwrap());  // min point
+        self.extrema.push(*raw_data.last().unwrap());   // max point
 
         // Other style of data returning
-        Ok(self.extremes())
+        Ok(self.extrema())
     }
 
-    pub fn extremes(&self) -> Option<Vec<Point>> {
-        match self.flags.is_extrs && !self.extrs.is_empty() {
+    pub fn extrema(&self) -> Option<Vec<Point>> {
+        match self.flags.is_extrs && !self.extrema.is_empty() {
             false => None,
             true => {
-                let points = self.extrs.iter()
+                let points = self.extrema.iter()
                     .map(|p| p.convert_to_point())
                     .collect();
                 Some(points)
@@ -213,16 +213,16 @@ impl<F> Expression<F>
     }
 
     pub fn max(&self) -> Option<Point> {
-        match self.flags.is_extrs && !self.extrs.is_empty() {
+        match self.flags.is_extrs && !self.extrema.is_empty() {
             false => None,
-            true => Some(self.extrs.last().unwrap().convert_to_point())
+            true => Some(self.extrema.last().unwrap().convert_to_point())
         }
     }
 
     pub fn min(&self) -> Option<Point> {
-        match self.flags.is_extrs && !self.extrs.is_empty() {
+        match self.flags.is_extrs && !self.extrema.is_empty() {
             false => None,
-            true => Some(self.extrs.first().unwrap().convert_to_point())
+            true => Some(self.extrema.first().unwrap().convert_to_point())
         }
     }
 
@@ -246,8 +246,8 @@ impl<F> Expression<F>
         }
 
         if self.flags.is_extrs {
-            match self.extrs.is_empty() {
-                true  => println!("No extremes"),
+            match self.extrema.is_empty() {
+                true  => println!("No extrema"),
                 false => {
                     if self.min() == self.max() {
                         println!("Min=Max F(x)={:.2}, x={:.2}", self.min().unwrap().y, self.min().unwrap().x);

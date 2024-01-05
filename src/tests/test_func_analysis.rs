@@ -24,11 +24,11 @@ mod test_func_analysis {
     }
 
     #[test]
-    fn test_find_extremums1_max_min_pos() {
+    fn test_find_extrema1_max_min_pos() {
         let mut y = Expression::new(
             |x: f64| 6.0 * x.powf(5.0) - 90.0 * x.powf(3.0) - 5.0
         );
-        y.find_extremes(-5.0, 1.0).unwrap();
+        y.find_extrema(-5.0, 1.0).unwrap();
 
         let max = y.max().unwrap();
         assert_eq!(max, Point::new(-3.0, 967.0));
@@ -42,11 +42,11 @@ mod test_func_analysis {
     }
 
     #[test]
-    fn test_find_extremums2_extremums_pos() {
+    fn test_find_extrema2_extrema_pos() {
         let mut y = Expression::new(
             |x: f64| x.powf(3.0) - 16.0 * x.powf(2.0) / 3.0 + 15.0 * x
         );
-        let res = y.find_extremes(-5.0, 1.0).unwrap().unwrap();
+        let res = y.find_extrema(-5.0, 1.0).unwrap().unwrap();
         let min = res.first().unwrap();
         let max = res.last().unwrap();
         assert!(min.x().is_equal(-5.0, 0.01));
@@ -56,39 +56,39 @@ mod test_func_analysis {
     }
 
     #[test]
-    fn test_find_extremums3_extremums_pos() {
+    fn test_find_extrema3_extrema_pos() {
         let mut y = Expression::new(
             |x: f64| x.powf(2.0) + x
         );
-        let res = y.find_extremes(-5.0, 1.0).unwrap().unwrap();
+        let res = y.find_extrema(-5.0, 1.0).unwrap().unwrap();
         let min = Point::new(-0.5, -0.25);
         let max = Point::new(-5.0, 20.0);
         assert!(min.eq(res.first().unwrap()));
         assert!(max.eq(res.last().unwrap()));
-        assert_eq!(Some(vec![min, max]), y.extremes());
+        assert_eq!(Some(vec![min, max]), y.extrema());
     }
 
     #[test]
-    fn test_find_extremums4_extremums_pos() {
+    fn test_find_extrema4_extrema_pos() {
         let mut y = Expression::new(
             |x: f64| x.powf(2.0) + x
         );
-        let res = y.find_extremes(-5.0, 1.0).unwrap().unwrap();
+        let res = y.find_extrema(-5.0, 1.0).unwrap().unwrap();
         let min = Point::new(-0.5, -0.25);
         let max = Point::new(-5.0, 20.0);
         assert!(min.eq(res.first().unwrap()));
         assert!(max.eq(res.last().unwrap()));
-        assert_eq!(Some(vec![min, max]), y.extremes());
+        assert_eq!(Some(vec![min, max]), y.extrema());
     }
 
     #[test]
-    fn test_find_extremums5_none_pos() {
+    fn test_find_extrema5_none_pos() {
         let mut y = Expression::new(
             |x: f64| (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt()
         );
-        let res = y.find_extremes(-5.0, 1.0).unwrap();
+        let res = y.find_extrema(-5.0, 1.0).unwrap();
         assert!(res.is_none());
-        assert!(y.extremes().is_none());
+        assert!(y.extrema().is_none());
     }
 
     #[test]
@@ -96,7 +96,7 @@ mod test_func_analysis {
         let y = Expression::new(
             |x: f64| (x.powf(3.0) + 1.0) * (x - 1.0) / (x - 2.0).sqrt()
         );
-        assert!(y.extremes().is_none());
+        assert!(y.extrema().is_none());
         assert!(y.min().is_none());
         assert!(y.max().is_none());
         assert!(y.roots().is_none());

@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut y = Expression::new(
         |x: f64| x.powi(3) - 16.0*x.powi(2)/3.0 + 15.0*x
     );
-    y.find_extremes(-5.0, 1.0)?;
+    y.find_extrema(-5.0, 1.0)?;
     y.find_roots()?;
     y.print_result();
     // x1=0.00
