@@ -14,7 +14,7 @@ mod test_common {
     #[test]
     fn test_factorial2_pos() {
         let res = factorial(0);
-        assert_eq!(res, 0.0);
+        assert_eq!(res, 1.0);
     }
 
     #[test]
