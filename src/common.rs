@@ -7,8 +7,7 @@ pub fn factorial(n: usize) -> f64 {
     //! Limit 170, if > then 'inf'
 
     match n {
-        0 => { 0.0 }
-        1 => { 1.0 }
+        0 | 1 => { 1.0 }
         _ => {
             let mut r = Box::<f64>::new(1e0);
             for i in 2..=n {
