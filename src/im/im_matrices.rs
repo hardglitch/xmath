@@ -2,11 +2,11 @@ use std::cmp::{min, Ordering};
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::mem::swap;
-use std::ops::{Add, Deref, Mul, Sub};
+use std::ops::{Add, Mul, Sub};
 use crate::im::core::Im;
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ImMatrix {
     strings: usize,
     rows: usize,
@@ -189,10 +189,23 @@ impl ImMatrix {
             1 => { Ok(self.clone()) }
             _ => {
                 let mut m = Box::new(self.mul_by_ref(self)?);
-                for _ in 2..pow {
-                    let old_m = m.deref();
-                    let new_m = old_m.mul_by_ref(self)?;
-                    *m = new_m;
+                let mut p = 2_usize;
+
+                loop {
+                    let mut new_m = Box::<ImMatrix>::default();
+                    match (pow - p).cmp(&1) {
+                        Ordering::Equal => {
+                            *new_m = m.mul_by_ref(self)?;
+                            *m = *new_m;
+                            break;
+                        },
+                        Ordering::Greater => {
+                            *new_m = m.mul_by_ref(&m)?;
+                            *m = *new_m;
+                            p += p;
+                        },
+                        _ => break,
+                    }
                 }
                 Ok(*m)
             }

@@ -277,6 +277,28 @@ mod test_matrices {
     }
 
     #[test]
+    fn test_matrices_pow2_pos() {
+        let m = Matrix::new(2,2,vec![
+            1.0, 1.0,
+            1.0, 0.0,
+        ]).unwrap();
+        assert_eq!(m.pow(8).unwrap(), m.clone() * m.clone() * m.clone() * m.clone() * m.clone() * m.clone() * m.clone() * m.clone());
+    }
+
+    #[test]
+    fn test_matrices_pow3_pos() {
+        let m = Matrix::new(2,2,vec![
+            1., 1.,
+            1., 0.,
+        ]).unwrap();
+        let res = Matrix::new(2,2,vec![
+            34., 21.,
+            21., 13.,
+        ]).unwrap();
+        assert_eq!(m.pow(8).unwrap(), res);
+    }
+
+    #[test]
     fn test_matrices_slae1_pos() {
         let m = Matrix::new(3,3,vec![
             1.0, 4.0, 2.0,
