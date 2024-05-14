@@ -15,11 +15,11 @@ impl Im {
 
         if self.is_none() || rhs.is_none() { return Self::none() }
 
-        unsafe { self.pow_core(&mut rhs, false); }
+        self.pow_core(&mut rhs, false);
         self
     }
 
-    pub(crate) unsafe fn pow_core(&mut self, rhs: &mut Self, is_powi: bool) {
+    pub(crate) fn pow_core(&mut self, rhs: &mut Self, is_powi: bool) {
         self.im_pow_fixer();
         rhs.im_pow_fixer();
 
@@ -32,7 +32,7 @@ impl Im {
         self.fixer_pack();
     }
 
-    unsafe fn pow_logic(&mut self, rhs: &mut Self, is_powi: bool) {
+    fn pow_logic(&mut self, rhs: &mut Self, is_powi: bool) {
         if rhs.is_zero() {
             *self = Im::new(1.0, 0.0);
             return

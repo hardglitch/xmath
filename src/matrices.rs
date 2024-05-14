@@ -10,7 +10,7 @@ use crate::utils::AdvancedEQ;
 pub struct Matrix {
     strings: usize,
     rows: usize,
-    body: Vec<f64>,
+    pub(crate) body: Vec<f64>,
 }
 impl Display for Matrix {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

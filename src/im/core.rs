@@ -1,5 +1,5 @@
 use std::iter::Sum;
-use std::ptr::swap;
+use std::mem::swap;
 
 #[derive(PartialEq, Debug)]
 pub(crate) enum Sign {
@@ -154,7 +154,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn neg(&mut self) {
+    pub(crate) fn neg(&mut self) {
         if self.is_simple() {
             self.real = -self.real
         }
@@ -179,7 +179,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn pow_neg(&mut self) {
+    pub(crate) fn pow_neg(&mut self) {
         if self.is_zero() {
             *self = Self::none();
             return
@@ -266,7 +266,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn base_fixer(&mut self) {
+    pub(crate) fn base_fixer(&mut self) {
         if let Some(v) = &mut self.mixed_base && v.len() == 1 &&
             let Some(b) = v.first_mut()
 
@@ -316,7 +316,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn fixer_pack(&mut self) {
+    pub(crate) fn fixer_pack(&mut self) {
         self.pow_fixer();
         self.mul_fixer();
         self.base_fixer();
@@ -335,7 +335,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn add_ass_mixed_pow(&mut self, rhs: &mut Self) {
+    pub(crate) fn add_ass_mixed_pow(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_pow &&
             let Some(p1) = v1.first_mut()
         {
@@ -355,7 +355,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn sub_ass_mixed_pow(&mut self, rhs: &mut Self) {
+    pub(crate) fn sub_ass_mixed_pow(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_pow &&
             let Some(p1) = v1.first_mut()
         {
@@ -375,7 +375,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn mul_ass_mixed_mul(&mut self, rhs: &mut Self) {
+    pub(crate) fn mul_ass_mixed_mul(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_mul &&
             let Some(m1) = v1.first_mut()
         {
@@ -394,7 +394,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn div_ass_mixed_mul(&mut self, rhs: &mut Self) {
+    pub(crate) fn div_ass_mixed_mul(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_mul &&
             let Some(m1) = v1.first_mut()
         {
@@ -409,7 +409,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn add_ass_mixed_mul(&mut self, rhs: &mut Self) {
+    pub(crate) fn add_ass_mixed_mul(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_mul &&
             let Some(m1) = v1.first_mut()
         {
@@ -424,7 +424,7 @@ impl Im {
         }
     }
 
-    pub(crate) unsafe fn sub_ass_mixed_mul(&mut self, rhs: &mut Self) {
+    pub(crate) fn sub_ass_mixed_mul(&mut self, rhs: &mut Self) {
         if let Some(v1) = &mut self.mixed_mul &&
             let Some(m1) = v1.first_mut()
         {
@@ -446,7 +446,7 @@ impl Im {
         *self = expr
     }
 
-    pub(crate) unsafe fn collect(&mut self) {
+    pub(crate) fn collect(&mut self) {
         if self.is_mixed_base_only() {
             let e = &mut Im::default();
             if let Some(b) = &mut self.mixed_base {

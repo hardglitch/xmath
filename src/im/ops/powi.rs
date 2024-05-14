@@ -15,7 +15,7 @@ impl Im {
 
         if self.is_none() || rhs.is_none() { return Self::none() }
 
-        unsafe { self.pow_core(&mut rhs, true); }
+        self.pow_core(&mut rhs, true);
         self
     }
 }

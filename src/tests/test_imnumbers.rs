@@ -174,7 +174,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg1_pos() {
             let mut expr = 1.i();
-            unsafe { expr.neg(); }
+            expr.neg();
             let test_res = (-1).i();
             assert_eq!(expr, test_res);
         }
@@ -182,7 +182,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg2_pos() {
             let mut expr = (-1).i();
-            unsafe { expr.neg(); }
+            expr.neg();
             let test_res = (1).i();
             assert_eq!(expr, test_res);
         }
@@ -190,7 +190,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg3_pos() {
             let mut expr = (-1).r();
-            unsafe { expr.neg(); }
+            expr.neg();
             let test_res = (1).r();
             assert_eq!(expr, test_res);
         }
@@ -198,7 +198,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg4_pos() {
             let mut expr = 1.r();
-            unsafe { expr.neg(); }
+            expr.neg();
             let test_res = (-1).r();
             assert_eq!(expr, test_res);
         }
@@ -206,7 +206,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg5_pos() {
             let mut expr = 3.r() + 2.i();
-            unsafe { expr.neg(); }
+            expr.neg();
             let mut test_res = Im::default();
             test_res.push_in_mixed_base(Im::new(-3.0, 0.0));
             test_res.push_in_mixed_base(Im::new(-2.0, 1.0));
@@ -216,7 +216,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg6_pos() {
             let mut expr = (3.r() + 2.i()).pow(1.i());
-            unsafe { expr.neg(); }
+            expr.neg();
 
             let mut test_res = Im::default();
             test_res.push_in_mixed_base(Im::new(3.0, 0.0));
@@ -230,7 +230,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg7_pos() {
             let mut expr = (3.r() + 2.i()).pow(2.i()) * 2.i();
-            unsafe { expr.neg(); }
+            expr.neg();
 
             let mut test_res = Im::default();
             test_res.push_in_mixed_base(Im::new(3.0, 0.0));
@@ -244,7 +244,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg1_neg() {
             let mut expr = 1.i();
-            unsafe { expr.neg(); }
+            expr.neg();
             let test_res = (-1).r();
             assert_ne!(expr, test_res);
         }
@@ -252,7 +252,7 @@ pub(crate) mod test_im_numbers {
         #[test]
         fn test_neg2_neg() {
             let mut expr = 1.r();
-            unsafe { expr.neg(); }
+            expr.neg();
             let test_res = (-1).i();
             assert_ne!(expr, test_res);
         }
@@ -265,19 +265,19 @@ pub(crate) mod test_im_numbers {
 
         #[test]
         fn test_abs1_pos() {
-            let sign = unsafe { 1.r().is_equal_by_abs(&(-1).r()) };
+            let sign = 1.r().is_equal_by_abs(&(-1).r());
             assert_eq!(sign, Sign::Minus);
         }
 
         #[test]
         fn test_abs2_pos() {
-            let sign = unsafe { 1.r().is_equal_by_abs(&(1).r()) };
+            let sign = 1.r().is_equal_by_abs(&(1).r());
             assert_eq!(sign, Sign::Plus);
         }
 
         #[test]
         fn test_abs3_pos() {
-            let sign = unsafe { 1.r().is_equal_by_abs(&(-2).r()) };
+            let sign = 1.r().is_equal_by_abs(&(-2).r());
             assert_eq!(sign, Sign::None);
         }
     }
@@ -465,7 +465,7 @@ pub(crate) mod test_im_numbers {
             expr.push_in_mixed_base(Im::new(1.0, 0.0));
             expr.push_in_mixed_base(Im::new(-1.0, 0.0));
             expr.push_in_mixed_base(Im::new(1.0, 1.0));
-            unsafe { expr.collect(); }
+            expr.collect();
             assert_eq!(expr, 2.i());
         }
 

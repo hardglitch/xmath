@@ -1,5 +1,5 @@
 use std::ops::Mul;
-use std::ptr::swap;
+use std::mem::swap;
 use crate::im::core::Im;
 
 
@@ -9,13 +9,13 @@ impl Mul for Im {
     fn mul(mut self, mut rhs: Self) -> Self {
         if self.is_none() || rhs.is_none() { return Self::none() }
 
-        unsafe { self.mul_core(&mut rhs); }
+        self.mul_core(&mut rhs);
         self
     }
 }
 
 impl Im {
-    pub(crate) unsafe fn mul_core(&mut self, rhs: &mut Self) {
+    pub(crate) fn mul_core(&mut self, rhs: &mut Self) {
         self.im_pow_fixer();
         rhs.im_pow_fixer();
 
@@ -26,10 +26,10 @@ impl Im {
         }
 
         self.fixer_pack();
-        unsafe { self.collect(); }
+        self.collect();
     }
 
-    unsafe fn mul_logic(&mut self, rhs: &mut Self) {
+    fn mul_logic(&mut self, rhs: &mut Self) {
         if self.is_fast_logic2(rhs) { self.mul_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.mul_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.mul_mixed_base_logic(rhs) }
@@ -59,7 +59,7 @@ impl Im {
         }
     }
 
-    unsafe fn mul_mixed_base_logic(&mut self, rhs: &mut Self) {
+    fn mul_mixed_base_logic(&mut self, rhs: &mut Self) {
 
         // a * S
         if self.is_a_s(rhs) {
@@ -79,7 +79,7 @@ impl Im {
         }
     }
 
-    unsafe fn mul_mixed_pow_logic(&mut self, rhs: &mut Self) {
+    fn mul_mixed_pow_logic(&mut self, rhs: &mut Self) {
 
         // a^n * a , a^n * a^n , a^n * a^x
         if self.is_an_a(rhs) || self.is_an_an(rhs) || self.is_an_ax(rhs)
@@ -106,7 +106,7 @@ impl Im {
         }
     }
 
-    unsafe fn mul_mixed_mul_logic(&mut self, rhs: &mut Self) {
+    fn mul_mixed_mul_logic(&mut self, rhs: &mut Self) {
 
         // Ma^n * S , Ma^n * x , Ma^n * x^x , Ma^n * Xx^x
         if self.is_man_s(rhs) || self.is_man_x(rhs) || self.is_man_xx(rhs) || self.is_man_xxx(rhs) {
@@ -137,7 +137,7 @@ impl Im {
         }
     }
 
-    unsafe fn mul_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {
+    fn mul_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {
         let is_gr = Im::is_vec_greater(lhs, rhs);
         if !is_gr { swap(lhs, rhs) }
 

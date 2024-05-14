@@ -1,5 +1,5 @@
 use std::ops::Sub;
-use std::ptr::swap;
+use std::mem::swap;
 use crate::im::core::Im;
 
 impl Sub for Im {
@@ -8,13 +8,13 @@ impl Sub for Im {
     fn sub(mut self, mut rhs: Self) -> Self {
         if self.is_none() || rhs.is_none() { return Self::none() }
 
-        unsafe { self.sub_core(&mut rhs); }
+        self.sub_core(&mut rhs);
         self
     }
 }
 
 impl Im {
-    pub(crate) unsafe fn sub_core(&mut self, rhs: &mut Self) {
+    pub(crate) fn sub_core(&mut self, rhs: &mut Self) {
         if self.is_none() || rhs.is_none() { return }
 
         self.im_pow_fixer();
@@ -29,7 +29,7 @@ impl Im {
         self.fixer_pack();
     }
 
-    unsafe fn sub_logic(&mut self, rhs: &mut Self) {
+    fn sub_logic(&mut self, rhs: &mut Self) {
         if self.is_fast_logic1(rhs) { self.sub_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.sub_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.sub_mixed_base_logic(rhs) }
@@ -37,7 +37,7 @@ impl Im {
         else if self.is_mixed_mul_logic(rhs) { self.sub_mixed_mul_logic(rhs) }
     }
 
-    unsafe fn sub_fast_logic(&mut self, rhs: &mut Self) {
+    fn sub_fast_logic(&mut self, rhs: &mut Self) {
         if self.is_zero() {
             swap(self, rhs);
             self.neg();
@@ -47,7 +47,7 @@ impl Im {
         }
     }
 
-    unsafe fn sub_simple_logic(&mut self, rhs: &mut Self) {
+    fn sub_simple_logic(&mut self, rhs: &mut Self) {
 
         // Sr - Sr , Si - Si
         if self.is_sr_sr(rhs) || self.is_si_si(rhs) {
@@ -63,7 +63,7 @@ impl Im {
         }
     }
 
-    unsafe fn sub_mixed_base_logic(&mut self, rhs: &mut Self) {
+    fn sub_mixed_base_logic(&mut self, rhs: &mut Self) {
 
         // a - S
         if self.is_a_s(rhs) {
@@ -89,7 +89,7 @@ impl Im {
         }
     }
 
-    unsafe fn sub_mixed_pow_logic(&mut self, rhs: &mut Self) {
+    fn sub_mixed_pow_logic(&mut self, rhs: &mut Self) {
 
         // a^n - a , a^n - S , a^n - x , a^n - a^x , a^n - x^x
         if self.is_an_a(rhs) || self.is_an_s(rhs) || self.is_an_x(rhs) || self.is_an_ax(rhs) || self.is_an_xx(rhs)
@@ -107,7 +107,7 @@ impl Im {
         }
     }
 
-    unsafe fn sub_mixed_mul_logic(&mut self, rhs: &mut Self) {
+    fn sub_mixed_mul_logic(&mut self, rhs: &mut Self) {
 
         // Ma^n - a^n
         if self.is_man_an(rhs) {
