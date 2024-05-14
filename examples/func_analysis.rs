@@ -1,5 +1,5 @@
 // x.powi(2) + x : x1=-1, x2=0, x=-5..1 -> min=-0.25, max=20
-// (x.powi(3)+1.0) * (x-1.0) / (x-2.0).sqrt() : No roots, x=-5..1 -> No extremes
+// (x.powi(3)+1.0) * (x-1.0) / (x-2.0).sqrt() : No roots, x=-5..1 -> No extrema
 // -1.0 / (x * (1.0 - x.ln().powi(2)).sqrt()) : No roots, x=-5..1 -> min=-257,11, max=-1
 // x.powi(3) - 16.0*x.powi(2)/3.0 + 15.0*x : x1=0, x=-5..1 -> min=-333,33, max=10.67
 // 6.0*x.powi(5) - 90.0*x.powi(3) - 5.0 : No roots, x=-5..1 -> min=-7505, max=967
