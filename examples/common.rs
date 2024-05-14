@@ -1,4 +1,4 @@
-use xmath::common::{factorial, sigma};
+use xmath::common::{factorial, fib, sigma};
 
 fn main() {
     let res = sigma(1.0, 10000.0, 1.0, |x| x);
@@ -12,4 +12,8 @@ fn main() {
     let a = factorial(170);
     println!("{:?}", a);
     // 7.257415615307994e306
+
+    let a = fib(9);
+    println!("{:?}", a);
+    // 34.0
 }

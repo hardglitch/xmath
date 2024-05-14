@@ -1,4 +1,5 @@
 use std::error::Error;
+use crate::matrices::Matrix;
 use crate::utils::AdvancedEQ;
 
 
@@ -58,4 +59,9 @@ pub fn sigma<F>(first: f64, last: f64, step: f64, func: F) -> Result<f64, Box<dy
         value += step;
     }
     Ok(sum)
+}
+
+pub fn fib(step: usize) -> f64 {
+    let m = Matrix::new(2, 2, vec![1., 1., 1., 0.]).unwrap();
+    *m.pow(step - 1).unwrap().body.first().unwrap()
 }

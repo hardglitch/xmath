@@ -48,7 +48,7 @@ impl Im {
         false
     }
     #[allow(dead_code)]
-    pub(crate) unsafe fn is_equal_by_abs(&self, other: &Self) -> Sign {
+    pub(crate) fn is_equal_by_abs(&self, other: &Self) -> Sign {
         let mut neg_self = self.clone();
         neg_self.neg();
         if self == other { Sign::Plus }

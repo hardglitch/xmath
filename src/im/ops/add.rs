@@ -1,5 +1,5 @@
+use std::mem::swap;
 use std::ops::Add;
-use std::ptr::swap;
 use crate::im::core::Im;
 
 impl Add for Im {
@@ -8,13 +8,13 @@ impl Add for Im {
     fn add(mut self, mut rhs: Self) -> Self {
         if self.is_none() || rhs.is_none() { return Self::none() }
 
-        unsafe { self.add_core(&mut rhs); }
+        self.add_core(&mut rhs);
         self
     }
 }
 
 impl Im {
-    pub(crate) unsafe fn add_core(&mut self, rhs: &mut Self) {
+    pub(crate) fn add_core(&mut self, rhs: &mut Self) {
         if self.is_none() || rhs.is_none() { return }
 
         self.im_pow_fixer();
@@ -29,7 +29,7 @@ impl Im {
         self.fixer_pack();
     }
 
-    unsafe fn add_logic(&mut self, rhs: &mut Self) {
+    fn add_logic(&mut self, rhs: &mut Self) {
         if self.is_fast_logic2(rhs) { self.add_fast_logic(rhs) }
         else if self.is_simple_logic(rhs) { self.add_simple_logic(rhs) }
         else if self.is_mixed_base_logic(rhs) { self.add_mixed_base_logic(rhs) }
@@ -37,7 +37,7 @@ impl Im {
         else if self.is_mixed_mul_logic(rhs) { self.add_mixed_mul_logic(rhs) }
     }
 
-    unsafe fn add_fast_logic(&mut self, rhs: &mut Self) {
+    fn add_fast_logic(&mut self, rhs: &mut Self) {
         if self.is_zero() {
             swap(self, rhs);
         }
@@ -58,7 +58,7 @@ impl Im {
         }
     }
 
-    unsafe fn add_mixed_base_logic(&mut self, rhs: &mut Self) {
+    fn add_mixed_base_logic(&mut self, rhs: &mut Self) {
 
         // a + S
         if self.is_a_s(rhs) {
@@ -85,7 +85,7 @@ impl Im {
         };
     }
 
-    unsafe fn add_mixed_pow_logic(&mut self, rhs: &mut Self) {
+    fn add_mixed_pow_logic(&mut self, rhs: &mut Self) {
 
         // a^n + a , a^n + S , a^n + x , a^n + a^x , a^n + x^x
         if self.is_an_a(rhs) || self.is_an_s(rhs) || self.is_an_x(rhs) || self.is_an_ax(rhs) || self.is_an_xx(rhs)
@@ -106,7 +106,7 @@ impl Im {
         }
     }
 
-    unsafe fn add_mixed_mul_logic(&mut self, rhs: &mut Self) {
+    fn add_mixed_mul_logic(&mut self, rhs: &mut Self) {
 
         // Ma^n + a^n
         if self.is_man_an(rhs) {
@@ -138,10 +138,10 @@ impl Im {
         }
     }
 
-    unsafe fn add_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {
+    fn add_vec(mut lhs: &mut Option<Vec<Im>>, mut rhs: &mut Option<Vec<Im>>) {
 
         let is_gr = Im::is_vec_greater(lhs, rhs);
-        if !is_gr { swap(lhs, rhs) }
+        if !is_gr { std::mem::swap(lhs, rhs) }
 
         let mut exprs = Vec::<Im>::new();
 
